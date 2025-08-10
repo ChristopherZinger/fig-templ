@@ -1,0 +1,11 @@
+{
+  "name": "Empty Vite Plugin",
+  "id": "empty-vite-plugin",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/src/ui.html",
+  "editorType": [
+    "figma"
+  ],
+  "enableProposedApi": false
+}

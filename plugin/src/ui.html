@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Empty Plugin</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        margin: 0;
+      }
+      .wrap {
+        padding: 12px;
+      }
+      button {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h3>Empty Plugin</h3>
+      <p>Welcome to Figma Template</p>
+      <button id="close">Close</button>
+    </div>
+    <script>
+      console.log("Script loaded!");
+
+      function setupCloseButton() {
+        console.log("Setting up close button...");
+        const closeBtn = document.getElementById("close");
+        console.log("Close button element:", closeBtn);
+
+        if (closeBtn) {
+          closeBtn.addEventListener("click", function () {
+            console.log("Close button clicked!");
+            parent.postMessage({ pluginMessage: "close" }, "*");
+          });
+          console.log("Event listener added successfully");
+        } else {
+          console.log("Close button not found!");
+        }
+      }
+
+      // Try multiple ways to ensure DOM is ready
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", setupCloseButton);
+      } else {
+        setupCloseButton();
+      }
+
+      // Also try on window load as backup
+      window.addEventListener("load", setupCloseButton);
+    </script>
+  </body>
+</html>
