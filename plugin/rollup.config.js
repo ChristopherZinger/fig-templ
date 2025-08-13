@@ -110,7 +110,7 @@ export default [
       inlineDynamicImports: false,
     },
     plugins: [
-      typescript(),
+      typescript({ tsconfig: "./tsconfig.backend.json" }),
       resolve(),
       commonjs(),
       json(),
