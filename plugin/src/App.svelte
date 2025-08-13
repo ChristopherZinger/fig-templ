@@ -30,5 +30,5 @@
 <main>
   <h1>Templetto</h1>
 
-  <button onclick={onClick}>Close</button>
+  <button onclick={onClick}>Export Frame</button>
 </main>
