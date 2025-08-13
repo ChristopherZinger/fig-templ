@@ -1,19 +1,29 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import h from "hyperscript";
 
   function onClick() {
-    console.log("Click", parent);
     parent.postMessage({ pluginMessage: "hello" }, "*");
   }
 
   window.addEventListener("message", (event) => {
-    console.log("Message Received in UI", event);
-  });
+    switch (event.data.pluginMessage.type) {
+      case "frame_nodes": {
+        const figNodes = event.data.pluginMessage.data.nodes;
 
-  onMount(() => {
-    parent.onmessage = (event) => {
-      console.log("UI", event);
-    };
+        const hNodes = figNodes.map((node) => {
+          return h("div", "", {
+            x: node.x,
+            y: node.y,
+          });
+        });
+
+        console.log({ hNodes });
+        break;
+      }
+      default: {
+        console.log("unknown message", event);
+      }
+    }
   });
 </script>
 
