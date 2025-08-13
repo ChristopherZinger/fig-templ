@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Templetto is a plugin for Figma that generates pdfs from templates",
   "scripts": {
-    "build:dev": "ENV=DEV rollup -c && rm dist/ui.js",
+    "dev": "ENV=DEV rollup -c && rm dist/ui.js",
     "build:prod": "ENV=PRODUCTION rollup -c && rm dist/ui.js",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
   },
