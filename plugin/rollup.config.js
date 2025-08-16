@@ -26,12 +26,16 @@ export default [
       format: "iife",
       name: "ui",
       file: "dist/ui.js",
+      sourcemap: !production,
     },
     plugins: [
       svelte({
         preprocess: sveltePreprocess({
           sourceMap: !production,
           postcss: true,
+          typescript: {
+            tsconfigFile: "./tsconfig.app.json",
+          },
         }),
         compilerOptions: {
           dev: !production,
@@ -41,9 +45,11 @@ export default [
         browser: true,
         dedupe: (importee) =>
           importee === "svelte" || importee.startsWith("svelte/"),
-        extensions: [".svelte", ".mjs", ".js", ".json", ".node"],
+        extensions: [".svelte", ".mjs", ".js", ".ts", ".json", ".node"],
       }),
-      typescript(),
+      typescript({
+        tsconfig: "./tsconfig.app.json",
+      }),
       commonjs(),
       babel({ babelHelpers: "bundled" }),
       svg(),

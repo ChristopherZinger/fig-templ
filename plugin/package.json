@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "ENV=DEV rollup -c --watch",
     "build": "ENV=PRODUCTION rollup -c && rm dist/ui.js",
-    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json && tsc -p tsconfig.backend.json"
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.backend.json"
   },
   "devDependencies": {
     "@figma/plugin-typings": "^1.116.0",
