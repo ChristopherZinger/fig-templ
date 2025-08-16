@@ -1,6 +1,8 @@
+import type { AppNode } from "../types.d.ts";
+
 figma.showUI(__html__, { width: 320, height: 240, title: "Figma Template" });
 
-figma.ui.onmessage = (msg) => {
+figma.ui.onmessage = async (msg) => {
   const frame = getAllFramesOnPage(figma.currentPage)[0];
 
   if (!frame) {
@@ -13,20 +15,39 @@ figma.ui.onmessage = (msg) => {
     return;
   }
 
+  const sceneNodeToNode = async (sceneNode: SceneNode): Promise<AppNode> => {
+    const result: AppNode = {
+      name: sceneNode.name,
+      type: sceneNode.type,
+      children:
+        "children" in sceneNode
+          ? await Promise.all(sceneNode.children.map(sceneNodeToNode))
+          : [],
+      style: {
+        x: sceneNode.x,
+        y: sceneNode.y,
+        width: sceneNode.width,
+        height: sceneNode.height,
+        maxWidth: sceneNode.maxWidth,
+        maxHeight: sceneNode.maxHeight,
+        css: await sceneNode.getCSSAsync(),
+      },
+    };
+
+    if (sceneNode.type === "TEXT") {
+      console.log("isText");
+      result.innerText = sceneNode.characters;
+    }
+
+    console.log(result);
+
+    return result;
+  };
+
   figma.ui.postMessage({
     type: "frame_nodes",
     data: {
-      nodes: frame.children.map((child) => ({
-        name: child.name,
-        type: child.type,
-        x: child.x,
-        y: child.y,
-        maxHeight: child.maxHeight,
-        maxWidth: child.maxWidth,
-        width: child.width,
-        height: child.height,
-        css: child.getCSSAsync(),
-      })),
+      node: await sceneNodeToNode(frame),
     },
   });
 };
