@@ -7,8 +7,10 @@ export type AppNode =
       innerText: string;
     }>;
 
-type AppNodeBase<T extends { type: string } & Record<string, unknown>> = T & {
+type AppNodeBase<T extends { type: string }> = T & {
   name: string;
   style: Record<string, unknown>;
+  css: Record<string, unknown>;
   children: AppNode[];
+  parent: AppNode | null;
 };

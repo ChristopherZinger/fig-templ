@@ -1,20 +1,8 @@
 <script lang="ts">
-  import h from "hyperscript";
-  import type { AppNode } from "./types";
+  import { getHscriptFromAppNode } from "./app-node-to-hscript";
 
   function onClick() {
     parent.postMessage({ pluginMessage: "hello" }, "*");
-  }
-
-  function getHscriptFromAppNode(node: AppNode): HTMLElement {
-    return h(
-      "div",
-      ...node.children.map(getHscriptFromAppNode),
-      node.type === "TEXT" ? node.innerText : "",
-      {
-        style: node.style.css,
-      }
-    );
   }
 
   window.addEventListener("message", (event) => {
@@ -24,8 +12,8 @@
 
         const rootNode = getHscriptFromAppNode(root);
 
+        console.log(rootNode);
         console.log(rootNode.outerHTML);
-
         break;
       }
       default: {
