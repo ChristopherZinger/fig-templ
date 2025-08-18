@@ -62,10 +62,14 @@ function getPositionStyles(node: BaseNode) {
 
 function getLayoutAlignSelfStyles(
   node: BaseNode
-): Record<string, string> | null {
+):
+  | { "align-self": string; width: string }
+  | { "align-self": string; height: string }
+  | { "align-self": string }
+  | null {
   if (!hasLayoutMode(node)) {
     console.warn("layout_align_not_supported", node);
-    return {};
+    return null;
   }
 
   const parentLayoutMode =
@@ -77,8 +81,6 @@ function getLayoutAlignSelfStyles(
 
   switch (layoutAlign) {
     case "STRETCH":
-      // Node stretches to fill available space in the cross axis
-
       if (node.parent && !hasLayoutMode(node.parent)) {
         console.warn("layout_align_not_supported", node);
         return null;
@@ -86,39 +88,27 @@ function getLayoutAlignSelfStyles(
       switch (parentLayoutMode) {
         case "HORIZONTAL":
           return {
-            alignSelf: "stretch",
+            "align-self": "stretch",
             height: "100%",
           };
         case "VERTICAL":
           return {
-            alignSelf: "stretch",
+            "align-self": "stretch",
             width: "100%",
-          };
-        default:
-          return {
-            alignSelf: "stretch",
           };
       }
 
     case "MIN":
-      // Deprecated but still used - align to start of cross axis
-      return { alignSelf: "flex-start" };
+      return { "align-self": "flex-start" };
 
     case "CENTER":
-      // Deprecated but still used - align to center of cross axis
-      return { alignSelf: "center" };
+      return { "align-self": "center" };
 
     case "MAX":
-      // Deprecated but still used - align to end of cross axis
-      return { alignSelf: "flex-end" };
+      return { "align-self": "flex-end" };
 
     case "INHERIT":
-      // Use parent's alignment (default flexbox behavior)
-      return { alignSelf: "auto" };
-
-    default:
-      console.warn("layout_align_not_supported", node);
-      return null;
+      return { "align-self": "auto" };
   }
 }
 
