@@ -12,7 +12,7 @@ export function buildNodeStyle(node: BaseNode) {
     getLayoutAlignStyles(node),
     getBackgroundStyle(node),
     getGapStyle(node),
-    getPaddingStyle(node)
+    getPaddingStyle(node),
   );
 }
 
@@ -242,9 +242,14 @@ function getGapStyle(node: BaseNode): Record<string, string> {
   };
 }
 
-function getPaddingStyle(node: BaseNode): Record<string, string> {
+function getPaddingStyle(node: BaseNode): {
+  "padding-top": string;
+  "padding-right": string;
+  "padding-bottom": string;
+  "padding-left": string;
+} | null {
   if (!hasLayoutMode(node)) {
-    return {};
+    return null;
   }
 
   return {
