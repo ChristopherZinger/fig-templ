@@ -229,13 +229,17 @@ function getBackgroundStyle(node: BaseNode): Record<string, string> {
   }
 }
 
-function getGapStyle(node: BaseNode): Record<string, string> {
+function getGapStyle(node: BaseNode): { gap: string } | null {
   if (node.type === "TEXT") {
-    return {};
+    return null;
   }
 
-  if (!("layoutMode" in node) || node.layoutMode === "NONE") {
-    return {};
+  if (!hasLayoutMode(node) || node.layoutMode === "NONE") {
+    return null;
+  }
+
+  if (node.primaryAxisAlignItems === "SPACE_BETWEEN") {
+    return null;
   }
 
   return {
