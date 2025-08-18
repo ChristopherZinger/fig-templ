@@ -17,7 +17,7 @@ export function buildNodeStyle(node: BaseNode) {
 function getFlexStyle(node: BaseNode):
   | {
       display: "flex";
-      flexDirection: "row" | "column";
+      "flex-direction": "row" | "column";
     }
   | {
       display: "grid";
@@ -32,13 +32,13 @@ function getFlexStyle(node: BaseNode):
     case "HORIZONTAL": {
       return {
         display: "flex",
-        flexDirection: "row",
+        "flex-direction": "row",
       };
     }
     case "VERTICAL":
       return {
         display: "flex",
-        flexDirection: "column",
+        "flex-direction": "column",
       };
     case "GRID":
       return {
