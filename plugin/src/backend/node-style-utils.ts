@@ -9,7 +9,7 @@ export function buildNodeStyle(node: BaseNode) {
     getSizeStyles(node),
     getFlexStyle(node),
     getPositionStyles(node),
-    getLayoutAlignStyles(node),
+    getLayoutAlignSelfStyles(node),
     getBackgroundStyle(node),
     getGapStyle(node),
     getPaddingStyle(node),
@@ -60,7 +60,9 @@ function getPositionStyles(node: BaseNode) {
   return { position: "static" };
 }
 
-function getLayoutAlignStyles(node: BaseNode): Record<string, string> | null {
+function getLayoutAlignSelfStyles(
+  node: BaseNode
+): Record<string, string> | null {
   if (!hasLayoutMode(node)) {
     console.warn("layout_align_not_supported", node);
     return {};
