@@ -13,6 +13,7 @@ export function buildNodeStyle(node: BaseNode) {
     getBackgroundStyle(node),
     getGapStyle(node),
     getPaddingStyle(node),
+    getJustifyContentStyle(node)
   );
 }
 
@@ -258,4 +259,31 @@ function getPaddingStyle(node: BaseNode): {
     "padding-bottom": node.paddingBottom + "px",
     "padding-left": node.paddingLeft + "px",
   };
+}
+
+function getJustifyContentStyle(
+  node: BaseNode
+): { "justify-content": string } | null {
+  if (!hasLayoutMode(node)) {
+    return null;
+  }
+
+  switch (node.primaryAxisAlignItems) {
+    case "MIN":
+      return {
+        "justify-content": "flex-start",
+      };
+    case "MAX":
+      return {
+        "justify-content": "flex-end",
+      };
+    case "CENTER":
+      return {
+        "justify-content": "center",
+      };
+    case "SPACE_BETWEEN":
+      return {
+        "justify-content": "space-between",
+      };
+  }
 }
