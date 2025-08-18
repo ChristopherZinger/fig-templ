@@ -10,7 +10,9 @@ export function buildNodeStyle(node: BaseNode) {
     getFlexStyle(node),
     getPositionStyles(node),
     getLayoutAlignStyles(node),
-    getBackgroundStyle(node)
+    getBackgroundStyle(node),
+    getGapStyle(node),
+    getPaddingStyle(node)
   );
 }
 
@@ -224,4 +226,31 @@ function getBackgroundStyle(node: BaseNode): Record<string, string> {
     default:
       return {};
   }
+}
+
+function getGapStyle(node: BaseNode): Record<string, string> {
+  if (node.type === "TEXT") {
+    return {};
+  }
+
+  if (!("layoutMode" in node) || node.layoutMode === "NONE") {
+    return {};
+  }
+
+  return {
+    gap: node.itemSpacing + "px",
+  };
+}
+
+function getPaddingStyle(node: BaseNode): Record<string, string> {
+  if (!hasLayoutMode(node)) {
+    return {};
+  }
+
+  return {
+    "padding-top": node.paddingTop + "px",
+    "padding-right": node.paddingRight + "px",
+    "padding-bottom": node.paddingBottom + "px",
+    "padding-left": node.paddingLeft + "px",
+  };
 }
