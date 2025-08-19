@@ -13,7 +13,8 @@ export function buildNodeStyle(node: BaseNode) {
     getBackgroundStyle(node),
     getGapStyle(node),
     getPaddingStyle(node),
-    getJustifyContentStyle(node)
+    getJustifyContentStyle(node),
+    getBorderStyle(node)
   );
 }
 
@@ -282,4 +283,26 @@ function getJustifyContentStyle(
         "justify-content": "space-between",
       };
   }
+}
+
+function getBorderStyle(node: BaseNode): {
+  "border-width": string;
+  "border-style": string;
+  "border-color": string;
+} | null {
+  if (
+    "strokes" in node &&
+    Array.isArray(node.strokes) &&
+    node.strokes.length > 0
+  ) {
+    const stroke = node.strokes.find((stroke) => stroke.visible === true);
+    return {
+      "border-width": stroke.thickness + "px",
+      "border-style": "solid",
+      "border-color":
+        stroke.color.r + " " + stroke.color.g + " " + stroke.color.b,
+    };
+  }
+
+  return null;
 }
