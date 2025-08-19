@@ -1,15 +1,13 @@
 import { hasLayoutMode, isRootNode } from "./node-utils";
 
 export function buildNodeStyle(node: BaseNode) {
-  const x = "layoutMode" in node && node.layoutMode !== "NONE";
-
   return Object.assign(
     {},
     getBaseStyles(node),
     getSizeStyles(node),
     getFlexStyle(node),
     getPositionStyles(node),
-    getLayoutAlignSelfStyles(node),
+    getAlignItemsStyle(node),
     getBackgroundStyle(node),
     getGapStyle(node),
     getPaddingStyle(node),
@@ -61,55 +59,25 @@ function getPositionStyles(node: BaseNode) {
   return { position: "static" };
 }
 
-function getLayoutAlignSelfStyles(
-  node: BaseNode
-):
-  | { "align-self": string; width: string }
-  | { "align-self": string; height: string }
-  | { "align-self": string }
-  | null {
+function getAlignItemsStyle(node: BaseNode): { "align-items": string } | null {
   if (!hasLayoutMode(node)) {
     console.warn("layout_align_not_supported", node);
     return null;
   }
 
-  const parentLayoutMode =
-    node.parent && hasLayoutMode(node.parent)
-      ? node.parent.layoutMode
-      : undefined;
+  console.log({ v: node.inferredAutoLayout });
 
-  const layoutAlign = node.layoutAlign;
-
-  switch (layoutAlign) {
-    case "STRETCH":
-      if (node.parent && !hasLayoutMode(node.parent)) {
-        console.warn("layout_align_not_supported", node);
-        return null;
-      }
-      switch (parentLayoutMode) {
-        case "HORIZONTAL":
-          return {
-            "align-self": "stretch",
-            height: "100%",
-          };
-        case "VERTICAL":
-          return {
-            "align-self": "stretch",
-            width: "100%",
-          };
-      }
-
+  switch (node.counterAxisAlignItems) {
     case "MIN":
-      return { "align-self": "flex-start" };
+      return { "align-items": "start" };
 
     case "CENTER":
-      return { "align-self": "center" };
+      return { "align-items": "center" };
 
     case "MAX":
-      return { "align-self": "flex-end" };
-
-    case "INHERIT":
-      return { "align-self": "auto" };
+      return { "align-items": "end" };
+    case "BASELINE":
+      return { "align-items": "baseline" };
   }
 }
 
