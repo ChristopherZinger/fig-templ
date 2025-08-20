@@ -1,7 +1,7 @@
 import type { AppNode } from "../types.d.ts";
 import { buildNodeStyle } from "./node-style-utils.js";
 
-figma.showUI(__html__, { width: 320, height: 240, title: "Figma Template" });
+figma.showUI(__html__, { width: 600, height: 600, title: "Figma Template" });
 
 figma.ui.onmessage = async (msg) => {
   const frame = getAllFramesOnPage(figma.currentPage)[0];
