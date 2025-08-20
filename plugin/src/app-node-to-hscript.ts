@@ -44,7 +44,5 @@ function getGenericNode(appNode: AppNode): HTMLElement {
 }
 
 function getBaseStyle(appNode: AppNode) {
-  console.log({ style: appNode.style });
-
   return appNode.style;
 }
