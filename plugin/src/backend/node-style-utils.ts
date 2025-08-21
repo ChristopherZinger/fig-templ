@@ -5,6 +5,7 @@ export function buildNodeStyle(node: BaseNode) {
     {},
     getBaseStyles(node),
     getSizeStyles(node),
+    getMinMaxSizeStyles(node),
     getFlexStyle(node),
     getPositionStyles(node),
     getAlignItemsStyle(node),
@@ -95,17 +96,67 @@ function getBaseStyles(node: BaseNode) {
   }
 }
 
-function getSizeStyles(node: BaseNode) {
-  // TODO this should react to layout properties e.g stretch, hug, shrink etc
+function getSizeStyles(node: BaseNode): {
+  width: string;
+  height: string;
+  "text-wrap"?: "wrap" | "nowrap";
+} | null {
   switch (node.type) {
     case "DOCUMENT":
-      return {};
+      return null;
     case "PAGE":
-      return {};
+      return null;
+    case "TEXT":
+      switch (node.textAutoResize) {
+        case "NONE":
+          return {
+            width: node.width + "px",
+            height: node.height + "px",
+          };
+        case "WIDTH_AND_HEIGHT":
+          return {
+            width: "auto",
+            height: node.height + "px",
+            "text-wrap": "nowrap",
+          };
+        case "HEIGHT":
+          return {
+            height: "auto",
+            width: node.width + "px",
+            "text-wrap": "wrap",
+          };
+        case "TRUNCATE":
+          // deprecated
+          return {
+            width: node.width + "px",
+            height: node.height + "px",
+          };
+        default:
+          console.error("text_auto_resize_not_supported", node);
+          return null;
+      }
+
     default:
       return {
         width: node.width + "px",
         height: node.height + "px",
+      };
+  }
+}
+
+function getMinMaxSizeStyles(node: BaseNode): {
+  minWidth: string;
+  minHeight: string;
+  maxWidth: string;
+  maxHeight: string;
+} | null {
+  switch (node.type) {
+    case "DOCUMENT":
+      return null;
+    case "PAGE":
+      return null;
+    default:
+      return {
         minWidth: node.minWidth + "px",
         minHeight: node.minHeight + "px",
         maxWidth: node.maxWidth + "px",

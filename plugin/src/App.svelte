@@ -9,7 +9,7 @@
 
   let hsNode: HTMLElement | undefined | null = null;
   function onHsNodeChange(
-    hsNode: HTMLElement | undefined,
+    hsNode: HTMLElement | undefined | null,
     iframeRef: HTMLIFrameElement | undefined
   ) {
     if (!iframeRef?.contentDocument) {
