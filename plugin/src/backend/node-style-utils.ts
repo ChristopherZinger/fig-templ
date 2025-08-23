@@ -1,20 +1,31 @@
 import { hasLayoutMode, isRootNode } from "./node-utils";
 
-export function buildNodeStyle(node: BaseNode) {
-  return Object.assign(
-    {},
-    getBaseStyles(node),
-    getSizeStyles(node),
-    getMinMaxSizeStyles(node),
-    getFlexStyle(node),
-    getPositionStyles(node),
-    getAlignItemsStyle(node),
-    getBackgroundStyle(node),
-    getGapStyle(node),
-    getPaddingStyle(node),
-    getJustifyContentStyle(node),
-    getBorderStyle(node)
-  );
+/**
+ * @returns [cssStyles, options]
+ */
+export function buildNodeStyle(
+  node: BaseNode
+): [Record<string, string>, { fontNames: string[] }] {
+  const [fontStyles, { fontNames }] = getFontStyle(node);
+
+  return [
+    Object.assign(
+      {},
+      getBaseStyles(node),
+      getSizeStyles(node),
+      getMinMaxSizeStyles(node),
+      getFlexStyle(node),
+      getPositionStyles(node),
+      getAlignItemsStyle(node),
+      getBackgroundStyle(node),
+      getGapStyle(node),
+      getPaddingStyle(node),
+      getJustifyContentStyle(node),
+      getBorderStyle(node),
+      fontStyles
+    ),
+    { fontNames },
+  ];
 }
 
 function getFlexStyle(node: BaseNode):
@@ -65,8 +76,6 @@ function getAlignItemsStyle(node: BaseNode): { "align-items": string } | null {
     console.warn("layout_align_not_supported", node);
     return null;
   }
-
-  console.log({ v: node.inferredAutoLayout });
 
   switch (node.counterAxisAlignItems) {
     case "MIN":
@@ -324,4 +333,32 @@ function getBorderStyle(node: BaseNode): {
   }
 
   return null;
+}
+
+type FontCssStyles = {
+  "font-family"?: string;
+  "font-size"?: string;
+  "font-style"?: string;
+  "font-weight"?: string;
+};
+function getFontStyle(
+  node: BaseNode
+): [FontCssStyles | null, { fontNames: string[] }] {
+  const fontNames: string[] = [];
+  if (node.type === "TEXT") {
+    const result: FontCssStyles = {};
+    if (node.fontName !== figma.mixed) {
+      fontNames.push(node.fontName.family);
+      result["font-family"] = node.fontName.family;
+      result["font-style"] = node.fontName.style;
+    }
+    if (node.fontWeight !== figma.mixed) {
+      result["font-weight"] = node.fontWeight + "px";
+    }
+    if (node.fontSize !== figma.mixed) {
+      result["font-size"] = node.fontSize + "px";
+    }
+    return [result, { fontNames }];
+  }
+  return [null, { fontNames }];
 }

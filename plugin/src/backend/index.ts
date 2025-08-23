@@ -16,11 +16,11 @@ figma.ui.onmessage = async (msg) => {
     return;
   }
 
+  const [rootAppNode, { fontNames }] = await buildAppNodeTreeForFrame(frame);
+
   figma.ui.postMessage({
     type: "frame_nodes",
-    data: {
-      node: await buildAppNodeTreeForFrame(frame),
-    },
+    data: { node: [rootAppNode, { fontNames: [...fontNames] }] },
   });
 };
 
@@ -35,19 +35,21 @@ function getAllFramesOnPage(page: PageNode): FrameNode[] {
   return allFrames;
 }
 
-function buildAppNodeTreeForFrame(frame: FrameNode): AppNode {
+async function buildAppNodeTreeForFrame(
+  frame: FrameNode
+): Promise<[AppNode | null, { fontNames: Set<string> }]> {
   if (frame.type !== "FRAME") {
     console.error("expected_frame_node", frame);
-    return;
+    return [null, { fontNames: new Set() }];
   }
 
-  return buildAppNodeFromSceneNode(frame, { recursively: true });
+  return await buildAppNodeFromSceneNode(frame, { fontNames: new Set() });
 }
 
 async function buildAppNodeFromSceneNode(
   sceneNode: SceneNode,
-  { recursively = true }: { recursively: boolean } = { recursively: true }
-): Promise<AppNode> {
+  { fontNames }: { fontNames: Set<string> }
+): Promise<[AppNode, { fontNames: Set<string> }]> {
   const isLayoutMode =
     "layoutMode" in sceneNode && sceneNode.layoutMode !== "NONE";
 
@@ -58,30 +60,49 @@ async function buildAppNodeFromSceneNode(
     sceneNode.children.length > 0
   ) {
     console.error("containers_without_layout_are_unsupported", sceneNode);
-    return {};
+    return [null, { fontNames }];
     // throw new Error("containers_without_layout_are_unsupported");
   }
 
   const css = await sceneNode.getCSSAsync();
 
+  const [style, { fontNames: _fontNames }] = buildNodeStyle(sceneNode);
+
+  fontNames = fontNames || new Set();
+  for (const fontName of _fontNames) {
+    fontNames.add(fontName);
+  }
+
+  const children: AppNode[] = [];
+  if ("children" in sceneNode) {
+    const childNodes = await Promise.all(
+      sceneNode.children.map(
+        async (childNode) =>
+          await buildAppNodeFromSceneNode(childNode, {
+            fontNames,
+          })
+      )
+    );
+
+    for (const [node, { fontNames: childFontNames }] of childNodes) {
+      children.push(node);
+      for (const fontName of childFontNames) {
+        fontNames.add(fontName);
+      }
+    }
+  }
+
   const result: AppNode = {
     name: sceneNode.name,
     type: sceneNode.type,
-    children:
-      "children" in sceneNode
-        ? await Promise.all(
-            sceneNode.children.map((childNode) =>
-              buildAppNodeFromSceneNode(childNode)
-            )
-          )
-        : [],
+    children,
     css,
-    style: buildNodeStyle(sceneNode),
+    style,
   };
 
   if (sceneNode.type === "TEXT") {
     result.innerText = sceneNode.characters;
   }
 
-  return result;
+  return [result, { fontNames: fontNames || new Set() }];
 }

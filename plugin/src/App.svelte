@@ -1,38 +1,42 @@
 <script lang="ts">
-  import { getHscriptFromAppNode } from "./app-node-to-hscript";
+  import { getHtmlDocumentFromAppNode } from "./app-node-to-hscript";
+  import type { AppNode } from "./types";
 
+  let templateInfo: null | undefined | TemplateInfo = null;
   let iframeRef: HTMLIFrameElement | undefined;
 
   function onClickShowPreview() {
+    templateInfo = undefined;
     parent.postMessage({ pluginMessage: "hello" }, "*");
   }
 
-  let hsNode: HTMLElement | undefined | null = null;
-  function onHsNodeChange(
-    hsNode: HTMLElement | undefined | null,
-    iframeRef: HTMLIFrameElement | undefined
-  ) {
+  type TemplateInfo = [AppNode, { fontNames: string[] }];
+  function onTemplateInfoChange(templateInfo: null | undefined | TemplateInfo) {
     if (!iframeRef?.contentDocument) {
-      console.error("iframeRef.contentDocument is null");
+      console.error("expected_iframeRef_contentDocument");
       return;
     }
-    if (!hsNode) {
-      iframeRef.contentDocument.body.innerHTML = "loading...";
+
+    if (!templateInfo) {
+      iframeRef.contentDocument.body.innerHTML = "";
       return;
     }
-    iframeRef.contentDocument.body.innerHTML = hsNode.outerHTML;
+
+    const [rootAppNode, { fontNames }] = templateInfo;
+    const html = getHtmlDocumentFromAppNode(rootAppNode, new Set(fontNames));
+    iframeRef.contentDocument.body.innerHTML = html.outerHTML;
   }
-  $: onHsNodeChange(hsNode, iframeRef);
+  $: onTemplateInfoChange(templateInfo);
 
   window.addEventListener("message", (event) => {
     switch (event.data.pluginMessage.type) {
       case "frame_nodes": {
-        const root = event.data.pluginMessage.data.node;
-        const rootNode = getHscriptFromAppNode(root);
+        const _templateInfo = event.data.pluginMessage.data.node as [
+          AppNode | null,
+          { fontNames: string[] },
+        ];
 
-        hsNode = rootNode;
-
-        console.log(rootNode.outerHTML);
+        templateInfo = _templateInfo;
         break;
       }
       default: {
@@ -49,8 +53,17 @@
 
   <div class="iframe-container">
     <h3>Preview</h3>
-    {#if hsNode !== null}
-      <iframe bind:this={iframeRef} title="iframe"></iframe>
+    <iframe
+      bind:this={iframeRef}
+      class:hidden={!templateInfo}
+      title="iframe"
+      style={`width: ${templateInfo?.[0]?.style.width || "100px"}; height: ${templateInfo?.[0]?.style.height || "100px"};`}
+    ></iframe>
+    {#if templateInfo === undefined}
+      <p>Loading...</p>
+    {/if}
+    {#if templateInfo === null}
+      <p>No template selected</p>
     {/if}
   </div>
 </main>
@@ -59,13 +72,11 @@
   .iframe-container {
     margin: 20px 0;
   }
-
-  iframe {
-    width: 300px;
-    height: 900px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    width: 100%;
+  .iframe-container iframe {
     background-color: white;
+  }
+
+  .hidden {
+    display: none;
   }
 </style>
