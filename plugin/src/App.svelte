@@ -4,6 +4,7 @@
 
   let templateInfo: null | undefined | TemplateInfo = null;
   let iframeRef: HTMLIFrameElement | undefined;
+  let strHtml: string | undefined;
 
   function onClickShowPreview() {
     templateInfo = undefined;
@@ -24,6 +25,7 @@
 
     const [rootAppNode, { fontNames }] = templateInfo;
     const html = getHtmlDocumentFromAppNode(rootAppNode, new Set(fontNames));
+    strHtml = html.outerHTML;
     iframeRef.contentDocument.body.innerHTML = html.outerHTML;
   }
   $: onTemplateInfoChange(templateInfo);
@@ -44,12 +46,37 @@
       }
     }
   });
+
+  function onCreateTemplate(strHtml: string) {
+    fetch("http://localhost:5173/template", {
+      method: "PUT",
+      body: JSON.stringify(strHtml),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log("myerr", err);
+      });
+  }
 </script>
 
 <main>
   <h1>Templetto</h1>
 
-  <button onclick={onClickShowPreview}>Show Preview</button>
+  {#if strHtml}
+    <div style="margin-bottom: 10px">
+      <button onclick={() => strHtml && onCreateTemplate(strHtml)}>
+        Save
+      </button>
+    </div>
+  {/if}
+  <div>
+    <button onclick={onClickShowPreview}>Show Preview</button>
+  </div>
 
   <div class="iframe-container">
     <h3>Preview</h3>
