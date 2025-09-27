@@ -1,0 +1,104 @@
+import { defineConfig } from "rollup";
+import typescript from "@rollup/plugin-typescript";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import json from "@rollup/plugin-json";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+const pkg = require("./package.json");
+
+// External dependencies that should not be bundled
+const external = [
+  // Node.js built-ins
+  "fs",
+  "path",
+  "url",
+  "util",
+  "os",
+  "crypto",
+  "stream",
+  "events",
+  "buffer",
+  "child_process",
+  "cluster",
+  "dgram",
+  "dns",
+  "http",
+  "https",
+  "net",
+  "tls",
+  "querystring",
+  "readline",
+  "repl",
+  "string_decoder",
+  "sys",
+  "tty",
+  "v8",
+  "vm",
+  "zlib",
+  "assert",
+  "constants",
+  "domain",
+  "punycode",
+  "timers",
+
+  // Dependencies that should remain external (typically native modules or large deps)
+  "@sparticuz/chromium",
+  "puppeteer-core",
+
+  // Any other dependencies you want to keep external
+  ...Object.keys(pkg.dependencies || {}),
+  ...Object.keys(pkg.peerDependencies || {}),
+];
+
+export default defineConfig({
+  input: "src/main.ts",
+  output: {
+    file: "dist/server.js",
+    format: "es", // ES modules since your package.json has "type": "module"
+    sourcemap: true,
+    banner: "#!/usr/bin/env node",
+  },
+  external,
+  plugins: [
+    // Handle JSON imports
+    json(),
+
+    // Resolve node modules
+    nodeResolve({
+      preferBuiltins: true, // Prefer Node.js built-ins over npm packages
+      exportConditions: ["node"], // Use Node.js export conditions
+    }),
+
+    // Convert CommonJS modules to ES6
+    commonjs(),
+
+    // TypeScript compilation
+    typescript({
+      tsconfig: "./tsconfig.json",
+      compilerOptions: {
+        // Override tsconfig for bundling
+        noEmit: false,
+        declaration: false,
+        declarationMap: false,
+        outDir: "dist",
+        rootDir: "src",
+        module: "ESNext",
+        target: "ES2022",
+        moduleResolution: "bundler",
+      },
+      exclude: ["**/*.test.ts", "**/*.spec.ts"],
+    }),
+  ],
+
+  // Suppress warnings for certain circular dependencies that are safe
+  onwarn(warning, warn) {
+    // Skip certain warnings
+    if (warning.code === "CIRCULAR_DEPENDENCY") return;
+    if (warning.code === "THIS_IS_UNDEFINED") return;
+
+    // Use default for everything else
+    warn(warning);
+  },
+});

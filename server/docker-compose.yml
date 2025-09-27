@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  puppeteer-server:
+    build: .
+    platform: linux/amd64
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "3000:3000"
+    # Override the default command for development
+    command: npm run start
