@@ -1,0 +1,27 @@
+FROM --platform=linux/amd64 node:22-slim
+
+# Install Chromium and dependencies for Puppeteer (simpler approach)
+RUN apt-get update && \
+    apt-get install -y chromium && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set environment variables for Chromium
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json (if available)
+COPY package*.json ./
+
+# Install Node.js dependencies
+RUN npm install 
+
+# Copy the rest of the application code
+COPY . .
+
+ENV GOOGLE_APPLICATION_CREDENTIALS="/app/service-account-key.json"
+
+# Command to run the application
+CMD ["npm", "run", "start:puppeteer-worker"]

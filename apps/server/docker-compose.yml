@@ -1,15 +1,35 @@
 version: "3.8"
 
 services:
-  puppeteer-server:
-    build: .
+  puppeteer-worker:
+    build:
+      dockerfile: Dockerfile.puppeteer-worker
+      context: .
+    container_name: puppeteer-worker
+    image: puppeteer-worker:latest
     platform: linux/amd64
     volumes:
       - .:/app
       - /app/node_modules
     environment:
       - NODE_ENV=development
+      - PORT=3001
+    ports:
+      - "3001:3001"
+
+  rest-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.rest-server
+    image: rest-server:latest
+    container_name: rest-server
+    platform: linux/amd64
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - PUPPETEER_WORKER_URL=http://puppeteer-worker:3001
     ports:
       - "3000:3000"
-    # Override the default command for development
-    command: npm run start
