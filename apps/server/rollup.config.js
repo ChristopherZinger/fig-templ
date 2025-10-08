@@ -53,9 +53,9 @@ const external = [
 ];
 
 export default defineConfig({
-  input: "src/main.ts",
+  input: ["src/rest-server.ts", "src/puppeteer-worker.ts"],
   output: {
-    file: "dist/server.js",
+    dir: "dist",
     format: "es", // ES modules since your package.json has "type": "module"
     sourcemap: true,
     banner: "#!/usr/bin/env node",
@@ -82,7 +82,6 @@ export default defineConfig({
         noEmit: false,
         declaration: false,
         declarationMap: false,
-        outDir: "dist",
         rootDir: "src",
         module: "ESNext",
         target: "ES2022",
