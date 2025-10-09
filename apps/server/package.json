@@ -8,6 +8,7 @@
     "build": "rm -rf dist && rollup -c",
     "build:watch": "rollup -c --watch",
     "start:rest-server": "node dist/rest-server.js",
+    "start:locally:rest-server": "node -r dotenv/config dist/rest-server.js",
     "start:puppeteer-worker": "functions-framework --target=main --source=dist/puppeteer-worker.js --port=3001"
   },
   "devDependencies": {
@@ -22,7 +23,10 @@
   },
   "dependencies": {
     "@google-cloud/functions-framework": "^4.0.0",
+    "@google-cloud/logging": "^11.2.1",
+    "@google-cloud/logging-winston": "^6.0.1",
     "@sparticuz/chromium": "^138.0.2",
+    "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "firebase-admin": "^13.5.0",
     "google-auth-library": "^10.4.0",

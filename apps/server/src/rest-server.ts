@@ -1,6 +1,7 @@
 import express from "express";
 import z from "zod";
 import { GoogleAuth } from "google-auth-library";
+import { log } from "./utils/logging";
 
 const projectNumber = process.env.GCLOUD_PROJECT_NUMBER;
 const defaultLocation = process.env.DEFAULT_LOCATION;
@@ -27,11 +28,15 @@ const config = configParseResult.data;
 const app = express();
 app.use(express.json());
 
-app.get("/", async (_, res) => {
+app.get("/", async (req, res) => {
+  log.info("handle_request", {
+    httpRequest: { requestUrl: req.url, requestMethod: req.method },
+  });
+
   const auth = new GoogleAuth();
-  console.info(`request ${url} with target audience ${targetAudience}`);
   const client = await auth.getIdTokenClient(targetAudience);
   try {
+    log.debug("fetching_from_puppeteer_worker");
     const response = await client.fetch(config.puppeterWorkerUrl, {
       method: "POST",
       headers: {
@@ -47,15 +52,20 @@ app.get("/", async (_, res) => {
     }
 
     res.status(200).send("processed_successfully");
-    return;
   } catch (error) {
-    console.error("failed_to_process_request", error);
+    log.error("failed_to_process_request", { error });
     res.status(500).json({ error: "Internal server error" });
-    return;
   }
+  log.info("response", {
+    httpRequest: {
+      status: res.statusCode,
+      requestUrl: req.url,
+      requestMethod: req.method,
+    },
+  });
 });
 
 app.listen(config.port, () => {
-  console.log(`REST server listening on port ${config.port}`);
-  console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+  log.info("REST_server_listening", { port: config.port });
+  log.info("Environment", { env: process.env.NODE_ENV || "development" });
 });
