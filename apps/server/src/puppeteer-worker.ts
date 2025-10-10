@@ -61,7 +61,7 @@ export async function main(req: Request, res: Response) {
     filePathInStorage: pdfPathInStorage,
   });
 
-  res.status(200).json({ message: "reponse_from_puppeteer_worker" });
+  res.status(200).json({ message: "response_from_puppeteer_worker" });
 
   log.info("puppeteer_worker_response", {
     httpRequest: {
