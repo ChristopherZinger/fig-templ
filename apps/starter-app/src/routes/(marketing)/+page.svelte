@@ -75,7 +75,7 @@
       <div
         class="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-primary to-accent mb-3 md:mb-5 pb-1"
       >
-        Figma Plugin Coming Soon
+        Coming Soon
       </div>
 
       <div

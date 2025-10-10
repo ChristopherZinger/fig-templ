@@ -69,7 +69,7 @@
         <li>
           <a
             href="https://github.com/CriticalMoments/CMSaasStarter"
-            class="border border-primary">★ us on Github</a
+            class="border border-primary">Try Templetto</a
           >
         </li>
       </ul>
