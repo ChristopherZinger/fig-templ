@@ -1,5 +1,5 @@
-export const WebsiteName: string = "SaaS Starter"
-export const WebsiteBaseUrl: string = "https://saasstarter.work"
+export const WebsiteName: string = "Templetto"
+export const WebsiteBaseUrl: string = "https://templetto.com"
 export const WebsiteDescription: string =
-  "Open source, fast, and free to host SaaS template. Built with SvelteKit, Supabase, Stripe, Tailwind, DaisyUI, and Postgres"
+  "Turn your Figma designs into PDF documents with our powerful API. Template your designs and generate professional PDFs at scale."
 export const CreateProfileStep: boolean = true

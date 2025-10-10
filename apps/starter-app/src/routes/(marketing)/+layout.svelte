@@ -18,7 +18,7 @@
       <li class="md:mx-4">
         <a
           href="https://github.com/CriticalMoments/CMSaasStarter"
-          class="border border-primary">★ us on Github</a
+          class="border border-primary">Try Templetto</a
         >
       </li>
       <li class="md:mx-2"><a href="/blog">Blog</a></li>
@@ -94,21 +94,16 @@
       <a class="link link-hover my-1" href="/pricing">Pricing</a>
       <a class="link link-hover my-1" href="/blog">Blog</a>
       <a class="link link-hover my-1" href="/contact_us">Contact Us</a>
-      <a
-        class="link link-hover my-1"
-        href="https://github.com/CriticalMoments/CMSaasStarter">Github</a
-      >
     </nav>
     <aside>
       <span class="footer-title opacity-80">Sponsor</span>
       <a class="max-w-[260px]" href="https://getkiln.ai">
-        <div class="font-bold text-3xl mb-1">Kiln AI</div>
-        <div class="font-medium mb-3">Build High Quality AI Products</div>
+        <div class="font-bold text-3xl mb-1">Templetto</div>
+        <div class="font-medium mb-3">Build High Quality PDFs</div>
         <div class="font-light">
-          Use advanced AI tactics, and collaborate with your team. Free apps for
-          Mac and Windows.
+          Use the tools designers love, collaborate with your team. Free plugin for
+          Figma.
         </div>
-        <div class="link text-sm font-bold mt-2">Learn More</div>
       </a>
     </aside>
   </footer>
