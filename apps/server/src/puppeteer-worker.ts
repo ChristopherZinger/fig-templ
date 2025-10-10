@@ -6,6 +6,7 @@ import { getBucket, pushToStorage } from "./utils/firebase-storage";
 import { firestore } from "./utils/firebase";
 import { withBrowserPage } from "./utils/puppeteer";
 import { log } from "./utils/logging";
+import { puppeteerWorkerRequestSchema } from "./utils/puppeteer-worker-utils";
 
 const configParseResult = z
   .object({
@@ -24,7 +25,18 @@ if (!configParseResult.success) {
 export async function main(req: Request, res: Response) {
   log.info("got_request_from_rest_server");
 
-  const templatePathInStorage = `templates/4pQTTMHwqPCraONcfrU4.html`;
+  if (!req.is("application/json")) {
+    throw new Error("expected_application_json");
+  }
+
+  const reqParsingResult = puppeteerWorkerRequestSchema.safeParse(req.body);
+  if (!reqParsingResult.success) {
+    res.status(400).json({ error: "invalid_request" });
+    return;
+  }
+  const { templateId } = reqParsingResult.data;
+
+  const templatePathInStorage = `templates/${templateId}.html`;
   const bucket = getBucket();
   const templateRef = bucket.file(templatePathInStorage);
   if (!(await templateRef.exists())) {
