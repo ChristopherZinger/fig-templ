@@ -51,8 +51,8 @@ export async function main(req: Request, res: Response) {
 
   log.info("saving_pdf_to_storage", { pdfPathInStorage });
   await pushToStorage({
-    localFilePath: pdfPathInStorage,
-    destinationInStorage: pdfLocalFilePath,
+    localFilePath: pdfLocalFilePath,
+    destinationInStorage: pdfPathInStorage,
   });
 
   log.info("saving_pdf_to_firestore", { pdfPathInStorage });
