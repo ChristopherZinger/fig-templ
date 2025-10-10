@@ -5,6 +5,7 @@ import path from "path";
 import { getBucket, pushToStorage } from "./utils/firebase-storage";
 import { firestore } from "./utils/firebase";
 import { withBrowserPage } from "./utils/puppeteer";
+import { log } from "./utils/logging";
 
 const configParseResult = z
   .object({
@@ -21,7 +22,7 @@ if (!configParseResult.success) {
 }
 
 export async function main(_: Request, res: Response) {
-  console.log("got_request_from_rest_server");
+  log.info("got_request_from_rest_server");
 
   const templatePathInStorage = `templates/4pQTTMHwqPCraONcfrU4.html`;
   const bucket = getBucket();
@@ -32,7 +33,7 @@ export async function main(_: Request, res: Response) {
   const [buffer] = await templateRef.download();
   const templateHtml = buffer.toString("utf-8");
 
-  console.log("create_template_with_puppeteer", templateHtml);
+  log.info("create_template_with_puppeteer", { templateHtml });
   const pdfLocalFilePath = `/tmp/${Date.now()}/out.pdf` as const;
   fs.mkdirSync(path.dirname(pdfLocalFilePath), { recursive: true });
 
@@ -48,13 +49,13 @@ export async function main(_: Request, res: Response) {
   const pdfDocRef = firestore.collection("output").doc();
   const pdfPathInStorage = `outputs/${pdfDocRef.id}.pdf`;
 
-  console.log("saving_pdf_to_storage", pdfPathInStorage);
+  log.info("saving_pdf_to_storage", { pdfPathInStorage });
   await pushToStorage({
     localFilePath: pdfPathInStorage,
     destinationInStorage: pdfLocalFilePath,
   });
 
-  console.log("saving_pdf_to_firestore", pdfPathInStorage);
+  log.info("saving_pdf_to_firestore", { pdfPathInStorage });
   await pdfDocRef.set({
     name: "output",
     filePathInStorage: pdfPathInStorage,
