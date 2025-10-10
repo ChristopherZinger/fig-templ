@@ -21,7 +21,7 @@ if (!configParseResult.success) {
   );
 }
 
-export async function main(_: Request, res: Response) {
+export async function main(req: Request, res: Response) {
   log.info("got_request_from_rest_server");
 
   const templatePathInStorage = `templates/4pQTTMHwqPCraONcfrU4.html`;
@@ -61,5 +61,13 @@ export async function main(_: Request, res: Response) {
     filePathInStorage: pdfPathInStorage,
   });
 
-  return res.status(200).json({ message: "reponse_from_puppeteer_worker" });
+  res.status(200).json({ message: "reponse_from_puppeteer_worker" });
+
+  log.info("puppeteer_worker_response", {
+    httpRequest: {
+      status: res.statusCode,
+      requestUrl: req.url,
+      requestMethod: req.method,
+    },
+  });
 }
