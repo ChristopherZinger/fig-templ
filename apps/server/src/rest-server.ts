@@ -3,11 +3,11 @@ import z from "zod";
 import { GoogleAuth, type IdTokenClient } from "google-auth-library";
 import { log } from "./utils/logging";
 import { PuppeteerWorkerRequest } from "./utils/puppeteer-worker-utils";
-const projectNumber = process.env.GCLOUD_PROJECT_NUMBER;
-const defaultLocation = process.env.DEFAULT_LOCATION;
-const puppeteerWorkerServiceName = process.env.PUPPETEER_WORKER_SERVICE_NAME;
-const url = `https://${puppeteerWorkerServiceName}-${projectNumber}.${defaultLocation}.run.app/`;
-const targetAudience = url;
+
+const GCLOUD_PROJECT_NR = process.env.GCLOUD_PROJECT_NUMBER;
+const DEFAULT_LOCATION = process.env.DEFAULT_LOCATION;
+const PUPPETEER_WORKER_SERVICE_NAME = process.env.PUPPETEER_WORKER_SERVICE_NAME;
+const TARGET_AUDIENCE = `https://${PUPPETEER_WORKER_SERVICE_NAME}-${GCLOUD_PROJECT_NR}.${DEFAULT_LOCATION}.run.app/`;
 
 const configParseResult = z
   .object({
@@ -24,7 +24,6 @@ if (!configParseResult.success) {
 }
 
 const config = configParseResult.data;
-
 const app = express();
 app.use(express.json());
 
