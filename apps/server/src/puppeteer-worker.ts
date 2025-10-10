@@ -46,7 +46,10 @@ export async function main(req: Request, res: Response) {
   const templateHtml = buffer.toString("utf-8");
 
   log.info("create_template_with_puppeteer", { templateHtml });
-  const pdfLocalFilePath = `/tmp/${Date.now()}/out.pdf` as const;
+  const pdfLocalFilePath =
+    process.env.NODE_ENV === "production"
+      ? (`/tmp/${Date.now()}/out.pdf` as const)
+      : (`./${Date.now()}/out.pdf` as const);
   fs.mkdirSync(path.dirname(pdfLocalFilePath), { recursive: true });
 
   await withBrowserPage(async (page) => {
