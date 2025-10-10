@@ -46,9 +46,13 @@ const external = [
   // Dependencies that should remain external (typically native modules or large deps)
   "@sparticuz/chromium",
   "puppeteer-core",
+  "uuid",
+  "winston",
+  "@google-cloud/logging-winston",
 
   // Any other dependencies you want to keep external
-  ...Object.keys(pkg.dependencies || {}),
+  // BUT exclude workspace packages so they get bundled
+  ...Object.keys(pkg.dependencies || {}).filter(dep => !dep.startsWith('@templetto/')),
   ...Object.keys(pkg.peerDependencies || {}),
 ];
 
@@ -69,6 +73,7 @@ export default defineConfig({
     nodeResolve({
       preferBuiltins: true, // Prefer Node.js built-ins over npm packages
       exportConditions: ["node"], // Use Node.js export conditions
+      extensions: ['.ts', '.js', '.json'], // Resolve these extensions for workspace packages
     }),
 
     // Convert CommonJS modules to ES6
@@ -82,11 +87,11 @@ export default defineConfig({
         noEmit: false,
         declaration: false,
         declarationMap: false,
-        rootDir: "src",
         module: "ESNext",
         target: "ES2022",
         moduleResolution: "bundler",
       },
+      include: ["src/**/*", "../../packages/*/src/**/*"], // Include workspace packages
       exclude: ["**/*.test.ts", "**/*.spec.ts"],
     }),
   ],
