@@ -1,5 +1,10 @@
 import puppeteer, { Page } from "puppeteer-core";
+import { config } from "dotenv";
 
+const ENV = process.env.NODE_ENV;
+if (ENV !== "production") {
+  config({ path: ".env" });
+}
 const PUPPETEER_EXECUTABLE_PATH = process.env.PUPPETEER_EXECUTABLE_PATH;
 
 export async function withBrowserPage(
