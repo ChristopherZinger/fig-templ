@@ -20,12 +20,13 @@ export async function pushToStorage({
     throw new Error("expected_file_name");
   }
 
-  await getBucket()
-    .file(localFilePath)
-    .save(destinationInStorage, {
-      contentType: "application/pdf",
-      metadata: {
-        contentDisposition: `attachment; filename="${fileName}"`,
-      },
-    });
+  const bucket = getBucket();
+
+  bucket.upload(localFilePath, {
+    destination: destinationInStorage,
+    contentType: "application/pdf",
+    metadata: {
+      contentDisposition: `attachment; filename="${fileName}"`,
+    },
+  });
 }
