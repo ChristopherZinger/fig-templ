@@ -64,19 +64,26 @@ export async function main(req: Request, res: Response) {
   const pdfDocRef = firestore.collection("output").doc();
   const pdfPathInStorage = `outputs/${pdfDocRef.id}.pdf`;
 
-  log.info("saving_pdf_to_storage", { pdfPathInStorage });
+  log.debug("saving_pdf_to_storage", { pdfPathInStorage });
   await pushToStorage({
     localFilePath: pdfLocalFilePath,
     destinationInStorage: pdfPathInStorage,
   });
 
-  log.info("saving_pdf_to_firestore", { pdfPathInStorage });
+  log.debug("saving_pdf_to_firestore", { pdfPathInStorage });
   await pdfDocRef.set({
     name: "output",
     filePathInStorage: pdfPathInStorage,
   });
 
-  res.status(200).json({ message: "response_from_puppeteer_worker" });
+  log.debug("get_signed_url", { pdfPathInStorage });
+  const [downloadUrl] = await bucket.file(pdfPathInStorage).getSignedUrl({
+    action: "read",
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 365,
+    responseDisposition: `attachment; filename="result.pdf"`,
+  });
+
+  res.status(200).json({ downloadUrl });
 
   log.info("puppeteer_worker_response", {
     httpRequest: {

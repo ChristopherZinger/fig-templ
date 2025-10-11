@@ -23,7 +23,9 @@ export async function createPdfHandler(req: Request, res: Response) {
       error: "invalid_request",
       details: ["expected_valid_template_id"],
     });
-    log.info("response", { httpRequest: getRequestLogInfo(req, res) });
+    log.info("rest_server_response", {
+      httpRequest: getRequestLogInfo(req, res),
+    });
     return;
   }
   const { templateId } = parsingResult.data;
@@ -32,16 +34,25 @@ export async function createPdfHandler(req: Request, res: Response) {
     log.info("fetching_from_puppeteer_worker");
     const response = await callPuppeteerWorker({ templateId });
 
-    if (!response.ok) {
-      throw new Error("puppeteer_worker_error");
-    }
-    res.status(200).send("processed_successfully");
+    const {
+      data: { downloadUrl },
+    } = z
+      .object({ data: z.object({ downloadUrl: z.string() }) })
+      .parse(response);
+
+    log.debug("puppeteer_worker_response", { downloadUrl });
+
+    res.status(200).json({ downloadUrl });
+    log.info("rest_server_response", {
+      httpRequest: getRequestLogInfo(req, res),
+    });
   } catch (error) {
     log.error("failed_to_process_request", { error });
     res.status(500).json({ error: "Internal server error" });
+    log.error("rest_server_response", {
+      httpRequest: getRequestLogInfo(req, res),
+    });
   }
-
-  log.info("response", { httpRequest: getRequestLogInfo(req, res) });
 }
 
 function getRequestLogInfo(req: Request, res: Response) {
