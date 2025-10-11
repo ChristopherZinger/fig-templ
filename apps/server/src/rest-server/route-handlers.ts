@@ -32,7 +32,10 @@ export async function createPdfHandler(req: Request, res: Response) {
 
   try {
     log.info("fetching_from_puppeteer_worker");
-    const response = await callPuppeteerWorker({ templateId });
+    const response = await callPuppeteerWorker({
+      templateId,
+      jsonData: req.body,
+    });
 
     const {
       data: { downloadUrl },

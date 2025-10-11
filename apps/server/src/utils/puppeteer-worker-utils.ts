@@ -5,6 +5,7 @@ import { getIdTokenClient } from "./gcloud-id-token";
 
 export const puppeteerWorkerRequestSchema = z.object({
   templateId: z.string(),
+  jsonData: z.record(z.string(), z.unknown()),
 });
 
 export type PuppeteerWorkerRequest = z.infer<

@@ -7,6 +7,7 @@ import { firestore } from "./utils/firebase";
 import { withBrowserPage } from "./utils/puppeteer";
 import { log } from "./utils/logging";
 import { puppeteerWorkerRequestSchema } from "./utils/puppeteer-worker-utils";
+import Handlebars from "handlebars";
 
 const configParseResult = z
   .object({
@@ -34,7 +35,7 @@ export async function main(req: Request, res: Response) {
     res.status(400).json({ error: "invalid_request" });
     return;
   }
-  const { templateId } = reqParsingResult.data;
+  const { templateId, jsonData } = reqParsingResult.data;
 
   const templatePathInStorage = `templates/${templateId}.html`;
   const bucket = getBucket();
@@ -45,6 +46,8 @@ export async function main(req: Request, res: Response) {
   const [buffer] = await templateRef.download();
   const templateHtml = buffer.toString("utf-8");
 
+  const htmlToRender = Handlebars.compile(templateHtml)(jsonData);
+
   log.info("create_template_with_puppeteer", { templateHtml });
   const pdfLocalFilePath =
     process.env.NODE_ENV === "production"
@@ -53,7 +56,7 @@ export async function main(req: Request, res: Response) {
   fs.mkdirSync(path.dirname(pdfLocalFilePath), { recursive: true });
 
   await withBrowserPage(async (page) => {
-    await page.setContent(templateHtml, {
+    await page.setContent(htmlToRender, {
       waitUntil: "networkidle0",
       timeout: 30000,
     });
