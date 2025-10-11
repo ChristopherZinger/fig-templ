@@ -9,7 +9,8 @@
     "build:watch": "rollup -c --watch",
     "start:rest-server": "node dist/rest-server.js",
     "start:locally:rest-server": "node -r dotenv/config dist/rest-server.js",
-    "start:puppeteer-worker": "functions-framework --target=main --source=dist/puppeteer-worker.js --port=3001"
+    "start:puppeteer-worker": "functions-framework --target=main --source=dist/puppeteer-worker.js --port=3001",
+    "dev:rest-server": "npx tsx --watch --env-file=.env src/rest-server.ts"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.1",
