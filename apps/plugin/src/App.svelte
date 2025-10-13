@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
   import TemplatePreview from "./components/TemplatePreview.svelte";
+  import { MainThreadMsg, UiMsg } from "./lib/utils/messages";
 
   async function goToLogin() {
     console.log("before", location.origin);
@@ -10,7 +11,7 @@
   let session: null | string | undefined;
   function onSessionMessage(event: MessageEvent) {
     const { type, data } = event.data.pluginMessage;
-    if (type === "session") {
+    if (type === MainThreadMsg.PostSessionCookie) {
       console.log("got_session_message", data);
       session = data.session;
     }
@@ -19,7 +20,7 @@
 
   function requestSessionCookie() {
     parent.postMessage(
-      { pluginMessage: { type: "request_session_cookie" } },
+      { pluginMessage: { type: UiMsg.RequestSessionCookie } },
       "*"
     );
   }

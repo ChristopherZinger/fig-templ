@@ -1,5 +1,6 @@
 import type { AppNode } from "../types.d.ts";
 import { buildNodeStyle } from "./node-style-utils.js";
+import { MainThreadMsg, UiMsg } from "../lib/utils/messages.js";
 
 figma.showUI(__html__, { width: 600, height: 600, title: "Figma Template" });
 
@@ -7,7 +8,10 @@ async function postSessionCookieMessage() {
   console.log("postSessionCookieMessage");
   try {
     const session = (await figma.clientStorage.getAsync("session")) || null;
-    figma.ui.postMessage({ type: "session", data: { session } });
+    figma.ui.postMessage({
+      type: MainThreadMsg.PostSessionCookie,
+      data: { session },
+    });
   } catch (error) {
     console.error("error_posting_session_cookie_message", error);
   }
@@ -16,10 +20,10 @@ async function postSessionCookieMessage() {
 figma.ui.onmessage = async (msg) => {
   console.log("got_message_main_t", msg);
   switch (msg.type) {
-    case "request_session_cookie":
+    case UiMsg.RequestSessionCookie:
       postSessionCookieMessage();
       break;
-    case "hello":
+    case UiMsg.ShowPreview:
       makeFrames();
       break;
     default:
@@ -33,7 +37,7 @@ async function makeFrames() {
 
   if (!frame) {
     figma.ui.postMessage({
-      type: "error",
+      type: MainThreadMsg.FailedToMakeFrames,
       data: {
         message: "No frame found",
       },
@@ -44,7 +48,7 @@ async function makeFrames() {
   const [rootAppNode, { fontNames }] = await buildAppNodeTreeForFrame(frame);
 
   figma.ui.postMessage({
-    type: "frame_nodes",
+    type: MainThreadMsg.PostFrameNodes,
     data: { node: [rootAppNode, { fontNames: [...fontNames] }] },
   });
 }

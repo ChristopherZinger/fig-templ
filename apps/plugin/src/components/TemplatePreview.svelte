@@ -2,6 +2,7 @@
   import { onDestroy } from "svelte";
   import { getHtmlDocumentFromAppNode } from "../app-node-to-hscript";
   import type { AppNode } from "../types";
+  import { MainThreadMsg, UiMsg } from "../lib/utils/messages";
 
   type TemplateInfo = [AppNode, { fontNames: string[] }];
 
@@ -10,7 +11,7 @@
 
   function onClickShowPreview() {
     templateInfo = undefined;
-    parent.postMessage({ pluginMessage: { type: "hello" } }, "*");
+    parent.postMessage({ pluginMessage: { type: UiMsg.ShowPreview } }, "*");
   }
 
   function onTemplateInfoChange(templateInfo: null | undefined | TemplateInfo) {
@@ -32,7 +33,7 @@
 
   function onMessage(event: MessageEvent) {
     const { type, data } = event.data.pluginMessage;
-    if (type === "frame_nodes") {
+    if (type === MainThreadMsg.PostFrameNodes) {
       const _templateInfo = data.node as [
         AppNode | null,
         { fontNames: string[] },
