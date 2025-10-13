@@ -1,82 +1,48 @@
 <script lang="ts">
-  import { getHtmlDocumentFromAppNode } from "./app-node-to-hscript";
-  import type { AppNode } from "./types";
+  import { onDestroy, onMount } from "svelte";
+  import TemplatePreview from "./components/TemplatePreview.svelte";
 
-  let templateInfo: null | undefined | TemplateInfo = null;
-  let iframeRef: HTMLIFrameElement | undefined;
-
-  function onClickShowPreview() {
-    templateInfo = undefined;
-    parent.postMessage({ pluginMessage: "hello" }, "*");
+  async function goToLogin() {
+    console.log("before", location.origin);
+    location.href = "http://localhost:5173/login-plugin";
   }
 
-  type TemplateInfo = [AppNode, { fontNames: string[] }];
-  function onTemplateInfoChange(templateInfo: null | undefined | TemplateInfo) {
-    if (!iframeRef?.contentDocument) {
-      console.error("expected_iframeRef_contentDocument");
-      return;
+  let session: null | string | undefined;
+  function onSessionMessage(event: MessageEvent) {
+    const { type, data } = event.data.pluginMessage;
+    if (type === "session") {
+      console.log("got_session_message", data);
+      session = data.session;
     }
-
-    if (!templateInfo) {
-      iframeRef.contentDocument.body.innerHTML = "";
-      return;
-    }
-
-    const [rootAppNode, { fontNames }] = templateInfo;
-    const html = getHtmlDocumentFromAppNode(rootAppNode, new Set(fontNames));
-    iframeRef.contentDocument.body.innerHTML = html.outerHTML;
   }
-  $: onTemplateInfoChange(templateInfo);
+  window.addEventListener("message", onSessionMessage);
 
-  window.addEventListener("message", (event) => {
-    switch (event.data.pluginMessage.type) {
-      case "frame_nodes": {
-        const _templateInfo = event.data.pluginMessage.data.node as [
-          AppNode | null,
-          { fontNames: string[] },
-        ];
+  function requestSessionCookie() {
+    parent.postMessage(
+      { pluginMessage: { type: "request_session_cookie" } },
+      "*"
+    );
+  }
 
-        templateInfo = _templateInfo;
-        break;
-      }
-      default: {
-        console.log("unknown message", event);
-      }
-    }
+  onMount(() => {
+    requestSessionCookie();
+  });
+
+  onDestroy(() => {
+    window.removeEventListener("message", onSessionMessage);
   });
 </script>
 
 <main>
   <h1>Templetto</h1>
 
-  <button onclick={onClickShowPreview}>Show Preview</button>
-
-  <div class="iframe-container">
-    <h3>Preview</h3>
-    <iframe
-      bind:this={iframeRef}
-      class:hidden={!templateInfo}
-      title="iframe"
-      style={`width: ${templateInfo?.[0]?.style.width || "100px"}; height: ${templateInfo?.[0]?.style.height || "100px"};`}
-    ></iframe>
-    {#if templateInfo === undefined}
-      <p>Loading...</p>
-    {/if}
-    {#if templateInfo === null}
-      <p>No template selected</p>
-    {/if}
-  </div>
+  {#if session === undefined}
+    <p>Loading...</p>
+  {:else if session === null}
+    <div style="padding: 20px;">
+      <button onclick={goToLogin}>Login</button>
+    </div>
+  {:else}
+    <TemplatePreview />
+  {/if}
 </main>
-
-<style>
-  .iframe-container {
-    margin: 20px 0;
-  }
-  .iframe-container iframe {
-    background-color: white;
-  }
-
-  .hidden {
-    display: none;
-  }
-</style>

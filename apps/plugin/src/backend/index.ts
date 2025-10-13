@@ -3,7 +3,32 @@ import { buildNodeStyle } from "./node-style-utils.js";
 
 figma.showUI(__html__, { width: 600, height: 600, title: "Figma Template" });
 
+async function postSessionCookieMessage() {
+  console.log("postSessionCookieMessage");
+  try {
+    const session = (await figma.clientStorage.getAsync("session")) || null;
+    figma.ui.postMessage({ type: "session", data: { session } });
+  } catch (error) {
+    console.error("error_posting_session_cookie_message", error);
+  }
+}
+
 figma.ui.onmessage = async (msg) => {
+  console.log("got_message_main_t", msg);
+  switch (msg.type) {
+    case "request_session_cookie":
+      postSessionCookieMessage();
+      break;
+    case "hello":
+      makeFrames();
+      break;
+    default:
+      console.log("got_unknown_message_in_main_thread", msg);
+      break;
+  }
+};
+
+async function makeFrames() {
   const frame = getAllFramesOnPage(figma.currentPage)[0];
 
   if (!frame) {
@@ -22,7 +47,7 @@ figma.ui.onmessage = async (msg) => {
     type: "frame_nodes",
     data: { node: [rootAppNode, { fontNames: [...fontNames] }] },
   });
-};
+}
 
 function getAllFramesOnPage(page: PageNode): FrameNode[] {
   const allFrames: FrameNode[] = [];
