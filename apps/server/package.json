@@ -25,11 +25,11 @@
   "dependencies": {
     "@templetto/logging": "*",
     "@templetto/database": "*",
+    "@templetto/firebase": "*",
     "@google-cloud/functions-framework": "^4.0.0",
     "@sparticuz/chromium": "^138.0.2",
     "dotenv": "^16.6.1",
     "express": "^4.21.1",
-    "firebase-admin": "^13.5.0",
     "google-auth-library": "^10.4.0",
     "handlebars": "^4.7.8",
     "puppeteer-core": "^24.22.3",

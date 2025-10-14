@@ -1,12 +1,11 @@
 import { storage } from "./firebase";
 import path from "path";
 import { config } from "dotenv";
-import { log } from "./logging";
 
 const ENV = process.env.NODE_ENV;
 if (ENV !== "production") {
   config({ path: "./.env" });
-  log.info("running_google_storage_in_local_mode", { ENV });
+  console.log("running_google_storage_in_local_mode", { ENV });
 }
 const DEFAULT_BUCKET_NAME = process.env.FIREBASE_STORAGE_BUCKET_NAME;
 
