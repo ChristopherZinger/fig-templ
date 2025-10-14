@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^6.0.0",
+    "@sveltejs/adapter-node": "^5.3.3",
     "@sveltejs/kit": "^2.21.1",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tailwindcss/postcss": "^4.0.9",
@@ -46,11 +47,11 @@
   },
   "type": "module",
   "dependencies": {
-    "@templetto/logging": "*",
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/auth-ui-svelte": "^0.2.9",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.45.2",
+    "@templetto/logging": "*",
     "handlebars": "^4.7.8",
     "resend": "^3.5.0",
     "stripe": "^13.3.0"
