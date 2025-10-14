@@ -24,7 +24,6 @@
   },
   "dependencies": {
     "@templetto/logging": "*",
-    "@templetto/database": "*",
     "@templetto/firebase": "*",
     "@google-cloud/functions-framework": "^4.0.0",
     "@sparticuz/chromium": "^138.0.2",
