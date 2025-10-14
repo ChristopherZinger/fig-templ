@@ -23,9 +23,9 @@
     "typescript": "~5.8.3"
   },
   "dependencies": {
+    "@templetto/logging": "*",
+    "@templetto/database": "*",
     "@google-cloud/functions-framework": "^4.0.0",
-    "@google-cloud/logging": "^11.2.1",
-    "@google-cloud/logging-winston": "^6.0.1",
     "@sparticuz/chromium": "^138.0.2",
     "dotenv": "^16.6.1",
     "express": "^4.21.1",
