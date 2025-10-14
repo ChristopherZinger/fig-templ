@@ -1,6 +1,6 @@
 {
   "name": "Templetto",
-  "id": "empty-vite-plugin",
+  "id": "templetto-plugin",
   "api": "1.0.0",
   "main": "dist/code.js",
   "ui": "dist/ui.html",
