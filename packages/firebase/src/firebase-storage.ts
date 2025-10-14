@@ -1,7 +1,7 @@
 import { storage } from "./firebase";
 import path from "path";
 import { config } from "dotenv";
-import { log } from "./logging";
+import { log } from "@templetto/logging";
 
 const ENV = process.env.NODE_ENV;
 if (ENV !== "production") {

@@ -1,0 +1,16 @@
+{
+  "name": "@templetto/firebase",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@templetto/logging": "*",
+    "firebase-admin": "^13.5.0",
+    "dotenv": "^16.6.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}
