@@ -5,7 +5,9 @@
 
   async function goToLogin() {
     console.log("before", location.origin);
-    location.href = "http://localhost:5173/login-plugin";
+    // TODO: add url to configuration (.env)
+    const url = "http://localhost:5173/plugin/get-pkce-keys";
+    location.href = url;
   }
 
   let session: null | string | undefined;

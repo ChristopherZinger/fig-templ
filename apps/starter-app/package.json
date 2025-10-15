@@ -55,7 +55,8 @@
     "firebase": "^12.4.0",
     "handlebars": "^4.7.8",
     "resend": "^3.5.0",
-    "stripe": "^13.3.0"
+    "stripe": "^13.3.0",
+    "zod": "^4.1.12"
   },
   "overrides": {
     "@supabase/auth-ui-svelte": {
