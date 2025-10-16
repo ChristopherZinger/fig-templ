@@ -1,33 +1,37 @@
-import winston from 'winston';
-import { LoggingWinston } from '@google-cloud/logging-winston';
+import winston from "winston";
+import { LoggingWinston } from "@google-cloud/logging-winston";
 
-const NODE_ENV = process.env.NODE_ENV || 'development';
+const NODE_ENV = process.env.NODE_ENV || "development";
 const GCLOUD_PROJECT_ID = process.env.GCLOUD_PROJECT_ID;
-const GOOGLE_APPLICATION_CREDENTIALS = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+const GOOGLE_APPLICATION_CREDENTIALS =
+  process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
+const FORMAT = winston.format.combine(
+  winston.format.timestamp(),
+  winston.format.json()
+);
 
 // Only use GCP logging in production
-const transports: winston.transport[] = [
+let transports: winston.transport[] = [
   new winston.transports.Console({
-    format: winston.format.combine(
-      winston.format.timestamp(),
-      winston.format.json()
-    )
-  })
+    format: FORMAT,
+  }),
 ];
 
-if (NODE_ENV === 'production' && GCLOUD_PROJECT_ID) {
+if (NODE_ENV === "production" && GCLOUD_PROJECT_ID) {
   const loggingWinston = new LoggingWinston({
     projectId: GCLOUD_PROJECT_ID,
     keyFilename: GOOGLE_APPLICATION_CREDENTIALS,
     labels: {
-      service: 'templetto',
-      environment: NODE_ENV
-    }
+      service: "templetto",
+      environment: NODE_ENV,
+    },
+    format: FORMAT,
   });
-  transports.push(loggingWinston);
+  transports = [loggingWinston];
 }
 
 export const log = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  transports
+  level: process.env.LOG_LEVEL || "info",
+  transports,
 });
