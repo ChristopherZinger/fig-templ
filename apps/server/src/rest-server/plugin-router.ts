@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  createSessionTokenHandler,
   getPkceKeysHandler,
   readSessionTokenHandler,
 } from "./plugin-rounte-handlers";
@@ -20,5 +21,6 @@ pluginRouter.use(
 
 pluginRouter.get("/get-pkce-keys", getPkceKeysHandler);
 pluginRouter.post("/read-session-token", readSessionTokenHandler);
+pluginRouter.post("/save-token", createSessionTokenHandler);
 
 export { pluginRouter };
