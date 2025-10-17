@@ -1,13 +1,11 @@
 <script lang="ts">
+  import { SERVER_URL, WEBAPP_URL } from "$lib/backend-for-plugin/url"
   import { onDestroy, onMount } from "svelte"
   import z from "zod"
 
   /**
    * THIS PAGE OPENS IN THE PLUGIN
    */
-
-  const SERVER_URL = "http://localhost:3000"
-  const WEBAPP_URL = "http://localhost:5173"
 
   let writeKey: string | null = null
   let readKey: string | null = null
@@ -43,7 +41,7 @@
       const response = await fetch(`${SERVER_URL}/plugin/read-session-token`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ readKey }),
+        body: JSON.stringify({ readKey, writeKey }),
       })
       if (!response.ok) {
         console.error("failed_to_pull_session", response)
@@ -52,6 +50,18 @@
       const respBody = await response.json()
       const parseResult = z.object({ sessionKey: z.string() }).parse(respBody)
       sessionKey = parseResult.sessionKey
+
+      parent.postMessage(
+        {
+          pluginMessage: {
+            type: "post_session_cookie_to_ui_thread",
+            data: { sessionToken: sessionKey },
+          },
+          // pluginId must correspond to the ids in the manifest.json file.
+          pluginId: "templetto-plugin",
+        },
+        "https://www.figma.com",
+      )
     } catch (error) {
       console.error({ error })
       return
