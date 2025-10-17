@@ -13,6 +13,15 @@ export function setMessageRouter(figma: PluginAPI) {
       case UiMsg.ShowPreview:
         makeFrames();
         break;
+      // message from webapp; UiMsg is local type not shared with webapp repo
+      case "post_session_cookie_to_ui_thread":
+        figma.showUI(__html__, {
+          width: 600,
+          height: 600,
+          title: "Figma Template",
+        });
+        saveSessionTokenMessage(msg.data.sessionToken);
+        break;
       default:
         console.log("got_unknown_message_in_main_thread", msg);
         break;
@@ -31,5 +40,22 @@ async function postSessionCookieMessage() {
     });
   } catch (error) {
     console.error("error_posting_session_cookie_message", error);
+  }
+}
+
+async function saveSessionTokenMessage(sessionToken: string) {
+  if (!sessionToken) {
+    console.error("expected_session_token", { sessionToken });
+    return;
+  }
+
+  try {
+    await figma.clientStorage.setAsync(SESSION_TOKEN_KEY, sessionToken);
+    figma.ui.postMessage({
+      type: MainThreadMsg.PostSessionCookie,
+      data: { session: sessionToken },
+    });
+  } catch (error) {
+    console.error("error_saving_session_cookie_message", error);
   }
 }
