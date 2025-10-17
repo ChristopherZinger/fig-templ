@@ -39,7 +39,7 @@ export async function getPkceKeysHandler(_: Request, res: Response) {
     expiresAt: new Date(now + EXPIRATION_TIME),
   };
 
-  const docRef = pkceKeyCollectionRef.doc(pkceKey.readKey);
+  const docRef = pkceKeyCollectionRef.doc(pkceKey.writeKey);
 
   // TODO: create retry mechanism if read key already exists
   await firestore.runTransaction(async (t) => {
@@ -49,7 +49,7 @@ export async function getPkceKeysHandler(_: Request, res: Response) {
     }
     t.set(docRef, {
       ...pkceKey,
-      createdAt: now,
+      createdAt: new Date(now),
       hasUsedReadKey: false,
       userSessionId: null,
     } satisfies PkceKeyDoc);
@@ -62,6 +62,7 @@ export async function readSessionTokenHandler(req: Request, res: Response) {
   const parsedBody = z
     .object({
       readKey: z.string(),
+      writeKey: z.string(),
     })
     .safeParse(req.body);
 
@@ -70,13 +71,13 @@ export async function readSessionTokenHandler(req: Request, res: Response) {
     return;
   }
 
-  const readKey = parsedBody.data.readKey;
+  const { writeKey } = parsedBody.data;
 
   try {
     const sessionToken = await firestore.runTransaction(async (t) => {
       const pkceDocRef = firestore
         .collection(pkceKeyCollectionName)
-        .doc(readKey);
+        .doc(writeKey);
       const pkceKeyDoc = (await t.get(pkceDocRef)).data() as
         | PkceKeyDoc
         | undefined; // TODO:  handle types once we have database package
@@ -85,9 +86,9 @@ export async function readSessionTokenHandler(req: Request, res: Response) {
       }
 
       // TODO: test this
-      if (pkceKeyDoc.expiresAt < new Date()) {
-        throw new Error("pkce_key_expired");
-      }
+      // if (pkceKeyDoc.expiresAt < new Date()) {
+      //   throw new Error("pkce_key_expired");
+      // }
 
       const { userSessionId } = pkceKeyDoc;
       if (!userSessionId) {
@@ -107,7 +108,7 @@ export async function readSessionTokenHandler(req: Request, res: Response) {
       const { sessionToken } = userSessionDoc;
       return sessionToken;
     });
-    res.status(200).json({ sessionToken });
+    res.status(200).json({ sessionKey: sessionToken });
   } catch (error) {
     res.status(500).json({ error: "failed_to_read_session_token" });
   }
