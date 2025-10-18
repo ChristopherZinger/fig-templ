@@ -4,5 +4,5 @@ export function sendToUiThread(
   msg: MainThreadMsg,
   payload: Record<string, any>
 ): void {
-  figma.ui.postMessage({ pluginMessage: { type: msg, data: payload } });
+  figma.ui.postMessage({ type: msg, data: payload });
 }
