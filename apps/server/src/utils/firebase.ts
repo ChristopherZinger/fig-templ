@@ -1,12 +1,10 @@
 import admin from "firebase-admin";
 
-const PROJECT_ID = process.env.GCLOUD_PROJECT_ID;
-
+// WARN: hast be run with service account for token creation!
+// application default credentials are failing to create session tokens
+// TODO: check if this can be mitigated with IAM permissions
 const initFirebaseAdmin = () => {
-  const app = admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
-    projectId: PROJECT_ID,
-  });
+  const app = admin.initializeApp({});
 
   const firestore = app.firestore();
   firestore.settings({ databaseId: "templetto-db" });

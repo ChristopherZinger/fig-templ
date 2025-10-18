@@ -4,7 +4,6 @@
   import { MainThreadMsg, UiMsg } from "./lib/utils/messages";
 
   async function goToLogin() {
-    console.log("before", location.origin);
     // TODO: add url to configuration (.env)
     const url = "http://localhost:5173/plugin/get-pkce-keys";
     location.href = url;
@@ -27,6 +26,28 @@
     );
   }
 
+  async function logout() {
+    parent.postMessage({ pluginMessage: { type: UiMsg.Logout } }, "*");
+
+    try {
+      const response = await fetch(`http://localhost:3000/plugin/logout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionToken: session }),
+      });
+
+      if (!response.ok) {
+        throw new Error("logout_request_failed");
+      }
+    } catch (error) {
+      console.error("failed_to_logout", error);
+      return;
+    }
+    // TODO: should this be confirmed (or posted as message) by main thread?
+    // e.g. in a for of two-way binding of sorts?
+    session = null;
+  }
+
   onMount(() => {
     requestSessionCookie();
   });
@@ -47,5 +68,7 @@
     </div>
   {:else}
     <TemplatePreview />
+
+    <button onclick={logout}>Logout</button>
   {/if}
 </main>

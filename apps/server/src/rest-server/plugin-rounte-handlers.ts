@@ -197,3 +197,41 @@ async function getValidPkcdKeyDocForWriteKey(writeKey: string, t: Transaction) {
 
   return pkceKeyDocRef;
 }
+
+export async function logoutHandler(req: Request, res: Response) {
+  log.info("logout_request", { request: req.body });
+  const parsingResult = z
+    .object({ sessionToken: z.string() })
+    .safeParse(req.body);
+
+  if (!parsingResult.success) {
+    log.debug("failed_to_parse_request_body", { error: parsingResult.error });
+    res.status(400).json({ error: "invalid_request" });
+    return;
+  }
+
+  const { sessionToken } = parsingResult.data;
+
+  await firestore.runTransaction(async (t) => {
+    const userSessionSnapshots = (
+      await userSessionCollectionRef
+        .where("sessionToken", "==", sessionToken)
+        .get()
+    ).docs;
+
+    if (userSessionSnapshots.length === 0) {
+      log.warn("no_user_session_doc_found_for_session_token", { sessionToken });
+    } else if (userSessionSnapshots.length > 1) {
+      log.error("multiple_user_session_docs_found_for_session_token", {
+        sessionToken,
+        numUserSessionDocs: userSessionSnapshots.length,
+      });
+    }
+
+    userSessionSnapshots.forEach((s) => {
+      t.delete(s.ref);
+    });
+  });
+
+  res.status(200).json({ message: "session_token_removed" });
+}

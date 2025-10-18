@@ -1,6 +1,7 @@
 export enum UiMsg {
   RequestSessionCookie = "request_session_cookie",
   ShowPreview = "show_preview",
+  Logout = "logout",
 }
 
 export enum MainThreadMsg {

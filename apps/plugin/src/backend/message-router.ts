@@ -13,6 +13,9 @@ export function setMessageRouter(figma: PluginAPI) {
       case UiMsg.ShowPreview:
         makeFrames();
         break;
+      case UiMsg.Logout:
+        logoutMessage();
+        break;
       // message from webapp; UiMsg is local type not shared with webapp repo
       case "post_session_cookie_to_ui_thread":
         figma.showUI(__html__, {
@@ -57,5 +60,22 @@ async function saveSessionTokenMessage(sessionToken: string) {
     });
   } catch (error) {
     console.error("error_saving_session_cookie_message", error);
+  }
+}
+
+async function logoutMessage() {
+  console.log("logoutMessage");
+  try {
+    const sessionToken = await figma.clientStorage.getAsync(SESSION_TOKEN_KEY);
+    if (!sessionToken) {
+      console.error("expected_session_token");
+      return;
+    }
+
+    await figma.clientStorage.deleteAsync(SESSION_TOKEN_KEY);
+
+    // return message to UI
+  } catch (error) {
+    console.error("error_logging_out", error);
   }
 }
