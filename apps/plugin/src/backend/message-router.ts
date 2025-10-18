@@ -1,4 +1,4 @@
-import { MainThreadMsg, UiMsg } from "../lib/utils/messages";
+import { MainThreadMsg, UiMsg } from "../lib/utils/shared/messages";
 import { makeFrames } from "./node-builder";
 
 const SESSION_TOKEN_KEY = "session_token";

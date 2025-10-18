@@ -2,7 +2,7 @@
   import { onDestroy } from "svelte";
   import { getHtmlDocumentFromAppNode } from "../app-node-to-hscript";
   import type { AppNode } from "../types";
-  import { MainThreadMsg, UiMsg } from "../lib/utils/messages";
+  import { MainThreadMsg, UiMsg } from "../lib/utils/shared/messages";
 
   type TemplateInfo = [AppNode, { fontNames: string[] }];
 

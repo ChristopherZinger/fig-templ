@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
   import TemplatePreview from "./components/TemplatePreview.svelte";
-  import { MainThreadMsg, UiMsg } from "./lib/utils/messages";
+  import { MainThreadMsg, UiMsg } from "./lib/utils/shared/messages";
 
   async function goToLogin() {
     // TODO: add url to configuration (.env)

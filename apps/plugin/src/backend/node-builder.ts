@@ -1,4 +1,4 @@
-import { MainThreadMsg } from "../lib/utils/messages";
+import { MainThreadMsg } from "../lib/utils/shared/messages";
 import { buildNodeStyle } from "./node-style-utils";
 import type { AppNode } from "../types";
 
