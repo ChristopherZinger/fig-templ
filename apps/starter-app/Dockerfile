@@ -1,19 +1,26 @@
 # Use the official Node.js runtime as the base image
-FROM node:22-slim
+FROM --platform=linux/amd64 node:22-slim
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json (if available)
-COPY package*.json ./
+# Copy package.json (But not package-lock.json bc of a npm bug with optional dependencies across mac/linux)
+COPY package.json ./
 
-# Install Node.js dependencies
+# Copy packages directory for local workspace packages
+COPY packages/ ./packages/
+
+# Copy the specific app's package.json
+COPY apps/starter-app/package.json ./apps/starter-app/
+
+# Install Node.js dependencies (this will install workspace dependencies)
 RUN npm install
 
 # Copy the rest of the application code
-COPY . .
+COPY apps/starter-app/ ./apps/starter-app/
 
-# Build the SvelteKit application
+# Change to the app directory and build
+WORKDIR /app/apps/starter-app
 RUN npm run build
 
 # Expose the port the app runs on

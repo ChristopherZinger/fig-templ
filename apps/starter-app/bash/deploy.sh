@@ -4,9 +4,10 @@ set -e
 
 source "$(dirname "$0")/build.env"
 
+pushd ../..
 # Build the Docker image
-echo "Building Docker image..."
-docker build -t $IMAGE_NAME:$TAG -f Dockerfile .
+echo "Building Docker image $IMAGE_NAME:$TAG..."
+docker build --platform linux/amd64 -f apps/starter-app/Dockerfile -t $IMAGE_NAME:$TAG .
 
 # Tag the image for Google Artifact Registry
 echo "Tagging image..."
@@ -17,6 +18,7 @@ echo "Pushing image to Artifact Registry..."
 docker push $IMAGE_URL
 
 # Deploy to Cloud Run
+popd;
 echo "Deploying to Cloud Run..."
 gcloud run deploy $SERVICE \
     --image $IMAGE_URL \
