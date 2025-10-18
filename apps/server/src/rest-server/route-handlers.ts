@@ -12,10 +12,6 @@ const createPdfRequestParamsSchema = z
   }));
 
 export async function createPdfHandler(req: Request, res: Response) {
-  log.info("handle_request", {
-    httpRequest: { requestUrl: req.url, requestMethod: req.method },
-  });
-
   const parsingResult = createPdfRequestParamsSchema.safeParse(req.query);
   if (!parsingResult.success) {
     log.error("invalid_request", { error: parsingResult.error });
