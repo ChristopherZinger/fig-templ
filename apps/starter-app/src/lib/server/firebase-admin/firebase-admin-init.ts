@@ -1,6 +1,17 @@
 import admin from "firebase-admin"
+const initFirebaseAdmin = () => {
+  const app = admin.initializeApp({})
 
-const firebaseAdmin = admin.initializeApp({})
-const authAdmin = firebaseAdmin.auth()
+  const firestore = app.firestore()
+  firestore.settings({ databaseId: "templetto-db" })
 
-export { firebaseAdmin, authAdmin }
+  return {
+    storage: app.storage(),
+    firestore,
+    auth: app.auth(),
+  }
+}
+
+const { storage, firestore, auth } = initFirebaseAdmin()
+
+export { storage, firestore, auth }

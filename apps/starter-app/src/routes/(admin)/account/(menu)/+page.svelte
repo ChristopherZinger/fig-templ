@@ -4,6 +4,8 @@
 
   let adminSection: Writable<string> = getContext("adminSection")
   adminSection.set("home")
+  let { data } = $props()
+  let { firebaseUser, userTemplates } = data
 </script>
 
 <svelte:head>
@@ -41,6 +43,12 @@
 <div class="my-6">
   <h1 class="text-xl font-bold mb-1">Users</h1>
   <div class="stats shadow-sm stats-vertical sm:stats-horizontal sm:w-[420px]">
+    <div class="stat place-items-center">
+      <div class="stat-title">Templates</div>
+      <div class="stat-value">{userTemplates.length}</div>
+      <div class="stat-desc">↗︎ 546 (2%)</div>
+    </div>
+
     <div class="stat place-items-center">
       <div class="stat-title">Downloads</div>
       <div class="stat-value">31K</div>

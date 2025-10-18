@@ -12,43 +12,6 @@ import type { Database } from "../../../DatabaseDefinitions.js"
 import { CreateProfileStep } from "../../../config"
 import { load_helper } from "$lib/load_helpers"
 
-export const load = async ({ fetch, data, depends, url }) => {
-  depends("supabase:auth")
-
-  const { session, user } = await load_helper(data.session, supabase)
-  if (!session || !user) {
-    redirect(303, "/login")
-  }
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select(`*`)
-    .eq("id", user.id)
-    .single()
-
-  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
-
-  const createProfilePath = "/account/create_profile"
-  const signOutPath = "/account/sign_out"
-  if (
-    profile &&
-    !_hasFullProfile(profile) &&
-    url.pathname !== createProfilePath &&
-    url.pathname !== signOutPath &&
-    CreateProfileStep
-  ) {
-    redirect(303, createProfilePath)
-  }
-
-  return {
-    supabase,
-    session,
-    profile,
-    user,
-    amr: aal?.currentAuthenticationMethods,
-  }
-}
-
 export const _hasFullProfile = (
   profile: Database["public"]["Tables"]["profiles"]["Row"] | null,
 ) => {

@@ -1,20 +1,14 @@
 <script lang="ts">
   import { goto } from "$app/navigation"
   import { onMount } from "svelte"
-
-  let { data } = $props()
-
-  let { supabase } = data
+  import { signOut } from "firebase/auth"
+  import { auth } from "$lib/utils/firebase/init-firebase"
   let message = $state("Signing out....")
 
   // on mount, sign out
   onMount(() => {
-    supabase.auth.signOut().then(({ error }) => {
-      if (error) {
-        message = "There was an issue signing out."
-      } else {
-        goto("/")
-      }
+    signOut(auth).then(() => {
+      goto("/")
     })
   })
 </script>
