@@ -1,5 +1,4 @@
 <script lang="ts">
-  import "../../../../app.css"
   import { writable } from "svelte/store"
   import { setContext } from "svelte"
   import { WebsiteName } from "../../../../config"

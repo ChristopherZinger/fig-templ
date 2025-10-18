@@ -1,7 +1,6 @@
 <script lang="ts">
   import { applyAction, enhance } from "$app/forms"
   import type { SubmitFunction } from "@sveltejs/kit"
-  import "../../../../app.css"
 
   interface User {
     email: string

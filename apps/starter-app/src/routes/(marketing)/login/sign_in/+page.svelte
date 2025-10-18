@@ -1,33 +1,44 @@
 <script lang="ts">
-  import { Auth } from "@supabase/auth-ui-svelte"
-  import { sharedAppearance, oauthProviders } from "../login_config"
   import { goto } from "$app/navigation"
+  import { onAuthStateChanged } from "firebase/auth"
   import { onMount } from "svelte"
-  import { page } from "$app/stores"
-
-  let { data } = $props()
-  let { supabase } = data
+  import { SERVER_URL } from "$lib/backend-for-plugin/url"
+  import { auth } from "$lib/utils/firebase/init-firebase"
+  import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
+  import { userStore } from "$lib/stores/userStore"
 
   onMount(() => {
-    supabase.auth.onAuthStateChange((event) => {
-      // Redirect to account after successful login
-      if (event == "SIGNED_IN") {
-        // Delay needed because order of callback not guaranteed.
-        // Give the layout callback priority to update state or
-        // we'll just bounch back to login when /account tries to load
-        setTimeout(() => {
-          goto("/account")
-        }, 1)
-      }
-    })
-  })
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      userStore.set(user)
+    } else {
+      userStore.set(null);
+    }
+  });
+});
+  let hasPluginLoginFailed = false
+  let isLoading = false
+  async function login() {
+    isLoading = true
+    try {
+      const provider = new GoogleAuthProvider()
+      // TODO: set persistence to NONE
+      // auth.setPersistence({ type: "NONE" })
+      const result = await signInWithPopup(auth, provider)
+    } catch (error) {
+      console.error({ error })
+      hasPluginLoginFailed = true
+    } finally {
+      isLoading = false
+    }
+  }
 </script>
 
 <svelte:head>
   <title>Sign in</title>
 </svelte:head>
 
-{#if $page.url.searchParams.get("verified") == "true"}
+<!-- {#if $page.url.searchParams.get("verified") == "true"}
   <div role="alert" class="alert alert-success mb-5">
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -43,18 +54,14 @@
     >
     <span>Email verified! Please sign in.</span>
   </div>
-{/if}
+{/if} -->
 <h1 class="text-2xl font-bold mb-6">Sign In</h1>
-<Auth
-  supabaseClient={data.supabase}
-  view="sign_in"
-  redirectTo={`${data.url}/auth/callback`}
-  providers={oauthProviders}
-  socialLayout="horizontal"
-  showLinks={false}
-  appearance={sharedAppearance}
-  additionalData={undefined}
-/>
+<button
+  onclick={login}
+  class="btn btn-primary w-full text-lg font-medium py-2 rounded-lg shadow transition duration-150 hover:bg-primary/90 focus:outline-none"
+>
+  Sign in with Google
+</button>
 <div class="text-l text-slate-800 mt-4">
   <a class="underline" href="/login/forgot_password">Forgot password?</a>
 </div>

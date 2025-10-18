@@ -4,6 +4,7 @@
     WebsiteBaseUrl,
     WebsiteDescription,
   } from "./../../config"
+  import { userStore } from "$lib/stores/userStore"
 
   const ldJson = {
     "@context": "https://schema.org",
@@ -76,6 +77,12 @@
         class="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-primary to-accent mb-3 md:mb-5 pb-1"
       >
         Coming Soon
+        {#if $userStore}
+          <span class="text-sm text-gray-500">Welcome, {$userStore.displayName}</span>
+        {:else  }
+          <span class="text-sm text-gray-500">Sign in to get started</span>
+        {/if}
+
       </div>
 
       <div
