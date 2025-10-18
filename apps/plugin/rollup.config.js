@@ -4,6 +4,7 @@ import dsv from "@rollup/plugin-dsv";
 import htmlBundle, { makeHtmlAttributes } from "@rollup/plugin-html";
 import json from "@rollup/plugin-json";
 import resolve from "@rollup/plugin-node-resolve";
+import replace from "@rollup/plugin-replace";
 import terser from "@rollup/plugin-terser";
 import typescript from "@rollup/plugin-typescript";
 import cssnano from "cssnano";
@@ -29,6 +30,14 @@ export default [
       sourcemap: !production,
     },
     plugins: [
+      replace({
+        preventAssignment: true,
+        values: {
+          "process.env.NODE_ENV": JSON.stringify(
+            production ? "production" : "development"
+          ),
+        },
+      }),
       svelte({
         preprocess: sveltePreprocess({
           sourceMap: !production,
@@ -116,6 +125,12 @@ export default [
       inlineDynamicImports: false,
     },
     plugins: [
+      replace({
+        preventAssignment: true,
+        values: {
+          "process.env.NODE_ENV": production ? "production" : "development",
+        },
+      }),
       typescript({ tsconfig: "./tsconfig.backend.json" }),
       resolve(),
       commonjs(),

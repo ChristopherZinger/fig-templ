@@ -3,10 +3,11 @@
   import TemplatePreview from "./components/TemplatePreview.svelte";
   import { MainThreadMsg, UiMsg } from "./lib/utils/shared/messages";
   import { sendToMainThread } from "./lib/utils/messages";
+  import { URLS } from "./lib/utils/shared/urls";
 
   async function goToLogin() {
-    // TODO: add url to configuration (.env)
-    const url = "http://localhost:5173/plugin/get-pkce-keys";
+    const baseUrl = URLS.webapp;
+    const url = `${baseUrl}/plugin/get-pkce-keys`;
     location.href = url;
   }
 
@@ -27,8 +28,10 @@
   async function logout() {
     sendToMainThread(UiMsg.Logout);
 
+    const baseUrl = URLS.server;
+    console.log("baseUrl", baseUrl);
     try {
-      const response = await fetch(`http://localhost:3000/plugin/logout`, {
+      const response = await fetch(`${baseUrl}/plugin/logout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionToken: session }),
