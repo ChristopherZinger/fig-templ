@@ -1,4 +1,5 @@
 import { MainThreadMsg, UiMsg } from "../lib/utils/shared/messages";
+import { sendToUiThread } from "./message-utils";
 import { makeFrames } from "./node-builder";
 
 const SESSION_TOKEN_KEY = "session_token";
@@ -37,10 +38,7 @@ async function postSessionCookieMessage() {
   try {
     const session =
       (await figma.clientStorage.getAsync(SESSION_TOKEN_KEY)) || null;
-    figma.ui.postMessage({
-      type: MainThreadMsg.PostSessionCookie,
-      data: { session },
-    });
+    sendToUiThread(MainThreadMsg.PostSessionCookie, { session });
   } catch (error) {
     console.error("error_posting_session_cookie_message", error);
   }
@@ -54,10 +52,7 @@ async function saveSessionTokenMessage(sessionToken: string) {
 
   try {
     await figma.clientStorage.setAsync(SESSION_TOKEN_KEY, sessionToken);
-    figma.ui.postMessage({
-      type: MainThreadMsg.PostSessionCookie,
-      data: { session: sessionToken },
-    });
+    sendToUiThread(MainThreadMsg.PostSessionCookie, { session: sessionToken });
   } catch (error) {
     console.error("error_saving_session_cookie_message", error);
   }

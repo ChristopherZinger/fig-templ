@@ -3,6 +3,7 @@
   import { getHtmlDocumentFromAppNode } from "../app-node-to-hscript";
   import type { AppNode } from "../types";
   import { MainThreadMsg, UiMsg } from "../lib/utils/shared/messages";
+  import { sendToMainThread } from "../lib/utils/messages";
 
   type TemplateInfo = [AppNode, { fontNames: string[] }];
 
@@ -11,7 +12,7 @@
 
   function onClickShowPreview() {
     templateInfo = undefined;
-    parent.postMessage({ pluginMessage: { type: UiMsg.ShowPreview } }, "*");
+    sendToMainThread(UiMsg.ShowPreview);
   }
 
   function onTemplateInfoChange(templateInfo: null | undefined | TemplateInfo) {

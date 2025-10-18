@@ -2,6 +2,7 @@
   import { onDestroy, onMount } from "svelte";
   import TemplatePreview from "./components/TemplatePreview.svelte";
   import { MainThreadMsg, UiMsg } from "./lib/utils/shared/messages";
+  import { sendToMainThread } from "./lib/utils/messages";
 
   async function goToLogin() {
     // TODO: add url to configuration (.env)
@@ -20,14 +21,11 @@
   window.addEventListener("message", onSessionMessage);
 
   function requestSessionCookie() {
-    parent.postMessage(
-      { pluginMessage: { type: UiMsg.RequestSessionCookie } },
-      "*"
-    );
+    sendToMainThread(UiMsg.RequestSessionCookie);
   }
 
   async function logout() {
-    parent.postMessage({ pluginMessage: { type: UiMsg.Logout } }, "*");
+    sendToMainThread(UiMsg.Logout);
 
     try {
       const response = await fetch(`http://localhost:3000/plugin/logout`, {

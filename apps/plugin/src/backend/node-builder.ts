@@ -1,25 +1,21 @@
 import { MainThreadMsg } from "../lib/utils/shared/messages";
 import { buildNodeStyle } from "./node-style-utils";
 import type { AppNode } from "../types";
+import { sendToUiThread } from "./message-utils";
 
 export async function makeFrames() {
   const frame = getAllFramesOnPage(figma.currentPage)[0];
 
   if (!frame) {
-    figma.ui.postMessage({
-      type: MainThreadMsg.FailedToMakeFrames,
-      data: {
-        message: "No frame found",
-      },
+    sendToUiThread(MainThreadMsg.FailedToMakeFrames, {
+      message: "No frame found",
     });
     return;
   }
 
   const [rootAppNode, { fontNames }] = await buildAppNodeTreeForFrame(frame);
-
-  figma.ui.postMessage({
-    type: MainThreadMsg.PostFrameNodes,
-    data: { node: [rootAppNode, { fontNames: [...fontNames] }] },
+  sendToUiThread(MainThreadMsg.PostFrameNodes, {
+    node: [rootAppNode, { fontNames: [...fontNames] }],
   });
 }
 
