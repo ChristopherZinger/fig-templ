@@ -47,6 +47,8 @@
   },
   "type": "module",
   "dependencies": {
+    "@google-cloud/logging": "^11.2.1",
+    "@google-cloud/logging-winston": "^6.0.1",
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/auth-ui-svelte": "^0.2.9",
     "@supabase/ssr": "^0.5.2",
