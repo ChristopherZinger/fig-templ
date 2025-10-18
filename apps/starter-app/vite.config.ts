@@ -21,4 +21,10 @@ export default defineConfig({
     include: ["src/**/*.{test,spec}.{js,ts}"],
     globals: true, /// allows to skip import of test functions like `describe`, `it`, `expect`, etc.
   },
+  optimizeDeps: {
+    include: ["@templetto/logging"],
+  },
+  ssr: {
+    noExternal: ["@templetto/logging"],
+  },
 })
