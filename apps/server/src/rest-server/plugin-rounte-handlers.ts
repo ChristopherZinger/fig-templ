@@ -1,45 +1,28 @@
 import type { Request, Response } from "express";
-import { firestore, auth } from "../utils/firebase";
+import {
+  auth,
+  firestore,
+  getPkceKeysCollectionRef,
+  getPluginSessionTokensCollectionRef,
+} from "@templetto/firebase";
 import { v4 as uuidv4 } from "uuid";
 import z from "zod";
 import { log } from "@templetto/logging";
-import { DecodedIdToken } from "firebase-admin/auth";
-import { Transaction } from "firebase-admin/firestore";
-
-const pkceKeyCollectionName = "pkceKeys";
-type PkceKeyDoc = {
-  readKey: string;
-  writeKey: string;
-  createdAt: Date;
-  expiresAt: Date;
-  hasUsedReadKey: boolean;
-  userSessionId: string | null;
-};
-const pkceKeyCollectionRef = firestore.collection(pkceKeyCollectionName);
-
-const userSessionCollectionName = "user-sessions";
-type UserSessionDoc = {
-  sessionToken: string;
-  createdAt: Date;
-  expiresAt: Date;
-  uid: string;
-};
-const userSessionCollectionRef = firestore.collection(
-  userSessionCollectionName
-);
+import type { DecodedIdToken } from "firebase-admin/auth";
+import type { Transaction } from "firebase-admin/firestore";
 
 export async function getPkceKeysHandler(_: Request, res: Response) {
   // TODO check if request comes from templetto.com/plugin/login
 
   const EXPIRATION_TIME = 1000 * 60 * 10; // 10 minutes
-  const now = Date.now();
+  const now = new Date();
   const pkceKey = {
     readKey: uuidv4(),
     writeKey: uuidv4(),
-    expiresAt: new Date(now + EXPIRATION_TIME),
+    expiresAt: new Date(Date.now() + EXPIRATION_TIME),
   };
 
-  const docRef = pkceKeyCollectionRef.doc(pkceKey.writeKey);
+  const docRef = getPkceKeysCollectionRef().doc(pkceKey.writeKey);
 
   // TODO: create retry mechanism if read key already exists
   await firestore.runTransaction(async (t) => {
@@ -52,7 +35,7 @@ export async function getPkceKeysHandler(_: Request, res: Response) {
       createdAt: new Date(now),
       hasUsedReadKey: false,
       userSessionId: null,
-    } satisfies PkceKeyDoc);
+    });
   });
 
   res.status(200).json(pkceKey);
@@ -75,12 +58,8 @@ export async function readSessionTokenHandler(req: Request, res: Response) {
 
   try {
     const sessionToken = await firestore.runTransaction(async (t) => {
-      const pkceDocRef = firestore
-        .collection(pkceKeyCollectionName)
-        .doc(writeKey);
-      const pkceKeyDoc = (await t.get(pkceDocRef)).data() as
-        | PkceKeyDoc
-        | undefined; // TODO:  handle types once we have database package
+      const pkceDocRef = getPkceKeysCollectionRef().doc(writeKey);
+      const pkceKeyDoc = (await t.get(pkceDocRef)).data();
       if (!pkceKeyDoc) {
         throw new Error("expected_pkce_key_doc");
       }
@@ -95,10 +74,9 @@ export async function readSessionTokenHandler(req: Request, res: Response) {
         return null;
       }
 
+      const userSessionCollectionRef = getPluginSessionTokensCollectionRef();
       const userSessionDocRef = userSessionCollectionRef.doc(userSessionId);
-      const userSessionDoc = (await t.get(userSessionDocRef)).data() as
-        | UserSessionDoc
-        | undefined;
+      const userSessionDoc = (await t.get(userSessionDocRef)).data();
       if (!userSessionDoc) {
         throw new Error("expected_user_session_doc_for_id");
       }
@@ -179,13 +157,8 @@ export async function createSessionTokenHandler(req: Request, res: Response) {
 
 // TODO: return type once firebase collections are well defined
 async function getValidPkcdKeyDocForWriteKey(writeKey: string, t: Transaction) {
-  const pkceKeyDocRef = pkceKeyCollectionRef.doc(writeKey);
-
-  const pkceKeyDoc = (await t.get(pkceKeyDocRef)).data() as
-    | PkceKeyDoc
-    | undefined;
-
-  console.log("pkceKeyDoc", { pkceKeyDoc });
+  const pkceKeyDocRef = getPkceKeysCollectionRef().doc(writeKey);
+  const pkceKeyDoc = (await t.get(pkceKeyDocRef)).data();
 
   if (
     !pkceKeyDoc ||
@@ -213,6 +186,7 @@ export async function logoutHandler(req: Request, res: Response) {
   const { sessionToken } = parsingResult.data;
 
   await firestore.runTransaction(async (t) => {
+    const userSessionCollectionRef = getPluginSessionTokensCollectionRef();
     const userSessionSnapshots = (
       await userSessionCollectionRef
         .where("sessionToken", "==", sessionToken)

@@ -26,6 +26,7 @@
   "dependencies": {
     "@google-cloud/functions-framework": "^4.0.0",
     "@sparticuz/chromium": "^138.0.2",
+    "@templetto/firebase": "*",
     "@templetto/logging": "*",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
