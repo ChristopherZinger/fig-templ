@@ -6,6 +6,7 @@ export enum UiMsg {
 
 export enum MainThreadMsg {
   PostSessionCookie = "post_session_cookie",
+  Logout = "sessionCookieRemoved",
   PostFrameNodes = "post_frame_nodes",
   FailedToMakeFrames = "failed_to_make_frames",
 }

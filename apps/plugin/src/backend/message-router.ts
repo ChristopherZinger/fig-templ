@@ -6,7 +6,6 @@ const SESSION_TOKEN_KEY = "session_token";
 
 export function setMessageRouter(figma: PluginAPI) {
   figma.ui.onmessage = async (msg) => {
-    console.log("got_message_main_t", msg);
     switch (msg.type) {
       case UiMsg.RequestSessionCookie:
         postSessionCookieMessage();
@@ -59,18 +58,6 @@ async function saveSessionTokenMessage(sessionToken: string) {
 }
 
 async function logoutMessage() {
-  console.log("logoutMessage");
-  try {
-    const sessionToken = await figma.clientStorage.getAsync(SESSION_TOKEN_KEY);
-    if (!sessionToken) {
-      console.error("expected_session_token");
-      return;
-    }
-
-    await figma.clientStorage.deleteAsync(SESSION_TOKEN_KEY);
-
-    // return message to UI
-  } catch (error) {
-    console.error("error_logging_out", error);
-  }
+  await figma.clientStorage.deleteAsync(SESSION_TOKEN_KEY);
+  sendToUiThread(MainThreadMsg.Logout, {});
 }

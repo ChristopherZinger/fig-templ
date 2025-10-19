@@ -1,60 +1,25 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
   import TemplatePreview from "./components/TemplatePreview.svelte";
-  import { MainThreadMsg, UiMsg } from "./lib/utils/shared/messages";
-  import { sendToMainThread } from "./lib/utils/messages";
-  import { URLS } from "./lib/utils/shared/urls";
+  import { UiMsg } from "./lib/utils/shared/messages";
+  import {
+    handleSessionTokenMessages,
+    sendToMainThread,
+  } from "./lib/utils/messages";
+  import { sessionTokenStore } from "./lib/stores/sessionTokenStore";
+  import { getMessageEventListener } from "./lib/utils/window-ev-listener-utils";
+  import LoginButton from "./components/LoginButton.svelte";
+  import LogoutButton from "./components/LogoutButton.svelte";
 
-  async function goToLogin() {
-    const baseUrl = URLS.webapp;
-    const url = `${baseUrl}/plugin/get-pkce-keys`;
-    location.href = url;
-  }
-
-  let session: null | string | undefined;
-  function onSessionMessage(event: MessageEvent) {
-    const { type, data } = event.data.pluginMessage;
-    if (type === MainThreadMsg.PostSessionCookie) {
-      console.log("got_session_message", data);
-      session = data.session;
-    }
-  }
-  window.addEventListener("message", onSessionMessage);
-
-  function requestSessionCookie() {
-    sendToMainThread(UiMsg.RequestSessionCookie);
-  }
-
-  async function logout() {
-    sendToMainThread(UiMsg.Logout);
-
-    const baseUrl = URLS.server;
-    console.log("baseUrl", baseUrl);
-    try {
-      const response = await fetch(`${baseUrl}/plugin/logout`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionToken: session }),
-      });
-
-      if (!response.ok) {
-        throw new Error("logout_request_failed");
-      }
-    } catch (error) {
-      console.error("failed_to_logout", error);
-      return;
-    }
-    // TODO: should this be confirmed (or posted as message) by main thread?
-    // e.g. in a for of two-way binding of sorts?
-    session = null;
-  }
+  $: session = $sessionTokenStore;
+  const unsub = getMessageEventListener(handleSessionTokenMessages);
 
   onMount(() => {
-    requestSessionCookie();
+    sendToMainThread(UiMsg.RequestSessionCookie);
   });
 
   onDestroy(() => {
-    window.removeEventListener("message", onSessionMessage);
+    unsub();
   });
 </script>
 
@@ -64,12 +29,10 @@
   {#if session === undefined}
     <p>Loading...</p>
   {:else if session === null}
-    <div style="padding: 20px;">
-      <button onclick={goToLogin}>Login</button>
-    </div>
+    <LoginButton />
   {:else}
     <TemplatePreview />
 
-    <button onclick={logout}>Logout</button>
+    <LogoutButton />
   {/if}
 </main>
