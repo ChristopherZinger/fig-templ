@@ -131,7 +131,9 @@ export async function createSessionTokenHandler(req: Request, res: Response) {
       return false;
     }
 
-    const userSessionDocRef = userSessionCollectionRef.doc();
+    const pluginSessionTokenCollectionRef =
+      getPluginSessionTokensCollectionRef();
+    const userSessionDocRef = pluginSessionTokenCollectionRef.doc();
     t.update(pkceKeyDocRef, {
       userSessionId: userSessionDocRef.id,
     });
