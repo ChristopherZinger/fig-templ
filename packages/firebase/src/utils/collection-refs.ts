@@ -1,16 +1,25 @@
 import { firestore } from "../admin-init";
 import { CollectionName } from "./collections";
-import {
-  getParsedConverter,
-  // getTypeAssertionConverter,
-} from "./fs-converter-utils";
+import { getParsedConverter } from "./fs-converter-utils";
 import type {
   DocumentReference,
   CollectionReference,
 } from "firebase-admin/firestore";
-import type { PkceKey_FsDoc, PluginSessionToken_FsDoc } from "./collections";
+import type {
+  Organization_FsDoc,
+  PkceKey_FsDoc,
+  PluginSessionToken_FsDoc,
+  User_FsDoc,
+  UserOrgJoinTable_FsDoc,
+} from "./collections";
 import z from "zod";
-import { pkceKeyParser, pluginSessionTokenParser } from "./collection-parsers";
+import {
+  organizationParser,
+  pkceKeyParser,
+  pluginSessionTokenParser,
+  userOrgJoinTableParser,
+  userParser,
+} from "./collection-parsers";
 
 function getCollectionRef<T extends Record<string, unknown>>({
   collectionName,
@@ -39,5 +48,29 @@ export function getPluginSessionTokensCollectionRef(): CollectionReference<Plugi
     collectionName: CollectionName.pluginSessionTokens,
     getBase: null,
     parser: pluginSessionTokenParser,
+  });
+}
+
+export function getUsersCollectionRef(): CollectionReference<User_FsDoc> {
+  return getCollectionRef({
+    collectionName: CollectionName.users,
+    getBase: null,
+    parser: userParser,
+  });
+}
+
+export function getOrgCollectionRef(): CollectionReference<Organization_FsDoc> {
+  return getCollectionRef({
+    collectionName: CollectionName.organizations,
+    getBase: null,
+    parser: organizationParser,
+  });
+}
+
+export function getUserOrgJoinTableCollectionRef(): CollectionReference<UserOrgJoinTable_FsDoc> {
+  return getCollectionRef({
+    collectionName: CollectionName.userOrgJoinTable,
+    getBase: null,
+    parser: userOrgJoinTableParser,
   });
 }

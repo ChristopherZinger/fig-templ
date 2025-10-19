@@ -26,3 +26,21 @@ export const pluginSessionTokenParser = z.object({
   expiresAt: firestoreDateField,
   uid: z.string(),
 });
+
+// /users/{uid}
+export const userParser = z.object({
+  uid: z.string(),
+  name: z.string(),
+});
+
+// /organizations/{id}
+export const organizationParser = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+
+// /user-organizations-join-table/{uid}/{orgId}
+export const userOrgJoinTableParser = z.object({
+  uid: z.string(),
+  orgId: z.string(),
+});
