@@ -160,8 +160,10 @@ export async function createSessionTokenHandler(req: Request, res: Response) {
   return;
 }
 
-// TODO: return type once firebase collections are well defined
-async function getValidPkcdKeyDocForWriteKey(writeKey: string, t: Transaction) {
+async function getValidPkcdKeyDocForWriteKey(
+  writeKey: string,
+  t: Transaction
+): Promise<DocumentReference<PkceKey_FsDoc> | null> {
   const pkceKeyDocRef = getPkceKeysCollectionRef().doc(writeKey);
   const pkceKeyDoc = (await t.get(pkceKeyDocRef)).data();
 
