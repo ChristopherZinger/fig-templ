@@ -12,7 +12,7 @@ export enum CollectionName {
   pluginSessionTokens = "plugin-session-tokens",
   users = "users",
   organizations = "organizations",
-  userOrgJoinTable = "user-organizations-join-table",
+  userOrgJoinTable = "user-organization-join-table",
 }
 
 export type PkceKey_FsDoc = z.infer<typeof pkceKeyParser>;

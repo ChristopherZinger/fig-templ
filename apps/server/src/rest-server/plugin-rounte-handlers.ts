@@ -2,14 +2,17 @@ import type { Request, Response } from "express";
 import {
   auth,
   firestore,
+  getOrgCollectionRef,
   getPkceKeysCollectionRef,
   getPluginSessionTokensCollectionRef,
+  getUserOrgJoinTableCollectionRef,
+  PkceKey_FsDoc,
 } from "@templetto/firebase";
 import { v4 as uuidv4 } from "uuid";
 import z from "zod";
 import { log } from "@templetto/logging";
 import type { DecodedIdToken } from "firebase-admin/auth";
-import type { Transaction } from "firebase-admin/firestore";
+import type { DocumentReference, Transaction } from "firebase-admin/firestore";
 
 export async function getPkceKeysHandler(_: Request, res: Response) {
   // TODO check if request comes from templetto.com/plugin/login
@@ -210,4 +213,35 @@ export async function logoutHandler(req: Request, res: Response) {
   });
 
   res.status(200).json({ message: "session_token_removed" });
+}
+
+export async function getOrganizationsHandler(req: Request, res: Response) {
+  const token = req["pluginSessionToken"];
+  if (!token) {
+    res.status(401).json({ error: "unauthorized" });
+    return;
+  }
+
+  let uid: string | undefined;
+  try {
+    const { uid: userId } = await auth.verifySessionCookie(token);
+    uid = userId;
+  } catch (error) {
+    log.error("failed_to_verify_session_cookie", { error });
+    res.status(401).json({ error: "unauthorized" });
+    return;
+  }
+
+  const userOrgs = (
+    await getUserOrgJoinTableCollectionRef().where("uid", "==", uid).get()
+  ).docs.map((doc) => doc.data());
+
+  const orgs = await Promise.all(
+    userOrgs.map(async ({ orgId }) => {
+      const orgDoc = await getOrgCollectionRef().doc(orgId).get();
+      return orgDoc.data();
+    })
+  );
+
+  res.status(200).json(orgs);
 }

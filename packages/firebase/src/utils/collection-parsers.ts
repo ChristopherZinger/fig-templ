@@ -39,7 +39,7 @@ export const organizationParser = z.object({
   name: z.string(),
 });
 
-// /user-organizations-join-table/{uid}/{orgId}
+// /user-organization-join-table/{uid}:{orgId}
 export const userOrgJoinTableParser = z.object({
   uid: z.string(),
   orgId: z.string(),

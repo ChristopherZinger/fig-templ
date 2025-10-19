@@ -20,6 +20,4 @@ const NODE_ENV = process.env.NODE_ENV as "development" | "production";
 
 const URLS = getUrls(NODE_ENV);
 
-console.log("URLS", URLS);
-
 export { URLS };

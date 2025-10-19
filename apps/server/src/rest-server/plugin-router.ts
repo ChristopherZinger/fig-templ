@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createSessionTokenHandler,
+  getOrganizationsHandler,
   getPkceKeysHandler,
   logoutHandler,
   readSessionTokenHandler,
@@ -28,9 +29,28 @@ pluginRouter.use(
   })
 );
 
+pluginRouter.use((req, _, next) => {
+  const authHeader = req.headers["authorization"];
+  let token;
+  if (
+    authHeader &&
+    typeof authHeader === "string" &&
+    (authHeader.startsWith("BEARER ") ||
+      authHeader.startsWith("bearer ") ||
+      authHeader.startsWith("Bearer "))
+  ) {
+    token = authHeader.substring("Bearer ".length);
+  }
+  console.log("token", token);
+  req["pluginSessionToken"] = token;
+
+  next();
+});
+
 pluginRouter.get("/get-pkce-keys", getPkceKeysHandler);
 pluginRouter.post("/read-session-token", readSessionTokenHandler);
 pluginRouter.post("/save-token", createSessionTokenHandler);
 pluginRouter.post("/logout", logoutHandler);
+pluginRouter.get("/get-organizations", getOrganizationsHandler);
 
 export { pluginRouter };
