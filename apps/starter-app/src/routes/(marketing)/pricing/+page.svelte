@@ -56,7 +56,7 @@
 <div class="min-h-[70vh] pb-8 pt-[5vh] px-4">
   <h1 class="text-3xl font-bold text-center">Pricing</h1>
   <h2 class="text-xl text-center text-slate-500 mt-1 pb-3">
-    Totally free, scale to millions of users
+    Plans that scale with your business
   </h2>
 
   <div class="w-full my-8">
@@ -67,49 +67,10 @@
         <div class="collapse collapse-arrow join-item border border-primary">
           <input type="radio" name="faq-accordion" />
           <div class="collapse-title text-lg font-medium">
-            Is this template free to use?
+            Is the plugin free to use?
           </div>
           <div class="collapse-content">
-            <p>Yup! This template is free to use for any project.</p>
-          </div>
-        </div>
-        <div class="collapse collapse-arrow join-item border border-primary">
-          <input type="radio" name="faq-accordion" />
-          <div class="collapse-title text-lg font-medium">
-            Why does a free template have a pricing page?
-          </div>
-          <div class="collapse-content">
-            <p>
-              The pricing page is part of the boilerplate. It shows how the
-              pricing page integrates into the billing portal and the Stripe
-              Checkout flows.
-            </p>
-          </div>
-        </div>
-        <div class="collapse collapse-arrow join-item border border-primary">
-          <input type="radio" name="faq-accordion" />
-          <div class="collapse-title text-lg font-medium">
-            What license is the template under?
-          </div>
-          <div class="collapse-content">
-            <p>The template is under the MIT license.</p>
-          </div>
-        </div>
-        <div class="collapse collapse-arrow join-item border border-primary">
-          <input type="radio" name="faq-accordion" />
-          <div class="collapse-title text-lg font-medium">
-            Can I try out purchase flows without real a credit card?
-          </div>
-          <div class="collapse-content">
-            <p>
-              Our demo page <a href="https://saasstarter.work" class="link"
-                >SaasStarter.work</a
-              > has a functional demo page, using Stripe's test environment.
-            </p>
-            <p class="mt-4">
-              You can use the credit card number 4242 4242 4242 4242 with any
-              future expiry date to test the payment and upgrade flows.
-            </p>
+            <p>The plugin is free to use, but you need to buy a plan to use the API.</p>
           </div>
         </div>
       </div>
@@ -142,6 +103,7 @@
       </defs>
     </svg>
 
+    <!--
     <h1 class="text-2xl font-bold text-center mt-16">Plan Features</h1>
     <h2 class="text-xl text-center text-slate-500 mt-1 pb-3">
       Example feature table
@@ -211,5 +173,6 @@
         </tbody>
       </table>
     </div>
+  -->
   </div>
 </div>
