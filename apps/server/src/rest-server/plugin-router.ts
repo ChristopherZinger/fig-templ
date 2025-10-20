@@ -3,17 +3,23 @@ import {
   createSessionTokenHandler,
   getOrganizationsHandler,
   getPkceKeysHandler,
+  getTemplatesHandler,
+  createTemplateHandler,
   logoutHandler,
   readSessionTokenHandler,
 } from "./plugin-rounte-handlers";
 import cors from "cors";
+import { pluginAuthMiddleware } from "./middleware";
 
 const pluginRouter = express.Router();
+const pluginAuthRouter = express.Router();
 
 /**
  * TODO: implement CORS!
  * - plugin router should only respond to requests from templetto.com/plugin/get-pkce-keys
  * - configure url in configuration (.env) for local and production
+ * - be explicite about which routes expect which origins
+ * - be explicit about which reoutes require authentication and handle 401 in middleware
  *  */
 
 const allowedOrigins = [
@@ -29,28 +35,16 @@ pluginRouter.use(
   })
 );
 
-pluginRouter.use((req, _, next) => {
-  const authHeader = req.headers["authorization"];
-  let token;
-  if (
-    authHeader &&
-    typeof authHeader === "string" &&
-    (authHeader.startsWith("BEARER ") ||
-      authHeader.startsWith("bearer ") ||
-      authHeader.startsWith("Bearer "))
-  ) {
-    token = authHeader.substring("Bearer ".length);
-  }
-  console.log("token", token);
-  req["pluginSessionToken"] = token;
-
-  next();
-});
-
 pluginRouter.get("/get-pkce-keys", getPkceKeysHandler);
 pluginRouter.post("/read-session-token", readSessionTokenHandler);
 pluginRouter.post("/save-token", createSessionTokenHandler);
-pluginRouter.post("/logout", logoutHandler);
-pluginRouter.get("/get-organizations", getOrganizationsHandler);
 
-export { pluginRouter };
+pluginAuthRouter.use(cors({ origin: ["null"] }));
+pluginAuthRouter.use(pluginAuthMiddleware);
+
+pluginAuthRouter.post("/logout", logoutHandler);
+pluginAuthRouter.get("/get-organizations", getOrganizationsHandler);
+pluginAuthRouter.get("/get-templates", getTemplatesHandler);
+pluginRouter.post("/create-template", createTemplateHandler);
+
+export { pluginRouter, pluginAuthRouter };

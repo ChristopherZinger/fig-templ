@@ -2,9 +2,11 @@ import type { Request, Response } from "express";
 import {
   auth,
   firestore,
+  getBucket,
   getOrgCollectionRef,
   getPkceKeysCollectionRef,
   getPluginSessionTokensCollectionRef,
+  getTemplatesCollectionRef,
   getUserOrgJoinTableCollectionRef,
   PkceKey_FsDoc,
 } from "@templetto/firebase";
@@ -13,6 +15,7 @@ import z from "zod";
 import { log } from "@templetto/logging";
 import type { DecodedIdToken } from "firebase-admin/auth";
 import type { DocumentReference, Transaction } from "firebase-admin/firestore";
+import { expectUid } from "../utils/plugin-session-token";
 
 export async function getPkceKeysHandler(_: Request, res: Response) {
   // TODO check if request comes from templetto.com/plugin/login
@@ -218,21 +221,7 @@ export async function logoutHandler(req: Request, res: Response) {
 }
 
 export async function getOrganizationsHandler(req: Request, res: Response) {
-  const token = req["pluginSessionToken"];
-  if (!token) {
-    res.status(401).json({ error: "unauthorized" });
-    return;
-  }
-
-  let uid: string | undefined;
-  try {
-    const { uid: userId } = await auth.verifySessionCookie(token);
-    uid = userId;
-  } catch (error) {
-    log.error("failed_to_verify_session_cookie", { error });
-    res.status(401).json({ error: "unauthorized" });
-    return;
-  }
+  const uid = expectUid(req);
 
   const userOrgs = (
     await getUserOrgJoinTableCollectionRef().where("uid", "==", uid).get()
@@ -246,4 +235,91 @@ export async function getOrganizationsHandler(req: Request, res: Response) {
   );
 
   res.status(200).json(orgs);
+}
+
+export async function getTemplatesHandler(req: Request, res: Response) {
+  const uid = expectUid(req);
+
+  const parseResult = z.object({ orgId: z.string() }).safeParse(req.query);
+  if (!parseResult.success) {
+    res.status(400).json({ error: "invalid_request" });
+    return;
+  }
+  const { orgId } = parseResult.data;
+
+  try {
+    await firestore.runTransaction(async (t) => {
+      const [userOrgJoinTableDoc, templatesDoc] = await Promise.all([
+        t.get(getUserOrgJoinTableCollectionRef().doc(`${uid}:${orgId}`)),
+        t.get(getTemplatesCollectionRef({ orgId })),
+      ]);
+
+      if (!userOrgJoinTableDoc.exists) {
+        throw new Error("unauthorized");
+      }
+
+      res.status(200).json(templatesDoc.docs.map((doc) => doc.data()));
+      return;
+    });
+  } catch (error) {
+    log.error("failed_to_get_templates", { error });
+    if (error instanceof Error && error.message === "unauthorized") {
+      res.status(401).json({ error: "unauthorized" });
+      return;
+    }
+    res.status(500).json({ error: "failed_to_get_templates" });
+    return;
+  }
+}
+
+export async function createTemplateHandler(req: Request, res: Response) {
+  const uid = expectUid(req);
+
+  const parsingResult = z
+    .object({ templateHtml: z.string(), orgId: z.string() })
+    .safeParse(req.body);
+  if (!parsingResult.success) {
+    res.status(400).json({ error: "invalid_request" });
+    return;
+  }
+  const { templateHtml, orgId } = parsingResult.data;
+
+  try {
+    await firestore.runTransaction(async (t) => {
+      const userOrgJoinTableDoc = await t.get(
+        getUserOrgJoinTableCollectionRef().doc(`${uid}:${orgId}`)
+      );
+      if (!userOrgJoinTableDoc.exists) {
+        log.debug("missin_org_for_user");
+        throw new Error("unauthorized");
+      }
+
+      const templatesCollectionRef = getTemplatesCollectionRef({ orgId });
+      const newTemplateDocRef = templatesCollectionRef.doc();
+
+      const pathInStorage = `organizations/${orgId}/templates/${newTemplateDocRef.id}.html`;
+
+      t.set(newTemplateDocRef, {
+        id: newTemplateDocRef.id,
+        orgId,
+        pathInStorage,
+        downloadUrl: null,
+      });
+
+      await getBucket().file(pathInStorage).save(templateHtml);
+
+      return newTemplateDocRef.id;
+    });
+
+    res.status(201).json({ message: "template_created" });
+  } catch (error) {
+    log.error("failed_to_create_template", { error });
+    if (error instanceof Error && error.message === "unauthorized") {
+      log.debug("unauthorized");
+      res.status(401).json({ error: "unauthorized" });
+      return;
+    }
+    res.status(500).json({ error: "failed_to_create_template" });
+    return;
+  }
 }
