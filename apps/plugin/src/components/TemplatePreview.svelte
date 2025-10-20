@@ -4,8 +4,12 @@
   import type { AppNode } from "../types";
   import { MainThreadMsg, UiMsg } from "../lib/utils/shared/messages";
   import { sendToMainThread } from "../lib/utils/messages";
+  import { URLS } from "../lib/utils/shared/urls";
+  import { sessionTokenStore } from "../lib/stores/sessionTokenStore";
 
   type TemplateInfo = [AppNode, { fontNames: string[] }];
+
+  export let orgId: string;
 
   let templateInfo: null | undefined | TemplateInfo = null;
   let iframeRef: HTMLIFrameElement | undefined;
@@ -28,9 +32,40 @@
 
     const [rootAppNode, { fontNames }] = templateInfo;
     const html = getHtmlDocumentFromAppNode(rootAppNode, new Set(fontNames));
-    iframeRef.contentDocument.body.innerHTML = html.outerHTML;
+    htmlString = html.outerHTML;
+    iframeRef.contentDocument.body.innerHTML = htmlString;
   }
   $: onTemplateInfoChange(templateInfo);
+
+  let htmlString: string | undefined = undefined;
+  async function onClickSaveTemplate() {
+    if (!htmlString) {
+      console.error("expected_htmlString");
+      return;
+    }
+    const session = $sessionTokenStore;
+    if (!session) {
+      console.error("expected_session");
+      return;
+    }
+    try {
+      const response = await fetch(`${URLS.server}/plugin/create-template`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `BEARER ${session}`,
+        },
+        body: JSON.stringify({ templateHtml: htmlString, orgId }),
+      });
+      if (!response.ok) {
+        console.error("failed_to_save_template", response);
+        return;
+      }
+      console.log("data", response);
+    } catch (error) {
+      console.error("failed_to_save_template", error);
+    }
+  }
 
   function onMessage(event: MessageEvent) {
     const { type, data } = event.data.pluginMessage;
@@ -50,7 +85,15 @@
 </script>
 
 <main>
-  <button onclick={onClickShowPreview}>Show Preview</button>
+  <div>
+    <button onclick={onClickShowPreview}>Show Preview</button>
+  </div>
+
+  <div>
+    <button disabled={!htmlString} onclick={onClickSaveTemplate}
+      >Save Template</button
+    >
+  </div>
 
   <div class="iframe-container">
     <h3>Preview</h3>

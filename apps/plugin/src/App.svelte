@@ -52,6 +52,42 @@
     }
   }
 
+  let templates: { id: string; name: string }[] | null | undefined = undefined;
+  async function onSelectedOrgIdChange({
+    orgId,
+    session,
+  }: {
+    orgId: string | undefined;
+    session: string | null | undefined;
+  }) {
+    templates = undefined;
+    if (!orgId || !session) {
+      templates = null;
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${URLS.server}/plugin/get-templates?orgId=${orgId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `BEARER ${session}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        console.error("failed_to_get_templates", response);
+        templates = null;
+      }
+      const _templates = await response.json();
+      templates = _templates;
+    } catch (error) {
+      console.error("failed_to_get_templates", error);
+    }
+  }
+  $: onSelectedOrgIdChange({ orgId: selectedOrgId, session });
+
   onMount(() => {
     sendToMainThread(UiMsg.RequestSessionCookie);
   });
@@ -71,9 +107,24 @@
   {:else}
     {#if orgs && selectedOrgId}
       <OrgSelector {orgs} {selectedOrgId} {onSelect} />
+      <br />
     {/if}
 
-    <TemplatePreview />
+    {#if templates}
+      {#if templates.length > 0}
+        <div>
+          {#each templates as template}
+            <div>{template.name}</div>
+          {/each}
+        </div>
+      {:else}
+        <p>No templates found</p>
+      {/if}
+    {/if}
+
+    {#if selectedOrgId}
+      <TemplatePreview orgId={selectedOrgId} />
+    {/if}
 
     <LogoutButton />
   {/if}
