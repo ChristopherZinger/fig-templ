@@ -39,7 +39,7 @@ pluginRouter.get("/get-pkce-keys", getPkceKeysHandler);
 pluginRouter.post("/read-session-token", readSessionTokenHandler);
 pluginRouter.post("/save-token", createSessionTokenHandler);
 
-pluginAuthRouter.use(cors({ origin: ["null"] }));
+pluginAuthRouter.use(cors({ origin: ["null"], credentials: true }));
 pluginAuthRouter.use(pluginAuthMiddleware);
 
 pluginAuthRouter.post("/logout", logoutHandler);
