@@ -5,8 +5,8 @@ import tailwindcss from "@tailwindcss/vite"
 
 export default defineConfig({
   plugins: [
-    tailwindcss(),
     sveltekit(),
+    tailwindcss(),
     {
       name: "vite-build-search-index",
       writeBundle: {
