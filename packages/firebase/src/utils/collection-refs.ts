@@ -9,6 +9,7 @@ import type {
   Organization_FsDoc,
   PkceKey_FsDoc,
   PluginSessionToken_FsDoc,
+  Template_FsDoc,
   User_FsDoc,
   UserOrgJoinTable_FsDoc,
 } from "./collections";
@@ -17,6 +18,7 @@ import {
   organizationParser,
   pkceKeyParser,
   pluginSessionTokenParser,
+  templateParser,
   userOrgJoinTableParser,
   userParser,
 } from "./collection-parsers";
@@ -72,5 +74,17 @@ export function getUserOrgJoinTableCollectionRef(): CollectionReference<UserOrgJ
     collectionName: CollectionName.userOrgJoinTable,
     getBase: null,
     parser: userOrgJoinTableParser,
+  });
+}
+
+export function getTemplatesCollectionRef({
+  orgId,
+}: {
+  orgId: string;
+}): CollectionReference<Template_FsDoc> {
+  return getCollectionRef({
+    collectionName: CollectionName.templates,
+    getBase: () => getOrgCollectionRef().doc(orgId),
+    parser: templateParser,
   });
 }

@@ -39,6 +39,14 @@ export const organizationParser = z.object({
   name: z.string(),
 });
 
+// /organizations/{orgId}/templates/{id}
+export const templateParser = z.object({
+  id: z.string(),
+  orgId: z.string(),
+  pathInStorage: z.string(),
+  downloadUrl: z.string().nullable(),
+});
+
 // /user-organization-join-table/{uid}:{orgId}
 export const userOrgJoinTableParser = z.object({
   uid: z.string(),
