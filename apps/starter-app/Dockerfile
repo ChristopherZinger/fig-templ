@@ -21,7 +21,7 @@ COPY apps/starter-app/ ./apps/starter-app/
 
 # Change to the app directory and build
 WORKDIR /app/apps/starter-app
-RUN npm run build
+RUN NODE_ENV=production npm run build
 
 # Expose the port the app runs on
 EXPOSE 3000
