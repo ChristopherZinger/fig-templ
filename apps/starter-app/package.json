@@ -54,6 +54,7 @@
     "@supabase/supabase-js": "^2.45.2",
     "@templetto/logging": "*",
     "firebase": "^12.4.0",
+    "firebase-admin": "^13.5.0",
     "handlebars": "^4.7.8",
     "resend": "^3.5.0",
     "stripe": "^13.3.0",
