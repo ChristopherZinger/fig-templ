@@ -45,6 +45,6 @@ pluginAuthRouter.use(pluginAuthMiddleware);
 pluginAuthRouter.post("/logout", logoutHandler);
 pluginAuthRouter.get("/get-organizations", getOrganizationsHandler);
 pluginAuthRouter.get("/get-templates", getTemplatesHandler);
-pluginRouter.post("/create-template", createTemplateHandler);
+pluginAuthRouter.post("/create-template", createTemplateHandler);
 
 export { pluginRouter, pluginAuthRouter };
