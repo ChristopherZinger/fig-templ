@@ -1,7 +1,8 @@
 #!/bin/bash
 
-set -e
+set -eoux pipefail
 
+export NODE_ENV=production
 source "$(dirname "$0")/build.env"
 
 pushd ../..
