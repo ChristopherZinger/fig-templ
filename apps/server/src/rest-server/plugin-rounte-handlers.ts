@@ -43,6 +43,7 @@ export async function getPkceKeysHandler(_: Request, res: Response) {
       userSessionId: null,
     });
   });
+  log.info("pkce_keys_generated", { pkceKey });
 
   res.status(200).json(pkceKey);
 }

@@ -10,7 +10,7 @@
     "start:rest-server": "node dist/rest-server.js",
     "start:locally:rest-server": "node -r dotenv/config dist/rest-server.js",
     "start:puppeteer-worker": "functions-framework --target=main --source=dist/puppeteer-worker.js --port=3001",
-    "dev:rest-server": "npx tsx --watch --env-file=.env src/rest-server.ts"
+    "dev:rest-server": "npx tsx --env-file=.env --import ./src/otel.ts --watch  src/rest-server.ts"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.1",
@@ -25,6 +25,13 @@
   },
   "dependencies": {
     "@google-cloud/functions-framework": "^4.0.0",
+    "@google-cloud/opentelemetry-cloud-trace-exporter": "^3.0.0",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.65.0",
+    "@opentelemetry/sdk-metrics": "^2.2.0",
+    "@opentelemetry/sdk-node": "^0.207.0",
+    "@opentelemetry/sdk-trace-node": "^2.2.0",
+    "@opentelemetry/winston-transport": "^0.18.0",
     "@sparticuz/chromium": "^138.0.2",
     "@templetto/firebase": "*",
     "@templetto/logging": "*",
