@@ -18,9 +18,16 @@
 
   const features = [
     {
-      name: "Figma to PDF API",
+      name: "Figma Plugin",
       description:
-        "Convert your Figma designs into professional PDF documents. Template variables let you generate dynamic PDFs at scale.",
+        "Extract and sync Figma designs into Templetto. Preview template outputs in real-time.",
+      svgContent: `<path d="M4.01207 15.7618L5.70156 10.6933C6.46758 8.39525 6.85059 7.24623 7.75684 7.03229C8.6631 6.81835 9.51953 7.67478 11.2324 9.38764L14.6114 12.7666C16.3242 14.4795 17.1807 15.3359 16.9667 16.2422C16.7528 17.1484 15.6038 17.5314 13.3057 18.2975L8.23724 19.987C5.47183 20.9088 4.08912 21.3697 3.35924 20.6398C2.62936 19.9099 3.09026 18.5272 4.01207 15.7618Z" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M12.2351 18.3461C12.2351 18.3461 11.477 16.0649 11.477 14.5552C11.477 13.0454 12.2351 10.7643 12.2351 10.7643M8.06517 19.4833C8.06517 19.4833 7.42484 16.7314 7.307 14.9343C7.11229 11.965 8.06517 7.35254 8.06517 7.35254" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>`,
+    },
+    {
+      name: "Reporting API",
+      description:
+        "Use our REST API to generate PDFs at scale. Integrate with your existing workflows.",
       svgContent: `<path d="M4.01207 15.7618L5.70156 10.6933C6.46758 8.39525 6.85059 7.24623 7.75684 7.03229C8.6631 6.81835 9.51953 7.67478 11.2324 9.38764L14.6114 12.7666C16.3242 14.4795 17.1807 15.3359 16.9667 16.2422C16.7528 17.1484 15.6038 17.5314 13.3057 18.2975L8.23724 19.987C5.47183 20.9088 4.08912 21.3697 3.35924 20.6398C2.62936 19.9099 3.09026 18.5272 4.01207 15.7618Z" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
 <path d="M12.2351 18.3461C12.2351 18.3461 11.477 16.0649 11.477 14.5552C11.477 13.0454 12.2351 10.7643 12.2351 10.7643M8.06517 19.4833C8.06517 19.4833 7.42484 16.7314 7.307 14.9343C7.11229 11.965 8.06517 7.35254 8.06517 7.35254" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>`,
     },
@@ -80,7 +87,7 @@
         {#if $userStore}
           <span class="text-sm text-gray-500">Welcome, {$userStore.displayName}</span>
         {:else  }
-          <span class="text-sm text-gray-500">Sign in to get started</span>
+          <span class="text-sm text-gray-500">Sign in</span>
         {/if}
 
       </div>
@@ -130,7 +137,7 @@
         How It Works
       </div>
       <div class="mt-4 text-lg">
-        Design in Figma, template with variables, generate PDFs via API
+        Design templates in Figma, then generate PDFs via API
       </div>
     </div>
 
@@ -188,7 +195,7 @@
       </div>
       <div class="mt-6 text-lg md:text-xl px-4">
         Sign up for a free account and start generating PDFs from your Figma
-        designs. No credit card required for the free tier.
+        designs. No credit card required for the free trial.
       </div>
       <div class="mt-8">
         <a href="/login/sign_up">

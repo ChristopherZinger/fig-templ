@@ -16,7 +16,7 @@
     <ul class="menu menu-horizontal px-1 hidden sm:flex font-bold text-lg">
       <li class="md:mx-4">
         <a
-          href="https://github.com/CriticalMoments/CMSaasStarter"
+          href="/login/sign_up"
           class="border border-primary">Try Templetto</a
         >
       </li>
@@ -95,7 +95,6 @@
       <a class="link link-hover my-1" href="/contact_us">Contact Us</a>
     </nav>
     <aside>
-      <span class="footer-title opacity-80">Sponsor</span>
       <a class="max-w-[260px]" href="https://getkiln.ai">
         <div class="font-bold text-3xl mb-1">Templetto</div>
         <div class="font-medium mb-3">Build High Quality PDFs</div>
