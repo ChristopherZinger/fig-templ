@@ -2,7 +2,13 @@ import type { Response, Request } from "express";
 import z from "zod";
 import fs from "fs";
 import path from "path";
-import { getBucket, pushToStorage, firestore } from "@templetto/firebase";
+import {
+  getBucket,
+  pushToStorage,
+  firestore,
+  getTemplatesCollectionRef,
+  expectDocInCollection,
+} from "@templetto/firebase";
 import { withBrowserPage } from "./utils/puppeteer";
 import { log } from "./utils/logging";
 import { puppeteerWorkerRequestSchema } from "./utils/puppeteer-worker-utils";
@@ -34,20 +40,25 @@ export async function main(req: Request, res: Response) {
     res.status(400).json({ error: "invalid_request" });
     return;
   }
-  const { templateId, jsonData } = reqParsingResult.data;
+  const { templateId, orgId, jsonData } = reqParsingResult.data;
 
-  const templatePathInStorage = `templates/${templateId}.html`;
+  const templateDocRef = getTemplatesCollectionRef({ orgId }).doc(templateId);
+  const { pathInStorage: templatePathInStorage } =
+    await expectDocInCollection(templateDocRef);
+
   const bucket = getBucket();
   const templateRef = bucket.file(templatePathInStorage);
   if (!(await templateRef.exists())) {
-    throw new Error("template_not_found" + " " + templatePathInStorage);
+    log.warn("template_not_found" + " " + templatePathInStorage);
+    res.status(404).json({ error: "template_not_found_in_storage" });
+    return;
   }
   const [buffer] = await templateRef.download();
   const templateHtml = buffer.toString("utf-8");
 
   const htmlToRender = Handlebars.compile(templateHtml)(jsonData);
 
-  log.info("create_template_with_puppeteer", { templateHtml });
+  log.debug("create_template_with_puppeteer", { templateHtml });
   const pdfLocalFilePath =
     process.env.NODE_ENV === "production"
       ? (`/tmp/${Date.now()}/out.pdf` as const)

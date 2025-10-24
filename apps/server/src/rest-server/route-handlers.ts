@@ -43,6 +43,7 @@ export async function createPdfHandler(req: Request, res: Response) {
     log.info("fetching_from_puppeteer_worker");
     const response = await callPuppeteerWorker({
       templateId,
+      orgId: apiTokenOrgId,
       jsonData: req.body,
     });
 
