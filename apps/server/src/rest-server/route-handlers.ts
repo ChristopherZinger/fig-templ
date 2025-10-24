@@ -3,6 +3,7 @@ import { log } from "../utils/logging";
 import { callPuppeteerWorker } from "../utils/puppeteer-worker-utils";
 import z from "zod";
 import { expectApiTokenOrgId } from "../utils/plugin-session-token";
+import { getTemplatesCollectionRef } from "@templetto/firebase";
 
 const createPdfRequestParamsSchema = z
   .object({
@@ -20,7 +21,7 @@ export async function createPdfHandler(req: Request, res: Response) {
     log.error("invalid_request", { error: parsingResult.error });
     res.status(400).json({
       error: "invalid_request",
-      details: ["expected_valid_template_id"],
+      details: z.prettifyError(parsingResult.error),
     });
     log.info("rest_server_response", {
       httpRequest: getRequestLogInfo(req, res),
@@ -28,6 +29,15 @@ export async function createPdfHandler(req: Request, res: Response) {
     return;
   }
   const { templateId } = parsingResult.data;
+
+  const templateDoc = await getTemplatesCollectionRef({ orgId: apiTokenOrgId })
+    .doc(templateId)
+    .get();
+  if (!templateDoc.exists) {
+    log.debug("template_not_found", { templateId, orgId: apiTokenOrgId });
+    res.status(404).json({ error: "template_not_found" });
+    return;
+  }
 
   try {
     log.info("fetching_from_puppeteer_worker");
