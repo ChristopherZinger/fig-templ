@@ -34,3 +34,12 @@ export function expectPluginSessionUid(req: Request): string {
   }
   return uid;
 }
+
+export function expectApiTokenOrgId(req: Request): string {
+  const orgId = req.auth?.type === "api-token" ? req.auth.orgId : null;
+  if (!orgId) {
+    log.debug("missing_org_id_in_request");
+    throw new Error("expected_org_id_in_request");
+  }
+  return orgId;
+}

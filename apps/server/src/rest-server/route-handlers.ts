@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { log } from "../utils/logging";
 import { callPuppeteerWorker } from "../utils/puppeteer-worker-utils";
 import z from "zod";
+import { expectApiTokenOrgId } from "../utils/plugin-session-token";
 
 const createPdfRequestParamsSchema = z
   .object({
@@ -12,6 +13,8 @@ const createPdfRequestParamsSchema = z
   }));
 
 export async function createPdfHandler(req: Request, res: Response) {
+  const apiTokenOrgId = expectApiTokenOrgId(req);
+
   const parsingResult = createPdfRequestParamsSchema.safeParse(req.query);
   if (!parsingResult.success) {
     log.error("invalid_request", { error: parsingResult.error });
