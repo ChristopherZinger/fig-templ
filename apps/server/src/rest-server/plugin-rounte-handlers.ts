@@ -15,7 +15,7 @@ import z from "zod";
 import { log } from "@templetto/logging";
 import type { DecodedIdToken } from "firebase-admin/auth";
 import type { DocumentReference, Transaction } from "firebase-admin/firestore";
-import { expectUid } from "../utils/plugin-session-token";
+import { expectPluginSessionUid } from "../utils/plugin-session-token";
 
 export async function getPkceKeysHandler(_: Request, res: Response) {
   // TODO check if request comes from templetto.com/plugin/login
@@ -221,7 +221,7 @@ export async function logoutHandler(req: Request, res: Response) {
 }
 
 export async function getOrganizationsHandler(req: Request, res: Response) {
-  const uid = expectUid(req);
+  const uid = expectPluginSessionUid(req);
 
   const userOrgs = (
     await getUserOrgJoinTableCollectionRef().where("uid", "==", uid).get()
@@ -238,7 +238,7 @@ export async function getOrganizationsHandler(req: Request, res: Response) {
 }
 
 export async function getTemplatesHandler(req: Request, res: Response) {
-  const uid = expectUid(req);
+  const uid = expectPluginSessionUid(req);
 
   const parseResult = z.object({ orgId: z.string() }).safeParse(req.query);
   if (!parseResult.success) {
@@ -273,7 +273,7 @@ export async function getTemplatesHandler(req: Request, res: Response) {
 }
 
 export async function createTemplateHandler(req: Request, res: Response) {
-  const uid = expectUid(req);
+  const uid = expectPluginSessionUid(req);
 
   const parsingResult = z
     .object({ templateHtml: z.string(), orgId: z.string() })
