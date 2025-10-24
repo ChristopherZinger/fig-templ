@@ -1,5 +1,6 @@
 import z from "zod";
 import {
+  apiTokenParser,
   organizationParser,
   pkceKeyParser,
   pluginSessionTokenParser,
@@ -15,6 +16,7 @@ export enum CollectionName {
   organizations = "organizations",
   userOrgJoinTable = "user-organization-join-table",
   templates = "templates",
+  apiTokens = "api-tokens",
 }
 
 export type PkceKey_FsDoc = z.infer<typeof pkceKeyParser>;
@@ -23,3 +25,4 @@ export type User_FsDoc = z.infer<typeof userParser>;
 export type Organization_FsDoc = z.infer<typeof organizationParser>;
 export type UserOrgJoinTable_FsDoc = z.infer<typeof userOrgJoinTableParser>;
 export type Template_FsDoc = z.infer<typeof templateParser>;
+export type ApiToken_FsDoc = z.infer<typeof apiTokenParser>;

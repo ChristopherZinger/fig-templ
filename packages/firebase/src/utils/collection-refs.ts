@@ -6,6 +6,7 @@ import type {
   CollectionReference,
 } from "firebase-admin/firestore";
 import type {
+  ApiToken_FsDoc,
   Organization_FsDoc,
   PkceKey_FsDoc,
   PluginSessionToken_FsDoc,
@@ -15,6 +16,7 @@ import type {
 } from "./collections";
 import z from "zod";
 import {
+  apiTokenParser,
   organizationParser,
   pkceKeyParser,
   pluginSessionTokenParser,
@@ -86,5 +88,13 @@ export function getTemplatesCollectionRef({
     collectionName: CollectionName.templates,
     getBase: () => getOrgCollectionRef().doc(orgId),
     parser: templateParser,
+  });
+}
+
+export function getOrgApiTokensCollectionRef(): CollectionReference<ApiToken_FsDoc> {
+  return getCollectionRef({
+    collectionName: CollectionName.apiTokens,
+    getBase: null,
+    parser: apiTokenParser,
   });
 }
