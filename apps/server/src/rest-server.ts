@@ -13,8 +13,10 @@ const app = express();
 app.use(express.json());
 app.use(logMiddleware);
 
-app.use("/", apiRouter);
+// important! order of mounting routes matters!
 app.use("/plugin", pluginRouter, pluginAuthRouter);
+app.use("/", apiRouter);
+
 app.listen(PORT, () => {
   log.info("REST_server_listening", { port: PORT, env: process.env.NODE_ENV });
 });
