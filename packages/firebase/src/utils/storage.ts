@@ -30,3 +30,9 @@ export async function pushToStorage({
     },
   });
 }
+
+export enum StorageDirectory {
+  organizations = "organizations",
+  templates = "templates",
+  artifacts = "artifacts",
+}

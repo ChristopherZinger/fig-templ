@@ -5,9 +5,10 @@ import path from "path";
 import {
   getBucket,
   pushToStorage,
-  firestore,
   getTemplatesCollectionRef,
   expectDocInCollection,
+  getArtifactsCollectionRef,
+  StorageDirectory,
 } from "@templetto/firebase";
 import { withBrowserPage } from "./utils/puppeteer";
 import { log } from "./utils/logging";
@@ -74,26 +75,30 @@ export async function main(req: Request, res: Response) {
     await page.pdf({ path: pdfLocalFilePath });
   });
 
-  const pdfDocRef = firestore.collection("output").doc();
-  const pdfPathInStorage = `outputs/${pdfDocRef.id}.pdf`;
+  const artifactDocRef = getArtifactsCollectionRef({ orgId }).doc();
+  const artifactPathInStorage = `${StorageDirectory.organizations}/${orgId}/${StorageDirectory.artifacts}/${artifactDocRef.id}.pdf`;
 
-  log.debug("saving_pdf_to_storage", { pdfPathInStorage });
+  log.debug("saving_pdf_to_storage", { artifactPathInStorage });
   await pushToStorage({
     localFilePath: pdfLocalFilePath,
-    destinationInStorage: pdfPathInStorage,
+    destinationInStorage: artifactPathInStorage,
   });
 
-  log.debug("saving_pdf_to_firestore", { pdfPathInStorage });
-  await pdfDocRef.set({
-    name: "output",
-    filePathInStorage: pdfPathInStorage,
-  });
-
-  log.debug("get_signed_url", { pdfPathInStorage });
-  const [downloadUrl] = await bucket.file(pdfPathInStorage).getSignedUrl({
+  log.debug("get_signed_url", { artifactPathInStorage });
+  const [downloadUrl] = await bucket.file(artifactPathInStorage).getSignedUrl({
     action: "read",
     expires: Date.now() + 1000 * 60 * 60 * 24 * 365,
     responseDisposition: `attachment; filename="result.pdf"`,
+  });
+
+  log.debug("saving_pdf_to_firestore", { artifactPathInStorage });
+  await artifactDocRef.set({
+    id: artifactDocRef.id,
+    orgId,
+    templateId,
+    filePathInStorage: artifactPathInStorage,
+    downloadUrl,
+    createdAt: new Date(),
   });
 
   res.status(200).json({ downloadUrl });
