@@ -7,6 +7,7 @@ import type {
 } from "firebase-admin/firestore";
 import type {
   ApiToken_FsDoc,
+  Artifact_FsDoc,
   Organization_FsDoc,
   PkceKey_FsDoc,
   PluginSessionToken_FsDoc,
@@ -17,6 +18,7 @@ import type {
 import z from "zod";
 import {
   apiTokenParser,
+  artifactParser,
   organizationParser,
   pkceKeyParser,
   pluginSessionTokenParser,
@@ -96,5 +98,17 @@ export function getOrgApiTokensCollectionRef(): CollectionReference<ApiToken_FsD
     collectionName: CollectionName.apiTokens,
     getBase: null,
     parser: apiTokenParser,
+  });
+}
+
+export function getArtifactsCollectionRef({
+  orgId,
+}: {
+  orgId: string;
+}): CollectionReference<Artifact_FsDoc> {
+  return getCollectionRef({
+    collectionName: CollectionName.artifacts,
+    getBase: () => getOrgCollectionRef().doc(orgId),
+    parser: artifactParser,
   });
 }

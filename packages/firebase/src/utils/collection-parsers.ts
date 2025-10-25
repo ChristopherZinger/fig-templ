@@ -60,3 +60,13 @@ export const userOrgJoinTableParser = z.object({
   uid: z.string(),
   orgId: z.string(),
 });
+
+// organizations/{orgId}/artifacts/{id}
+export const artifactParser = z.object({
+  id: z.string(),
+  orgId: z.string(),
+  filePathInStorage: z.string(),
+  downloadUrl: z.string(),
+  createdAt: firestoreDateField,
+  templateId: z.string(),
+});
