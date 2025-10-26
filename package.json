@@ -11,10 +11,14 @@
     "url": "git+https://github.com/ChristopherZinger/fig-templ.git"
   },
   "license": "ISC",
-  "author": "Christopher Zinger",
+  "author": "Amedee d'Aboville & Christopher Zinger",
   "scripts": {},
+  "packageManager": "npm@10.9.3",
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "devDependencies": {
+    "turbo": "^2.5.8"
+  }
 }

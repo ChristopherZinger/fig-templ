@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npx tsx src/main.ts",
+    "dev": "npm run dev:rest-server && npm run dev:puppeteer-worker",
     "build": "rm -rf dist && rollup -c",
     "build:watch": "rollup -c --watch",
     "start:rest-server": "node dist/rest-server.js",
