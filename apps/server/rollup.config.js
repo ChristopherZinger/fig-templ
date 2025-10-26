@@ -9,52 +9,19 @@ const require = createRequire(import.meta.url);
 const pkg = require("./package.json");
 
 // External dependencies that should not be bundled
-const external = [
-  // Node.js built-ins
-  "fs",
-  "path",
-  "url",
-  "util",
-  "os",
-  "crypto",
-  "stream",
-  "events",
-  "buffer",
-  "child_process",
-  "cluster",
-  "dgram",
-  "dns",
-  "http",
-  "https",
-  "net",
-  "tls",
-  "querystring",
-  "readline",
-  "repl",
-  "string_decoder",
-  "sys",
-  "tty",
-  "v8",
-  "vm",
-  "zlib",
-  "assert",
-  "constants",
-  "domain",
-  "punycode",
-  "timers",
-
-  // Dependencies that should remain external (typically native modules or large deps)
-  "@sparticuz/chromium",
-  "puppeteer-core",
-  "uuid",
-  "winston",
-  "@google-cloud/logging-winston",
-
-  // Any other dependencies you want to keep external
-  // BUT exclude workspace packages so they get bundled
-  ...Object.keys(pkg.dependencies || {}).filter(dep => !dep.startsWith('@templetto/')),
+// Bundle workspace packages and small utilities like uuid
+const externalPackages = [
+  ...Object.keys(pkg.dependencies || {}).filter(
+    (dep) => !dep.startsWith("@templetto/") && dep !== "uuid"
+  ),
   ...Object.keys(pkg.peerDependencies || {}),
 ];
+
+// Use function to catch sub-paths (e.g., firebase-admin/firestore)
+// This is the standard Rollup way to handle package sub-exports
+const external = (id) => {
+  return externalPackages.some((pkg) => id === pkg || id.startsWith(pkg + "/"));
+};
 
 export default defineConfig({
   input: ["src/rest-server.ts", "src/puppeteer-worker.ts"],
@@ -73,7 +40,7 @@ export default defineConfig({
     nodeResolve({
       preferBuiltins: true, // Prefer Node.js built-ins over npm packages
       exportConditions: ["node"], // Use Node.js export conditions
-      extensions: ['.ts', '.js', '.json'], // Resolve these extensions for workspace packages
+      extensions: [".ts", ".js", ".json"], // Resolve these extensions for workspace packages
     }),
 
     // Convert CommonJS modules to ES6
