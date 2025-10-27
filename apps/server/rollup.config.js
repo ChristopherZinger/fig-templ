@@ -11,6 +11,10 @@ const pkg = require("./package.json");
 // External dependencies that should not be bundled
 // Bundle workspace packages and small utilities like uuid
 const externalPackages = [
+  // we need to manually list out dependencies of local packages
+  "firebase-admin",
+  "@google-cloud/logging-winston",
+  "winston",
   ...Object.keys(pkg.dependencies || {}).filter(
     (dep) => !dep.startsWith("@templetto/") && dep !== "uuid"
   ),
