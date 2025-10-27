@@ -17,7 +17,7 @@ services:
   rest-server:
     build:
       context: .
-      dockerfile: Dockerfile.rest-server
+      dockerfile: Dockerfile.server
     image: rest-server:latest
     container_name: rest-server
     platform: linux/amd64

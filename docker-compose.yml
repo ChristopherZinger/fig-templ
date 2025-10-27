@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  rest-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.rest-server
+    image: rest-server:latest
+    container_name: rest-server
+    platform: linux/amd64
+    env_file:
+      - .prod.env
+    ports:
+      - "3000:3000"

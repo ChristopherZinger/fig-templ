@@ -1,0 +1,27 @@
+FROM --platform=linux/amd64 node:22-slim AS pruner
+WORKDIR /app
+
+RUN npm install -g turbo
+
+COPY . .
+
+RUN turbo prune templetto-server --docker
+
+FROM --platform=linux/amd64 node:22-slim AS runner
+WORKDIR /app
+
+COPY --from=pruner /app/out/json/ .
+
+RUN npm ci
+
+# Explicitly install the Rollup Linux binary (workaround for optional deps issue)
+# https://github.com/npm/cli/issues/4828
+RUN npm install --no-save @rollup/rollup-linux-x64-gnu
+
+COPY --from=pruner /app/out/full/ .
+
+COPY service-account-key.json /app/service-account-key.json
+
+RUN npx turbo run build 
+
+CMD ["npm", "run", "start:rest-server", "-w", "templetto-server"]

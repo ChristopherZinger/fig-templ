@@ -12,7 +12,11 @@
   },
   "license": "ISC",
   "author": "Amedee d'Aboville & Christopher Zinger",
-  "scripts": {},
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint"
+  },
   "packageManager": "npm@10.9.3",
   "workspaces": [
     "apps/*",

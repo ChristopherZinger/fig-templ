@@ -1,2 +1,4 @@
 node_modules
 .turbo
+service-account-key.json
+**/*.env
