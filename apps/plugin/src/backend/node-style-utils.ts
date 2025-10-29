@@ -92,16 +92,23 @@ function getAlignItemsStyle(node: BaseNode): { "align-items": string } | null {
 }
 
 function getBaseStyles(node: BaseNode) {
+  const defaultPosition = {
+    left: "0px",
+    top: "0px",
+  };
+
   switch (node.type) {
     case "DOCUMENT":
-      return {};
+      return defaultPosition;
     case "PAGE":
-      return {};
+      return defaultPosition;
     default:
-      return {
-        left: node.x + "px",
-        top: node.y + "px",
-      };
+      return isTopLevelNode(node)
+        ? defaultPosition
+        : {
+            left: node.x + "px",
+            top: node.y + "px",
+          };
   }
 }
 
