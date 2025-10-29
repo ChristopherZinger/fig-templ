@@ -2,7 +2,12 @@
 
 set -e
 
-source "$(dirname "$0")/build.env"
+BUILD_ENV_FILE="$(dirname "$0")/build-combined.env"
+echo -e "# local build.env" > "$BUILD_ENV_FILE"
+cat "$(dirname "$0")/build.env" >> "$BUILD_ENV_FILE"
+echo -e "\n\n# shared build.env" >> "$BUILD_ENV_FILE"
+cat "$(dirname "$0")/../build.env" >> "$BUILD_ENV_FILE"
+source "$BUILD_ENV_FILE"
 
 docker tag $IMAGE_NAME:$TAG $IMAGE_URL
 docker push $IMAGE_URL
@@ -19,7 +24,7 @@ gcloud run deploy $SERVICE \
     --timeout "3m" \
     --cpu 1 \
     --memory 4Gi \
-    --port 3001 \
+    --port 3000 \
     --cpu-boost \
     --execution-environment gen1 \
     --env-vars-file "$(dirname "$0")/runtime.env"
