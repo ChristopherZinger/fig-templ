@@ -32,6 +32,6 @@ if (isProduction && GCLOUD_PROJECT_ID) {
 }
 
 export const log = winston.createLogger({
-  level: process.env.NODE_ENV === "production" ? "info" : "debug",
+  level: "debug",
   transports,
 });
