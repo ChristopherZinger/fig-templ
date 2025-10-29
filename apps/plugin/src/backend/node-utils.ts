@@ -2,9 +2,6 @@ export function hasLayoutMode(node: BaseNode) {
   return "layoutMode" in node;
 }
 
-export function isRootNode(node: BaseNode) {
-  return (
-    node.parent &&
-    (node.parent.type === "PAGE" || node.parent.type === "DOCUMENT")
-  );
+export function isTopLevelNode(node: BaseNode) {
+  return !node.parent || ["PAGE", "DOCUMENT"].includes(node.parent.type);
 }

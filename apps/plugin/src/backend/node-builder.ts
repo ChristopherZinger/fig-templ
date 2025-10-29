@@ -2,9 +2,10 @@ import { MainThreadMsg } from "../lib/utils/shared/messages";
 import { buildNodeStyle } from "./node-style-utils";
 import type { AppNode } from "../types";
 import { sendToUiThread } from "./message-utils";
+import { isTopLevelNode } from "./node-utils";
 
 export async function makeFrames() {
-  const frame = getAllFramesOnPage(figma.currentPage)[0];
+  const frame = getVisibleTopLevelNodes(figma.currentPage)[0];
 
   if (!frame) {
     sendToUiThread(MainThreadMsg.FailedToMakeFrames, {
@@ -13,32 +14,23 @@ export async function makeFrames() {
     return;
   }
 
-  const [rootAppNode, { fontNames }] = await buildAppNodeTreeForFrame(frame);
+  const [rootAppNode, { fontNames }] = await buildAppNodeFromSceneNode(frame, {
+    fontNames: new Set(),
+  });
   sendToUiThread(MainThreadMsg.PostFrameNodes, {
     node: [rootAppNode, { fontNames: [...fontNames] }],
   });
 }
 
-function getAllFramesOnPage(page: PageNode): FrameNode[] {
-  const allFrames: FrameNode[] = [];
+function getVisibleTopLevelNodes(page: PageNode): SceneNode[] {
+  const allFrames: SceneNode[] = [];
 
-  const framesOnPage = page.findAll(
-    (node) => node.type === "FRAME"
-  ) as FrameNode[];
-  allFrames.push(...framesOnPage);
+  const getVisibleTopLevelNodes = page.findAll((node) => {
+    return isTopLevelNode(node) && node.visible;
+  }) as SceneNode[];
+  allFrames.push(...getVisibleTopLevelNodes);
 
   return allFrames;
-}
-
-async function buildAppNodeTreeForFrame(
-  frame: FrameNode
-): Promise<[AppNode | null, { fontNames: Set<string> }]> {
-  if (frame.type !== "FRAME") {
-    console.error("expected_frame_node", frame);
-    return [null, { fontNames: new Set() }];
-  }
-
-  return await buildAppNodeFromSceneNode(frame, { fontNames: new Set() });
 }
 
 async function buildAppNodeFromSceneNode(

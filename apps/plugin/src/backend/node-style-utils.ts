@@ -1,10 +1,10 @@
-import { hasLayoutMode, isRootNode } from "./node-utils";
+import { hasLayoutMode, isTopLevelNode } from "./node-utils";
 
 /**
  * @returns [cssStyles, options]
  */
 export function buildNodeStyle(
-  node: BaseNode
+  node: SceneNode
 ): [Record<string, string>, { fontNames: string[] }] {
   const [fontStyles, { fontNames }] = getFontStyle(node);
 
@@ -62,10 +62,10 @@ function getFlexStyle(node: BaseNode):
 }
 
 function getPositionStyles(node: BaseNode) {
-  if (isRootNode(node)) {
+  if (isTopLevelNode(node)) {
     return { position: "absolute" };
   }
-  if (node.parent && isRootNode(node.parent)) {
+  if (node.parent && isTopLevelNode(node.parent)) {
     return { position: "absolute" };
   }
   return { position: "static" };
