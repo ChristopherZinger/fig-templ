@@ -7,7 +7,16 @@ COPY . .
 
 RUN turbo prune templetto-server --docker
 
-FROM --platform=linux/amd64 node:22-slim AS runner
+
+# Install Chromium and dependencies for Puppeteer (simpler approach)
+RUN apt-get update && \
+    apt-get install -y chromium && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set environment variables for Chromium
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
 WORKDIR /app
 
 COPY --from=pruner /app/out/json/ .
