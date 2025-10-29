@@ -14,6 +14,7 @@ import { withBrowserPage } from "./utils/puppeteer";
 import { log } from "./utils/logging";
 import { puppeteerWorkerRequestSchema } from "./utils/puppeteer-worker-utils";
 import Handlebars from "handlebars";
+import { AppError } from "@templetto/app-error";
 
 const configParseResult = z
   .object({
@@ -24,16 +25,16 @@ const configParseResult = z
   });
 
 if (!configParseResult.success) {
-  throw new Error(
-    "invalid_puppeteer_worker_config" + JSON.stringify(configParseResult.error)
-  );
+  throw new AppError("invalid_puppeteer_worker_config", {
+    error: configParseResult.error,
+  });
 }
 
 export async function main(req: Request, res: Response) {
   log.info("got_request_from_rest_server");
 
   if (!req.is("application/json")) {
-    throw new Error("expected_application_json");
+    throw new AppError("expected_application_json");
   }
 
   const reqParsingResult = puppeteerWorkerRequestSchema.safeParse(req.body);

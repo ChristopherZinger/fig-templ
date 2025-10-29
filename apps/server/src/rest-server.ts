@@ -4,9 +4,10 @@ import { apiRouter } from "./rest-server/router";
 import { PORT } from "./utils/env";
 import { pluginAuthRouter, pluginRouter } from "./rest-server/plugin-router";
 import { logMiddleware } from "./rest-server/middleware";
+import { AppError } from "@templetto/app-error";
 
 if (!PORT) {
-  throw new Error("missing_env_config PORT");
+  throw new AppError("missing_env_config PORT");
 }
 
 const app = express();

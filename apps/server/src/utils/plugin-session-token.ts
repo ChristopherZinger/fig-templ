@@ -1,6 +1,7 @@
 import { log } from "@templetto/logging";
 import z from "zod";
 import type { Request } from "express";
+import { AppError } from "@templetto/app-error";
 
 export const SESSION_TOKEN_KEY = "pluginSessionToken";
 export const SESSION_TOKEN_PREFIXES = ["Bearer", "bearer", "Bearer", "BEARER"];
@@ -30,7 +31,7 @@ export function expectPluginSessionUid(req: Request): string {
   const uid = req.auth?.type === "plugin-session" ? req.auth.uid : null;
   if (!uid) {
     log.debug("missing_uid_in_request");
-    throw new Error("expected_uid_in_request");
+    throw new AppError("expected_uid_in_request");
   }
   return uid;
 }
@@ -39,7 +40,7 @@ export function expectApiTokenOrgId(req: Request): string {
   const orgId = req.auth?.type === "api-token" ? req.auth.orgId : null;
   if (!orgId) {
     log.debug("missing_org_id_in_request");
-    throw new Error("expected_org_id_in_request");
+    throw new AppError("expected_org_id_in_request");
   }
   return orgId;
 }

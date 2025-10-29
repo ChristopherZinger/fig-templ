@@ -1,3 +1,4 @@
+import { AppError } from "@templetto/app-error";
 import { log } from "@templetto/logging";
 import type { DocumentReference } from "firebase-admin/firestore";
 
@@ -10,7 +11,7 @@ export async function expectDocInCollection<T>(
       id: docRef.id,
       collectionRef: docRef.parent?.path,
     });
-    throw new Error("expected_doc_not_found");
+    throw new AppError("expected_doc_not_found", { docPath: docRef.path });
   }
   return doc.data() as T;
 }

@@ -2,6 +2,7 @@ import z from "zod";
 import { PUPPETEER_WORKER_URL } from "./env";
 import { log } from "./logging";
 import { getIdTokenClient } from "./gcloud-id-token";
+import { AppError } from "@templetto/app-error";
 
 export const puppeteerWorkerRequestSchema = z.object({
   templateId: z.string(),
@@ -17,7 +18,7 @@ export async function callPuppeteerWorker(
   requestParams: PuppeteerWorkerRequest
 ): Promise<Response> {
   if (!PUPPETEER_WORKER_URL) {
-    throw new Error("missing_env_config PUPPETEER_WORKER_URL");
+    throw new AppError("missing_env_config PUPPETEER_WORKER_URL");
   }
 
   log.info("calling_puppeteer_worker", { PUPPETEER_WORKER_URL });

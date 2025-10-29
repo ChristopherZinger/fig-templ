@@ -16,6 +16,7 @@ import { log } from "@templetto/logging";
 import type { DecodedIdToken } from "firebase-admin/auth";
 import type { DocumentReference, Transaction } from "firebase-admin/firestore";
 import { expectPluginSessionUid } from "../utils/plugin-session-token";
+import { AppError } from "@templetto/app-error";
 
 export async function getPkceKeysHandler(_: Request, res: Response) {
   // TODO check if request comes from templetto.com/plugin/login
@@ -34,7 +35,7 @@ export async function getPkceKeysHandler(_: Request, res: Response) {
   await firestore.runTransaction(async (t) => {
     const pkceKeyDoc = await t.get(docRef);
     if (pkceKeyDoc.exists) {
-      throw new Error("read_key_already_exists");
+      throw new AppError("read_key_already_exists", { docPath: docRef.path });
     }
     t.set(docRef, {
       ...pkceKey,
@@ -67,7 +68,7 @@ export async function readSessionTokenHandler(req: Request, res: Response) {
       const pkceDocRef = getPkceKeysCollectionRef().doc(writeKey);
       const pkceKeyDoc = (await t.get(pkceDocRef)).data();
       if (!pkceKeyDoc) {
-        throw new Error("expected_pkce_key_doc");
+        throw new AppError("expected_pkce_key_doc");
       }
 
       // TODO: test this
@@ -84,7 +85,7 @@ export async function readSessionTokenHandler(req: Request, res: Response) {
       const userSessionDocRef = userSessionCollectionRef.doc(userSessionId);
       const userSessionDoc = (await t.get(userSessionDocRef)).data();
       if (!userSessionDoc) {
-        throw new Error("expected_user_session_doc_for_id");
+        throw new AppError("expected_user_session_doc_for_id");
       }
 
       t.delete(pkceDocRef);
@@ -255,7 +256,7 @@ export async function getTemplatesHandler(req: Request, res: Response) {
       ]);
 
       if (!userOrgJoinTableDoc.exists) {
-        throw new Error("unauthorized");
+        throw new AppError("unauthorized");
       }
 
       res.status(200).json(templatesDoc.docs.map((doc) => doc.data()));
@@ -291,7 +292,7 @@ export async function createTemplateHandler(req: Request, res: Response) {
       );
       if (!userOrgJoinTableDoc.exists) {
         log.debug("missin_org_for_user");
-        throw new Error("unauthorized");
+        throw new AppError("unauthorized");
       }
 
       const templatesCollectionRef = getTemplatesCollectionRef({ orgId });
