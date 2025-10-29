@@ -18,16 +18,18 @@ export async function main(req: Request, res: Response) {
   log.info("got_request_from_rest_server");
 
   if (!req.is("application/json")) {
-    throw new AppError("expected_application_json");
+    log.debug("expected_application_json_header");
+    res.status(400).json({ error: "expected_application_json_header" });
+    return;
   }
 
   const reqParsingResult = puppeteerWorkerRequestSchema.safeParse(req.body);
   if (!reqParsingResult.success) {
-    res.status(400).json({ error: "invalid_request" });
+    res.status(400).json({ error: "invalid_request_body" });
     return;
   }
-  const { templateId, orgId, jsonData } = reqParsingResult.data;
 
+  const { templateId, orgId, jsonData } = reqParsingResult.data;
   const templateDocRef = getTemplatesCollectionRef({ orgId }).doc(templateId);
   const { pathInStorage: templatePathInStorage } =
     await expectDocInCollection(templateDocRef);
@@ -35,7 +37,11 @@ export async function main(req: Request, res: Response) {
   const bucket = getBucket();
   const templateRef = bucket.file(templatePathInStorage);
   if (!(await templateRef.exists())) {
-    log.warn("template_not_found" + " " + templatePathInStorage);
+    log.debug("template_not_found", {
+      templatePathInStorage,
+      orgId,
+      templateId,
+    });
     res.status(404).json({ error: "template_not_found_in_storage" });
     return;
   }
