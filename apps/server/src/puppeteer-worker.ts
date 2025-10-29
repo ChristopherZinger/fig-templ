@@ -39,8 +39,16 @@ export async function main(req: Request, res: Response) {
     res.status(404).json({ error: "template_not_found_in_storage" });
     return;
   }
-  const [buffer] = await templateRef.download();
-  const templateHtml = buffer.toString("utf-8");
+
+  let templateHtml: string;
+  try {
+    const [buffer] = await templateRef.download();
+    templateHtml = buffer.toString("utf-8");
+  } catch (error) {
+    log.error("failed_to_download_template", { error });
+    res.status(500).json({ error: "internal_server_error" });
+    return;
+  }
 
   const htmlToRender = Handlebars.compile(templateHtml)(jsonData);
 
@@ -51,14 +59,20 @@ export async function main(req: Request, res: Response) {
       : (`./${Date.now()}/out.pdf` as const);
   fs.mkdirSync(path.dirname(pdfLocalFilePath), { recursive: true });
 
-  await withBrowserPage(async (page) => {
-    await page.setContent(htmlToRender, {
-      waitUntil: "networkidle0",
-      timeout: 30000,
-    });
+  try {
+    await withBrowserPage(async (page) => {
+      await page.setContent(htmlToRender, {
+        waitUntil: "networkidle0",
+        timeout: 30000,
+      });
 
-    await page.pdf({ path: pdfLocalFilePath });
-  });
+      await page.pdf({ path: pdfLocalFilePath });
+    });
+  } catch (error) {
+    log.error("failed_to_create_template_with_puppeteer", { error });
+    res.status(500).json({ error: "internal_server_error" });
+    return;
+  }
 
   const artifactDocRef = getArtifactsCollectionRef({ orgId }).doc();
   const artifactPathInStorage = `${StorageDirectory.organizations}/${orgId}/${StorageDirectory.artifacts}/${artifactDocRef.id}.pdf`;
