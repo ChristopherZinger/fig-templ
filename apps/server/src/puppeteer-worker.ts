@@ -1,5 +1,4 @@
 import type { Response, Request } from "express";
-import z from "zod";
 import fs from "fs";
 import path from "path";
 import {
@@ -14,21 +13,6 @@ import { withBrowserPage } from "./utils/puppeteer";
 import { log } from "./utils/logging";
 import { puppeteerWorkerRequestSchema } from "./utils/puppeteer-worker-utils";
 import Handlebars from "handlebars";
-import { AppError } from "@templetto/app-error";
-
-const configParseResult = z
-  .object({
-    googleApplicationCredentials: z.string().optional(),
-  })
-  .safeParse({
-    googleApplicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS,
-  });
-
-if (!configParseResult.success) {
-  throw new AppError("invalid_puppeteer_worker_config", {
-    error: configParseResult.error,
-  });
-}
 
 export async function main(req: Request, res: Response) {
   log.info("got_request_from_rest_server");
