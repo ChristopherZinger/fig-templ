@@ -1,2 +1,4 @@
-export { log } from './logger';
-export { logPdfGeneration, logApiRequest } from './helpers';
+import "./init-otel";
+
+export { log } from "./logger";
+export { logPdfGeneration, logApiRequest } from "./helpers";

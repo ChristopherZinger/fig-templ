@@ -13,8 +13,15 @@ const pkg = require("./package.json");
 const externalPackages = [
   // we need to manually list out dependencies of local packages
   "firebase-admin",
+
+  "@opentelemetry/sdk-node",
+  "@opentelemetry/api",
+  "@opentelemetry/auto-instrumentations-node",
+
+  "@google-cloud/opentelemetry-cloud-trace-exporter",
   "@google-cloud/logging-winston",
   "winston",
+
   ...Object.keys(pkg.dependencies || {}).filter(
     (dep) => !dep.startsWith("@templetto/") && dep !== "uuid"
   ),
