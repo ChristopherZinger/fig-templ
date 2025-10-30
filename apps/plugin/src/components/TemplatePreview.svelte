@@ -4,8 +4,10 @@
   import type { AppNode } from "../types";
   import { MainThreadMsg, UiMsg } from "../lib/utils/shared/messages";
   import { sendToMainThread } from "../lib/utils/messages";
-  import { URLS } from "../lib/utils/shared/urls";
-  import { sessionTokenStore } from "../lib/stores/sessionTokenStore";
+  import {
+    callTemplettoApi,
+    TemplettoApiActions,
+  } from "../lib/utils/plugin-api-endpoint";
 
   type TemplateInfo = [AppNode, { fontNames: string[] }];
 
@@ -43,25 +45,17 @@
       console.error("expected_htmlString");
       return;
     }
-    const session = $sessionTokenStore;
-    if (!session) {
-      console.error("expected_session");
-      return;
-    }
     try {
-      const response = await fetch(`${URLS.server}/plugin/create-template`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `BEARER ${session}`,
-        },
-        body: JSON.stringify({ templateHtml: htmlString, orgId }),
+      const response = await callTemplettoApi({
+        action: TemplettoApiActions.CreateTemplate,
+        body: { templateHtml: htmlString, orgId },
       });
+
       if (!response.ok) {
         console.error("failed_to_save_template", response);
         return;
       }
-      console.log("data", response);
+      console.log("create_template_response", await response.json());
     } catch (error) {
       console.error("failed_to_save_template", error);
     }

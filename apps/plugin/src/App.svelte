@@ -12,6 +12,10 @@
   import LogoutButton from "./components/LogoutButton.svelte";
   import { URLS } from "./lib/utils/shared/urls";
   import OrgSelector from "./components/OrgSelector.svelte";
+  import {
+    callTemplettoApi,
+    TemplettoApiActions,
+  } from "./lib/utils/plugin-api-endpoint";
 
   $: session = $sessionTokenStore;
   const unsub = getMessageEventListener(handleSessionTokenMessages);
@@ -24,11 +28,8 @@
     }
 
     try {
-      const response = await fetch(`${URLS.server}/plugin/get-organizations`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `BEARER ${session}`,
-        },
+      const response = await callTemplettoApi({
+        action: TemplettoApiActions.getOrganizations,
       });
       if (!response.ok) {
         throw new Error("failed_to_get_organizations");
@@ -67,15 +68,10 @@
     }
 
     try {
-      const response = await fetch(
-        `${URLS.server}/plugin/get-templates?orgId=${orgId}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `BEARER ${session}`,
-          },
-        }
-      );
+      const response = await callTemplettoApi({
+        action: TemplettoApiActions.getTemplates,
+        queryParams: { orgId },
+      });
       if (!response.ok) {
         console.error("failed_to_get_templates", response);
         templates = null;
