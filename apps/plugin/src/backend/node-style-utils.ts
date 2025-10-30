@@ -5,7 +5,11 @@ import { hasLayoutMode, isTopLevelNode } from "./node-utils";
  */
 export function buildNodeStyle(
   node: SceneNode
-): [Record<string, string>, { fontNames: string[] }] {
+): [Record<string, string>, { fontNames: string[] }] | null {
+  if (!node.visible) {
+    return null;
+  }
+
   const [fontStyles, { fontNames }] = getFontStyle(node);
 
   return [
@@ -22,6 +26,7 @@ export function buildNodeStyle(
       getPaddingStyle(node),
       getJustifyContentStyle(node),
       getBorderStyle(node),
+      node.type === "TEXT" ? { "white-space": "pre-wrap" } : {},
       fontStyles
     ),
     { fontNames },

@@ -36,7 +36,7 @@ function getVisibleTopLevelNodes(page: PageNode): SceneNode[] {
 async function buildAppNodeFromSceneNode(
   sceneNode: SceneNode,
   { fontNames }: { fontNames: Set<string> }
-): Promise<[AppNode, { fontNames: Set<string> }]> {
+): Promise<[AppNode | null, { fontNames: Set<string> }]> {
   const isLayoutMode =
     "layoutMode" in sceneNode && sceneNode.layoutMode !== "NONE";
 
@@ -48,12 +48,15 @@ async function buildAppNodeFromSceneNode(
   ) {
     console.error("containers_without_layout_are_unsupported", sceneNode);
     return [null, { fontNames }];
-    // throw new Error("containers_without_layout_are_unsupported");
   }
 
   const css = await sceneNode.getCSSAsync();
 
-  const [style, { fontNames: _fontNames }] = buildNodeStyle(sceneNode);
+  const styleResult = buildNodeStyle(sceneNode);
+  if (!styleResult) {
+    return [null, { fontNames }];
+  }
+  const [style, { fontNames: _fontNames }] = styleResult;
 
   fontNames = fontNames || new Set();
   for (const fontName of _fontNames) {
@@ -72,6 +75,9 @@ async function buildAppNodeFromSceneNode(
     );
 
     for (const [node, { fontNames: childFontNames }] of childNodes) {
+      if (!node) {
+        continue;
+      }
       children.push(node);
       for (const fontName of childFontNames) {
         fontNames.add(fontName);
