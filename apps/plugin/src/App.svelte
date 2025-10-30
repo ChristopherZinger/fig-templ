@@ -9,13 +9,11 @@
   import { sessionTokenStore } from "./lib/stores/sessionTokenStore";
   import { getMessageEventListener } from "./lib/utils/window-ev-listener-utils";
   import LoginButton from "./components/LoginButton.svelte";
-  import LogoutButton from "./components/LogoutButton.svelte";
-  import { URLS } from "./lib/utils/shared/urls";
-  import OrgSelector from "./components/OrgSelector.svelte";
   import {
     callTemplettoApi,
     TemplettoApiActions,
   } from "./lib/utils/plugin-api-endpoint";
+  import HomePage from "./components/HomePage.svelte";
 
   $: session = $sessionTokenStore;
   const unsub = getMessageEventListener(handleSessionTokenMessages);
@@ -94,34 +92,11 @@
 </script>
 
 <main>
-  <h1>Templetto</h1>
-
   {#if session === undefined}
     <p>Loading...</p>
   {:else if session === null}
     <LoginButton />
   {:else}
-    {#if orgs && selectedOrgId}
-      <OrgSelector {orgs} {selectedOrgId} {onSelect} />
-      <br />
-    {/if}
-
-    {#if templates}
-      {#if templates.length > 0}
-        <div>
-          {#each templates as template}
-            <div>{template.name}</div>
-          {/each}
-        </div>
-      {:else}
-        <p>No templates found</p>
-      {/if}
-    {/if}
-
-    {#if selectedOrgId}
-      <TemplatePreview orgId={selectedOrgId} />
-    {/if}
-
-    <LogoutButton />
+    <HomePage />
   {/if}
 </main>
