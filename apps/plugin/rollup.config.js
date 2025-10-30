@@ -132,7 +132,7 @@ export default [
         },
       }),
       typescript({ tsconfig: "./tsconfig.backend.json" }),
-      resolve(),
+      resolve({ extensions: [".ts", ".js", ".json"] }),
       commonjs(),
       json(),
       babel({ babelHelpers: "bundled" }),
