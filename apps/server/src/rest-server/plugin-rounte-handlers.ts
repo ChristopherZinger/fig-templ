@@ -286,7 +286,7 @@ export async function createTemplateHandler(req: Request, res: Response) {
   const { templateHtml, orgId } = parsingResult.data;
 
   try {
-    await firestore.runTransaction(async (t) => {
+    const newTemplateId = await firestore.runTransaction(async (t) => {
       const userOrgJoinTableDoc = await t.get(
         getUserOrgJoinTableCollectionRef().doc(`${uid}:${orgId}`)
       );
@@ -312,7 +312,9 @@ export async function createTemplateHandler(req: Request, res: Response) {
       return newTemplateDocRef.id;
     });
 
-    res.status(201).json({ message: "template_created" });
+    res
+      .status(201)
+      .json({ message: "template_created", id: newTemplateId, orgId });
   } catch (error) {
     log.error("failed_to_create_template", { error });
     if (error instanceof Error && error.message === "unauthorized") {
