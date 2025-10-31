@@ -1,5 +1,16 @@
+<script lang="ts">
+  export let onClick: (() => {}) | undefined = undefined;
+</script>
+
 <div class="sidebar-item">
-  <div class="header">
+  <div
+    class="header"
+    onclick={onClick}
+    onkeyup={onClick}
+    role="button"
+    tabindex="0"
+    class:button={!!onClick}
+  >
     <slot name="header" />
   </div>
   <div class="content">
@@ -11,7 +22,7 @@
   .sidebar-item {
     display: flex;
     flex-direction: column;
-    padding: 0.8rem;
+    padding: 0.7rem;
     border-bottom: 1px solid var(--light-gray);
   }
 
@@ -24,5 +35,9 @@
   .content {
     display: flex;
     flex-direction: column;
+  }
+
+  .button {
+    cursor: pointer;
   }
 </style>
