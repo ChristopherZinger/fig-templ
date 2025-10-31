@@ -6,6 +6,9 @@
     TemplettoApiActions,
   } from "../lib/utils/plugin-api-endpoint";
   import OrgSelectorItem from "./sidebar/OrgSelectorItem.svelte";
+  import LogoutButton from "./LogoutButton.svelte";
+  import TemplateListItem from "./sidebar/TemplateListItem.svelte";
+  import TemplatesView from "./views/TemplatesView.svelte";
 
   let organizations: { id: string; name: string }[] | null | undefined =
     undefined;
@@ -31,10 +34,13 @@
   onMount(async () => {
     await loadOrganizations();
   });
+
+  let view: View = "preview";
+  const views = ["templates", "preview"] as const;
+  type View = (typeof views)[number];
 </script>
 
 <BaseLayout>
-  <div slot="content"></div>
   <div slot="sidebar" class="sidebar">
     <div class="panel">
       <OrgSelectorItem
@@ -44,7 +50,17 @@
           selectedOrgId = orgId;
         }}
       />
+      <TemplateListItem onClick={() => (view = "templates")} />
     </div>
+    <LogoutButton />
+  </div>
+
+  <div slot="content" class="content">
+    {#if view === "templates"}
+      <TemplatesView orgId={selectedOrgId} />
+    {:else if view === "preview"}
+      <div>preview</div>
+    {/if}
   </div>
 </BaseLayout>
 

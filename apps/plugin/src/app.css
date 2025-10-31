@@ -27,3 +27,7 @@ body {
   margin: 0px;
   padding: 0px;
 }
+
+.view {
+  padding: 0.7rem;
+}
