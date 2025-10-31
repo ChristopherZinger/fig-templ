@@ -6,6 +6,7 @@ import express, {
 } from "express";
 import { auth, getOrgApiTokensCollectionRef } from "@templetto/firebase";
 import { getTokenFromReqAuthHeader } from "../utils/plugin-session-token";
+import { isFirebaseAuthError } from "@templetto/firebase/errors";
 
 export const logMiddleware: express.RequestHandler = (
   req: Request,
@@ -37,7 +38,16 @@ export const pluginAuthMiddleware: express.RequestHandler = async (
     req.auth = { type: "plugin-session", uid };
   } catch (error) {
     log.error("failed_to_verify_session_cookie", { error });
-    res.status(401).json({ error: "unauthorized" });
+
+    if (
+      isFirebaseAuthError(error) &&
+      error.code === "auth/session-cookie-expired"
+    ) {
+      res.status(401).json({ message: "session_cookie_expired" });
+      return;
+    }
+
+    res.status(401).json({ message: "unauthorized" });
     return;
   }
 

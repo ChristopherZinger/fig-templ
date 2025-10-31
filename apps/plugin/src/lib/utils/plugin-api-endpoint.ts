@@ -33,6 +33,19 @@ export async function callTemplettoApi({
     body: body ? JSON.stringify(body) : undefined,
   });
 
+  if (!response.ok) {
+    const responseBody = await response.json();
+    console.log(
+      "bad_response",
+      response.status,
+      response.statusText,
+      responseBody
+    );
+    if (responseBody.message === "session_cookie_expired") {
+      sessionTokenStore.set(null);
+    }
+    throw new Error("bad_response");
+  }
   return response;
 }
 
