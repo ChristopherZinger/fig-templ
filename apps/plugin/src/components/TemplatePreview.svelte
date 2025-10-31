@@ -11,7 +11,7 @@
 
   type TemplateInfo = [AppNode, { fontNames: string[] }];
 
-  export let orgId: string;
+  export let orgId: string | undefined | null;
 
   let templateNameInput = "";
   let templateInfo: null | undefined | TemplateInfo = null;
@@ -116,7 +116,6 @@
   </div>
 
   <div class="iframe-container">
-    <h3>Preview</h3>
     <iframe
       bind:this={iframeRef}
       class:hidden={!templateInfo}
