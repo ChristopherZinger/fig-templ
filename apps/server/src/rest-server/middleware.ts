@@ -28,7 +28,7 @@ export const pluginAuthMiddleware: express.RequestHandler = async (
 ) => {
   const token = getTokenFromReqAuthHeader(req);
   if (!token) {
-    res.status(401).json({ error: "unauthorized" });
+    res.status(401).json({ message: "unauthorized" });
     return;
   }
 
@@ -51,7 +51,7 @@ export const apiAuthMiddleware: express.RequestHandler = async (
 ) => {
   const authHeaderToken = getTokenFromReqAuthHeader(req);
   if (!authHeaderToken) {
-    res.status(401).json({ error: "unauthorized" });
+    res.status(401).json({ message: "unauthorized" });
     return;
   }
 
@@ -60,17 +60,17 @@ export const apiAuthMiddleware: express.RequestHandler = async (
       await getOrgApiTokensCollectionRef().doc(authHeaderToken).get()
     ).data();
     if (!tokenDoc) {
-      res.status(401).json({ error: "unauthorized" });
+      res.status(401).json({ message: "unauthorized" });
       return;
     }
     if (tokenDoc.expiresAt >= new Date()) {
-      res.status(401).json({ error: "token_expired" });
+      res.status(401).json({ message: "token_expired" });
       return;
     }
     req.auth = { type: "api-token", orgId: tokenDoc.orgId };
   } catch (error) {
     log.error("failed_to_verify_api_token", { error });
-    res.status(500).json({ error: "internal_server_error" });
+    res.status(500).json({ message: "internal_server_error" });
     return;
   }
 
