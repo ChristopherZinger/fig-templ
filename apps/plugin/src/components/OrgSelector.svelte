@@ -6,7 +6,13 @@
 
 <select
   onchange={(ev) => {
-    onSelect(ev.target.value);
+    if (
+      ev.target &&
+      "value" in ev.target &&
+      typeof ev.target.value === "string"
+    ) {
+      onSelect(ev.target.value);
+    }
   }}
 >
   {#each orgInfos as org}
