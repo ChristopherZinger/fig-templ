@@ -133,6 +133,15 @@
 </main>
 
 <style>
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--light-gray);
+    padding: 0.7rem;
+    height: 50px;
+    box-sizing: border-box;
+  }
   .iframe-container {
     margin: 20px 0;
   }
@@ -142,5 +151,10 @@
 
   .hidden {
     display: none;
+  }
+  .save-template-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 </style>
