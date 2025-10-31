@@ -277,13 +277,17 @@ export async function createTemplateHandler(req: Request, res: Response) {
   const uid = expectPluginSessionUid(req);
 
   const parsingResult = z
-    .object({ templateHtml: z.string(), orgId: z.string() })
+    .object({
+      templateHtml: z.string(),
+      orgId: z.string(),
+      name: z.string(),
+    })
     .safeParse(req.body);
   if (!parsingResult.success) {
     res.status(400).json({ error: "invalid_request" });
     return;
   }
-  const { templateHtml, orgId } = parsingResult.data;
+  const { templateHtml, orgId, name } = parsingResult.data;
 
   try {
     const newTemplateId = await firestore.runTransaction(async (t) => {
@@ -305,6 +309,8 @@ export async function createTemplateHandler(req: Request, res: Response) {
         orgId,
         pathInStorage,
         downloadUrl: null,
+        name: name || "Untitled",
+        createdAt: new Date(),
       });
 
       await getBucket().file(pathInStorage).save(templateHtml);

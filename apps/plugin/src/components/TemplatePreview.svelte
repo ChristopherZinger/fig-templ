@@ -13,6 +13,7 @@
 
   export let orgId: string;
 
+  let templateNameInput = "";
   let templateInfo: null | undefined | TemplateInfo = null;
   let iframeRef: HTMLIFrameElement | undefined;
 
@@ -40,15 +41,19 @@
   $: onTemplateInfoChange(templateInfo);
 
   let htmlString: string | undefined = undefined;
-  async function onClickSaveTemplate() {
-    if (!htmlString) {
-      console.error("expected_htmlString");
-      return;
-    }
+  async function onClickSaveTemplate({
+    name,
+    htmlString,
+    orgId,
+  }: {
+    name: string;
+    htmlString: string;
+    orgId: string;
+  }) {
     try {
       const response = await callTemplettoApi({
         action: TemplettoApiActions.CreateTemplate,
-        body: { templateHtml: htmlString, orgId },
+        body: { templateHtml: htmlString, orgId, name },
       });
 
       if (!response.ok) {
@@ -79,14 +84,35 @@
 </script>
 
 <main>
-  <div>
-    <button onclick={onClickShowPreview}>Show Preview</button>
-  </div>
+  <div class="header">
+    <div>
+      <button onclick={onClickShowPreview}>Show Preview</button>
+    </div>
 
-  <div>
-    <button disabled={!htmlString} onclick={onClickSaveTemplate}
-      >Save Template</button
-    >
+    <div>
+      {#if htmlString}
+        <div class="save-template-container">
+          {#if templateNameInput && htmlString && orgId}
+            <button
+              disabled={!htmlString || !templateNameInput}
+              onclick={() => {
+                if (htmlString && templateNameInput && orgId) {
+                  onClickSaveTemplate({
+                    name: templateNameInput,
+                    htmlString,
+                    orgId,
+                  });
+                }
+              }}
+            >
+              Save Template
+            </button>
+          {/if}
+
+          <input type="text" bind:value={templateNameInput} />
+        </div>
+      {/if}
+    </div>
   </div>
 
   <div class="iframe-container">
