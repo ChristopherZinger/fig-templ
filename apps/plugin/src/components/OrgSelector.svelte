@@ -15,3 +15,12 @@
     >
   {/each}
 </select>
+
+<style>
+  select {
+    outline: none;
+    border: none;
+    padding: 4px;
+    border-radius: 4px;
+  }
+</style>

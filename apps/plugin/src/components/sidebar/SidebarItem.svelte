@@ -12,6 +12,7 @@
     display: flex;
     flex-direction: column;
     padding: 0.8rem;
+    border-bottom: 1px solid var(--light-gray);
   }
 
   .header {

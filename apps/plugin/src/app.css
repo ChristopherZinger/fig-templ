@@ -15,4 +15,15 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --light-gray: #3c3c3c;
+
+  select {
+    color: #ffffffb3;
+  }
+}
+
+body {
+  margin: 0px;
+  padding: 0px;
 }
