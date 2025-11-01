@@ -13,9 +13,11 @@
   >
     <slot name="header" />
   </div>
-  <div class="content">
-    <slot name="content" />
-  </div>
+  {#if $$slots.content}
+    <div class="content">
+      <slot name="content" />
+    </div>
+  {/if}
 </div>
 
 <style>
