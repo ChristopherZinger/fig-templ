@@ -399,20 +399,77 @@ function getFontStyle(
   node: BaseNode
 ): [FontCssStyles | null, { fontNames: string[] }] {
   const fontNames: string[] = [];
-  if (node.type === "TEXT") {
-    const result: FontCssStyles = {};
-    if (node.fontName !== figma.mixed) {
-      fontNames.push(node.fontName.family);
-      result["font-family"] = node.fontName.family;
-      result["font-style"] = node.fontName.style;
-    }
-    if (node.fontWeight !== figma.mixed) {
-      result["font-weight"] = node.fontWeight + "px";
-    }
-    if (node.fontSize !== figma.mixed) {
-      result["font-size"] = node.fontSize + "px";
-    }
-    return [result, { fontNames }];
+  if (node.type !== "TEXT") {
+    return [null, { fontNames }];
   }
-  return [null, { fontNames }];
+
+  const fontFamilyStyle = getFontFamilyStyle(node);
+  if (fontFamilyStyle) {
+    fontNames.push(fontFamilyStyle["font-family"]);
+  }
+
+  return [
+    Object.assign(
+      {},
+      getFontWeightStyle(node),
+      getFontSizeStyle(node),
+      fontFamilyStyle
+    ),
+    { fontNames },
+  ];
+}
+
+function getFontSizeStyle(node: TextNode): { "font-size": string } | null {
+  if (node.fontSize !== figma.mixed) {
+    return {
+      "font-size": node.fontSize + "px",
+    };
+  }
+  // todo: handle mixed font sizes
+  console.warn("mixed_font_size", node.id);
+  const fontSize = node.getRangeFontSize(0, 1);
+  if (fontSize !== figma.mixed) {
+    return {
+      "font-size": fontSize + "px",
+    };
+  }
+  return null;
+}
+
+function getFontWeightStyle(node: TextNode): { "font-weight": string } | null {
+  if (node.fontWeight !== figma.mixed) {
+    return {
+      "font-weight": `${node.fontWeight}`,
+    };
+  }
+  // todo: handle mixed font weights
+  const fontWeight = node.getRangeFontWeight(0, 1);
+  console.warn("mixed_font_weight", node.id, fontWeight);
+  if (fontWeight !== figma.mixed) {
+    return {
+      "font-weight": `${fontWeight}`,
+    };
+  }
+  return null;
+}
+
+function getFontFamilyStyle(
+  node: TextNode
+): { "font-family": string; "font-style": string } | null {
+  if (node.fontName !== figma.mixed) {
+    return {
+      "font-family": node.fontName.family,
+      "font-style": node.fontName.style,
+    };
+  }
+  // todo: handle mixed font families
+  console.warn("mixed_font_family", node.fontName);
+  const fontName = node.getRangeFontName(0, 1);
+  if (fontName !== figma.mixed) {
+    return {
+      "font-family": fontName.family,
+      "font-style": fontName.style,
+    };
+  }
+  return null;
 }
