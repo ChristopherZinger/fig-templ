@@ -1,13 +1,13 @@
 <script lang="ts">
   import { onDestroy } from "svelte";
-  import { getHtmlDocumentFromAppNode } from "../app-node-to-hscript";
-  import type { AppNode } from "../types";
-  import { MainThreadMsg, UiMsg } from "../lib/utils/shared/messages";
-  import { sendToMainThread } from "../lib/utils/messages";
+  import { getHtmlDocumentFromAppNode } from "../../app-node-to-hscript";
+  import type { AppNode } from "../../types";
+  import { MainThreadMsg, UiMsg } from "../../lib/utils/shared/messages";
+  import { sendToMainThread } from "../../lib/utils/messages";
   import {
     callTemplettoApi,
     TemplettoApiActions,
-  } from "../lib/utils/plugin-api-endpoint";
+  } from "../../lib/utils/plugin-api-endpoint";
 
   type TemplateInfo = [AppNode, { fontNames: string[] }];
 
@@ -92,22 +92,20 @@
     <div>
       {#if htmlString}
         <div class="save-template-container">
-          {#if templateNameInput && htmlString && orgId}
-            <button
-              disabled={!htmlString || !templateNameInput}
-              onclick={() => {
-                if (htmlString && templateNameInput && orgId) {
-                  onClickSaveTemplate({
-                    name: templateNameInput,
-                    htmlString,
-                    orgId,
-                  });
-                }
-              }}
-            >
-              Save Template
-            </button>
-          {/if}
+          <button
+            disabled={!htmlString || !templateNameInput || !orgId}
+            onclick={() => {
+              if (htmlString && templateNameInput && orgId) {
+                onClickSaveTemplate({
+                  name: templateNameInput,
+                  htmlString,
+                  orgId,
+                });
+              }
+            }}
+          >
+            Save Template
+          </button>
 
           <input type="text" bind:value={templateNameInput} />
         </div>

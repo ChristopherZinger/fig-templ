@@ -9,7 +9,7 @@
   import LogoutButton from "./LogoutButton.svelte";
   import TemplateListItem from "./sidebar/TemplateListItem.svelte";
   import TemplatesView from "./views/TemplatesView.svelte";
-  import TemplatePreview from "./TemplatePreview.svelte";
+  import TemplatePreviewView from "./views/TemplatePreviewView.svelte";
   import SidebarItem from "./sidebar/SidebarItem.svelte";
 
   let organizations: { id: string; name: string }[] | null | undefined =
@@ -66,7 +66,7 @@
     {#if view === "templates"}
       <TemplatesView orgId={selectedOrgId} />
     {:else if view === "preview"}
-      <TemplatePreview orgId={selectedOrgId} />
+      <TemplatePreviewView orgId={selectedOrgId} />
     {/if}
   </div>
 </BaseLayout>
