@@ -11,7 +11,7 @@ export function getHtmlDocumentFromAppNode(
     (fontName) =>
       `https://fonts.googleapis.com/css2?family=${fontName
         .split(" ")
-        .join("+")}&display=swap`
+        .join("+")}:ital,wght@0,100..900;1,100..900&display=swap`
   );
 
   const preConnect = [
