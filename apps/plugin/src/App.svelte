@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
-  import TemplatePreview from "./components/TemplatePreview.svelte";
   import { UiMsg } from "./lib/utils/shared/messages";
   import {
     handleSessionTokenMessages,
