@@ -90,26 +90,24 @@
     </div>
 
     <div>
-      {#if htmlString}
-        <div class="save-template-container">
-          <button
-            disabled={!htmlString || !templateNameInput || !orgId}
-            onclick={() => {
-              if (htmlString && templateNameInput && orgId) {
-                onClickSaveTemplate({
-                  name: templateNameInput,
-                  htmlString,
-                  orgId,
-                });
-              }
-            }}
-          >
-            Save Template
-          </button>
+      <div class="save-template-container">
+        <button
+          disabled={!htmlString || !templateNameInput || !orgId}
+          onclick={() => {
+            if (htmlString && templateNameInput && orgId) {
+              onClickSaveTemplate({
+                name: templateNameInput,
+                htmlString,
+                orgId,
+              });
+            }
+          }}
+        >
+          Save Template
+        </button>
 
-          <input type="text" bind:value={templateNameInput} />
-        </div>
-      {/if}
+        <input type="text" bind:value={templateNameInput} />
+      </div>
     </div>
   </div>
 
