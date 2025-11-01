@@ -41,6 +41,7 @@
   $: onTemplateInfoChange(templateInfo);
 
   let htmlString: string | undefined = undefined;
+  let isSavingTemplate = false;
   async function onClickSaveTemplate({
     name,
     htmlString,
@@ -50,6 +51,7 @@
     htmlString: string;
     orgId: string;
   }) {
+    isSavingTemplate = true;
     try {
       const response = await callTemplettoApi({
         action: TemplettoApiActions.CreateTemplate,
@@ -63,6 +65,8 @@
       console.log("create_template_response", await response.json());
     } catch (error) {
       console.error("failed_to_save_template", error);
+    } finally {
+      isSavingTemplate = false;
     }
   }
 
@@ -92,7 +96,10 @@
     <div>
       <div class="save-template-container">
         <button
-          disabled={!htmlString || !templateNameInput || !orgId}
+          disabled={!htmlString ||
+            !templateNameInput ||
+            !orgId ||
+            isSavingTemplate}
           onclick={() => {
             if (htmlString && templateNameInput && orgId) {
               onClickSaveTemplate({
