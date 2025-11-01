@@ -14,7 +14,7 @@ export function buildNodeStyle(
 
   return [
     Object.assign(
-      {},
+      { "box-sizing": "border-box" },
       getBaseStyles(node),
       getSizeStyles(node),
       getMinMaxSizeStyles(node),
