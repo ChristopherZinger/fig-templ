@@ -26,6 +26,7 @@ export function buildNodeStyle(
       getPaddingStyle(node),
       getJustifyContentStyle(node),
       getBorderStyle(node),
+      getBorderRadiusStyle(node),
       node.type === "TEXT" ? { "white-space": "pre-wrap" } : {},
       fontStyles
     ),
@@ -323,6 +324,28 @@ function getJustifyContentStyle(
         "justify-content": "space-between",
       };
   }
+}
+
+function getBorderRadiusStyle(
+  node: BaseNode
+): { "border-radius": string } | null {
+  const cornerRadiusKey = "cornerRadius";
+  if (!(cornerRadiusKey in node)) {
+    return null;
+  }
+
+  if (typeof node[cornerRadiusKey] === "number") {
+    return {
+      "border-radius": node[cornerRadiusKey] + "px",
+    };
+  }
+
+  if (node[cornerRadiusKey] === figma.mixed && "topLeftRadius" in node) {
+    return {
+      "border-radius": `${node.topLeftRadius}px ${node.topRightRadius}px ${node.bottomRightRadius}px ${node.bottomLeftRadius}px`,
+    };
+  }
+  return null;
 }
 
 function getBorderStyle(node: BaseNode): {
