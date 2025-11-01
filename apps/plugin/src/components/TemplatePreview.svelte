@@ -137,9 +137,9 @@
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--light-gray);
-    padding: 0.7rem;
+    padding: 0px 0.7rem;
+    max-height: 50px;
     height: 50px;
-    box-sizing: border-box;
   }
   .iframe-container {
     margin: 20px 0;

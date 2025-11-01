@@ -11,21 +11,12 @@
 </script>
 
 <SidebarItem>
-  <div slot="header" class="header">
+  <svelte:fragment slot="header">
     <div>Team</div>
     {#if orgInfos && selectedOrgId}
       <OrgSelector {orgInfos} {selectedOrgId} {onSelect} />
     {:else if isLoading}
       <div>Loading...</div>
     {/if}
-  </div>
+  </svelte:fragment>
 </SidebarItem>
-
-<style>
-  .header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-</style>

@@ -22,18 +22,18 @@
   .sidebar-item {
     display: flex;
     flex-direction: column;
-    padding: 0.7rem;
     border-bottom: 1px solid var(--light-gray);
   }
 
   .header {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     font-size: 0.6875rem;
     font-weight: 450;
-    padding: 0.7rem;
+    padding: 0 0.7rem;
     max-height: 50px;
     height: 50px;
-    box-sizing: border-box;
   }
 
   .content {
