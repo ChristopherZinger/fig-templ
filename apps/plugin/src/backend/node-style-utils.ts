@@ -359,14 +359,33 @@ function getBorderStyle(node: BaseNode): {
     node.strokes.length > 0
   ) {
     const stroke = node.strokes.find((stroke) => stroke.visible === true);
-    return {
-      "border-width": stroke.thickness + "px",
+    return Object.assign({}, getBorderWidthStyle(node), {
       "border-style": "solid",
       "border-color":
         stroke.color.r + " " + stroke.color.g + " " + stroke.color.b,
-    };
+    });
   }
 
+  return null;
+}
+
+function getBorderWidthStyle(
+  node: BaseNode
+): { "border-width": string } | null {
+  if (!("strokeWeight" in node)) {
+    return null;
+  }
+  if (node.strokeWeight !== figma.mixed) {
+    return {
+      "border-width": node.strokeWeight + "px",
+    };
+  }
+  if ("topStrokeWeight" in node) {
+    // TODO: handle stroke weights per side
+    return {
+      "border-width": node.topStrokeWeight + "px",
+    };
+  }
   return null;
 }
 
