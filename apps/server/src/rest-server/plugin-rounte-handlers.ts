@@ -17,6 +17,7 @@ import type { DecodedIdToken } from "firebase-admin/auth";
 import type { DocumentReference, Transaction } from "firebase-admin/firestore";
 import { expectPluginSessionUid } from "../utils/plugin-session-token";
 import { AppError } from "@templetto/app-error";
+import { PkceError } from "./pkce-errors";
 
 export async function getPkceKeysHandler(_: Request, res: Response) {
   // TODO check if request comes from templetto.com/plugin/login
@@ -68,13 +69,12 @@ export async function readSessionTokenHandler(req: Request, res: Response) {
       const pkceDocRef = getPkceKeysCollectionRef().doc(writeKey);
       const pkceKeyDoc = (await t.get(pkceDocRef)).data();
       if (!pkceKeyDoc) {
-        throw new AppError("expected_pkce_key_doc");
+        throw new PkceError("expected_pkce_key_doc", { path: pkceDocRef.path });
       }
 
-      // TODO: test this
-      // if (pkceKeyDoc.expiresAt < new Date()) {
-      //   throw new Error("pkce_key_expired");
-      // }
+      if (pkceKeyDoc.expiresAt < new Date()) {
+        throw new PkceError("pkce_key_expired", { path: pkceDocRef.path });
+      }
 
       const { userSessionId } = pkceKeyDoc;
       if (!userSessionId) {
@@ -85,7 +85,9 @@ export async function readSessionTokenHandler(req: Request, res: Response) {
       const userSessionDocRef = userSessionCollectionRef.doc(userSessionId);
       const userSessionDoc = (await t.get(userSessionDocRef)).data();
       if (!userSessionDoc) {
-        throw new AppError("expected_user_session_doc_for_id");
+        throw new PkceError("expected_user_session_doc_for_id", {
+          path: userSessionDocRef.path,
+        });
       }
 
       t.delete(pkceDocRef);
@@ -93,8 +95,17 @@ export async function readSessionTokenHandler(req: Request, res: Response) {
       const { sessionToken } = userSessionDoc;
       return sessionToken;
     });
+
+    if (!sessionToken) {
+      res.status(400).json({ error: "session_token_not_found" });
+      return;
+    }
     res.status(200).json({ sessionKey: sessionToken });
   } catch (error) {
+    if (error instanceof PkceError) {
+      res.status(400).json({ error: "invalid_pkce_key" });
+      return;
+    }
     res.status(500).json({ error: "failed_to_read_session_token" });
   }
 }
