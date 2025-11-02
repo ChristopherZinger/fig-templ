@@ -159,7 +159,7 @@ export async function createSessionTokenHandler(req: Request, res: Response) {
     t.set(userSessionDocRef, {
       sessionToken,
       createdAt: new Date(),
-      expiresAt: new Date(Date.now() + 60 * 60 * 24 * 14), // 14 days
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14), // 14 days
       uid: decodedToken.uid,
     });
 
