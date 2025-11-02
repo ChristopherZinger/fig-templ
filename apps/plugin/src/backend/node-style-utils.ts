@@ -187,21 +187,21 @@ function getMinMaxSizeStyles(node: BaseNode): {
   }
 }
 
-function getBackgroundStyle(node: BaseNode): Record<string, string> {
+function getBackgroundStyle(
+  node: BaseNode
+): { "background-color": string; "background-image"?: string } | null {
   if (node.type === "TEXT") {
-    return {};
+    return null;
   }
 
-  // Check if node has fills property
   if (!("fills" in node) || !node.fills || !Array.isArray(node.fills)) {
-    return {};
+    return null;
   }
 
-  // Get all visible fills
   const fill = node.fills.find((fill) => fill.visible === true);
 
   if (!fill) {
-    return {};
+    return null;
   }
 
   switch (fill.type) {
@@ -217,11 +217,11 @@ function getBackgroundStyle(node: BaseNode): Record<string, string> {
 
       if (alpha < 1) {
         return {
-          background: `rgba(${red}, ${green}, ${blue}, ${alpha})`,
+          "background-color": `rgba(${red}, ${green}, ${blue}, ${alpha})`,
         };
       } else {
         return {
-          background: `rgb(${red}, ${green}, ${blue})`,
+          "background-color": `rgb(${red}, ${green}, ${blue})`,
         };
       }
     }
@@ -243,23 +243,22 @@ function getBackgroundStyle(node: BaseNode): Record<string, string> {
         const blue = Math.round(b * 255);
 
         return {
-          background: `rgba(${red}, ${green}, ${blue}, ${alpha})`,
+          "background-color": `rgba(${red}, ${green}, ${blue}, ${alpha})`,
         };
       }
-      return {};
+      return null;
     }
 
     case "IMAGE": {
-      // For images, you might want to handle differently
-      // Could return a placeholder color or try to extract dominant color
+      // TODO: handle image fill
       return {
-        background: "#f0f0f0", // Placeholder
-        backgroundImage: "/* Image fill detected */",
+        "background-color": "#f0f0f0", // Placeholder
+        "background-image": "/* Image fill detected */",
       };
     }
 
     default:
-      return {};
+      return null;
   }
 }
 
