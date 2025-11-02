@@ -143,7 +143,10 @@ export async function createSessionTokenHandler(req: Request, res: Response) {
   });
 
   const success = await firestore.runTransaction(async (t) => {
-    const pkceKeyDocRef = await getValidPkcdKeyDocForWriteKey(writeKey, t);
+    const pkceKeyDocRef = await getValidNonWrittenPkcdKeyDocForWriteKey(
+      writeKey,
+      t
+    );
     if (!pkceKeyDocRef) {
       log.debug("invalid_write_key");
       return false;
@@ -175,18 +178,24 @@ export async function createSessionTokenHandler(req: Request, res: Response) {
   return;
 }
 
-async function getValidPkcdKeyDocForWriteKey(
+async function getValidNonWrittenPkcdKeyDocForWriteKey(
   writeKey: string,
   t: Transaction
 ): Promise<DocumentReference<PkceKey_FsDoc> | null> {
   const pkceKeyDocRef = getPkceKeysCollectionRef().doc(writeKey);
   const pkceKeyDoc = (await t.get(pkceKeyDocRef)).data();
 
-  if (
-    !pkceKeyDoc ||
-    // TODO: pkceKeyDoc.expiresAt < new Date() ||
-    !!pkceKeyDoc.userSessionId
-  ) {
+  const isMissing = !pkceKeyDoc;
+  const isExpired = pkceKeyDoc ? pkceKeyDoc.expiresAt > new Date() : undefined;
+  const isUsed = pkceKeyDoc ? !!pkceKeyDoc.userSessionId : undefined;
+
+  if (isMissing || isExpired || isUsed) {
+    log.debug("invalid_pkce_key", {
+      path: pkceKeyDocRef.path,
+      isMissing,
+      isExpired,
+      isUsed,
+    });
     return null;
   }
 
