@@ -1,4 +1,7 @@
-import { firestore } from "./firebase-admin/firebase-admin-init"
+import {
+  getUserOrgJoinTableCollectionRef,
+  getTemplatesCollectionRef,
+} from "@templetto/firebase"
 
 export type Template = {
   id: string
@@ -10,36 +13,21 @@ export type Organization = {
   name: string
   templates: string[]
 }
-export async function getUserOrgs(userUid: string): Promise<string[]> {
-  const userCollectionRef = await firestore
-    .collection("users")
-    .doc(userUid)
-    .get()
-  const collectionRef = firestore.collection("user-organizations")
-  console.log("getUserOrgs collectionRef")
-  const querySnapshot = await collectionRef.doc("gPHxz7aKbLATXxNMtkTp").get()
-  console.log("getUserOrgs querySnapshot")
-  const res = querySnapshot.data()?.orgUid
-  console.log("got result", res)
-  return res ? [res] : []
+export async function getUserOrgIds(userUid: string): Promise<string[]> {
+  const userOrgIds = (
+    await getUserOrgJoinTableCollectionRef().where("uid", "==", userUid).get()
+  ).docs.map((doc) => doc.data().orgId)
+  return userOrgIds
 }
 export async function getUsersTemplate(userUid: string): Promise<Template[]> {
+  const userOrgs = await getUserOrgIds(userUid)
   const templates: Template[] = []
-  const userOrgs = await getUserOrgs(userUid)
   for (const org of userOrgs) {
-    const orgDoc = await firestore.collection("organizations").doc(org).get()
-    if (orgDoc.exists) {
-      const orgData = orgDoc.data()
-      const orgTemplates = (
-        await firestore
-          .collection("organizations")
-          .doc(org)
-          .collection("templates")
-          .get()
-      ).docs.map((doc) => doc.data() as Template)
-      templates.push(...orgTemplates)
-    }
+    const templateCollectionRef = getTemplatesCollectionRef({ orgId: org })
+    const orgTemplates = (await templateCollectionRef.get()).docs.map(
+      (doc) => doc.data() as Template,
+    )
+    templates.push(...orgTemplates)
   }
-  console.log("getUsersTemplate", templates)
   return templates
 }

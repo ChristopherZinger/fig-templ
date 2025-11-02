@@ -2,7 +2,7 @@
 import { type Handle } from "@sveltejs/kit"
 import { sequence } from "@sveltejs/kit/hooks"
 import { log } from "@templetto/logging"
-import { auth } from "$lib/server/firebase-admin/firebase-admin-init.js"
+import { auth } from "@templetto/firebase"
 
 // export const supabase: Handle = async ({ event, resolve }) => {
 // event.locals.supabase = createServerClient(
