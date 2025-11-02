@@ -10,6 +10,9 @@
 - Create user org when Google Auth callback fires
 - "Architect" auth flow to get the whole flow working well
 - Use new user-organizations-join-table table in app
+- pdf size:
+  - Atm all pdf have A4 paper size. It should be defined by top level node e.g frame node.
+- When creating new user they should be automatically assigned to a new organization
 
 ### The translator (figma -> html)
 
@@ -32,6 +35,7 @@
 
 ## Webapp
 
+<<<<<<< HEAD
 "table" with list of templates
 Show template thumbnail
 
@@ -49,4 +53,10 @@ Later - Render templates with dummy data
 ## Doc site
 
 - API Docs
-- General docs
+- # General docs
+- invite user to a org
+
+## Server
+
+- introduce api.templetto.com subdomain
+  > > > > > > > 9c64e54 (update todo)
