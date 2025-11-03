@@ -186,7 +186,7 @@ async function getValidNonWrittenPkcdKeyDocForWriteKey(
   const pkceKeyDoc = (await t.get(pkceKeyDocRef)).data();
 
   const isMissing = !pkceKeyDoc;
-  const isExpired = pkceKeyDoc ? pkceKeyDoc.expiresAt > new Date() : undefined;
+  const isExpired = pkceKeyDoc ? pkceKeyDoc.expiresAt < new Date() : undefined;
   const isUsed = pkceKeyDoc ? !!pkceKeyDoc.userSessionId : undefined;
 
   if (isMissing || isExpired || isUsed) {
