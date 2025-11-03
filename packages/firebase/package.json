@@ -4,7 +4,8 @@
   "description": "Firebase admin SDK for Templetto",
   "exports": {
     ".": "./src/index.ts",
-    "./errors": "./src/utils/errors.ts"
+    "./errors": "./src/utils/errors.ts",
+    "./repositories/user": "./src/repositories/user.ts"
   },
   "type": "module",
   "dependencies": {
