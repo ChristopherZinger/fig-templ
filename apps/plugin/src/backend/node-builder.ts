@@ -52,7 +52,7 @@ async function buildAppNodeFromSceneNode(
 
   const css = await sceneNode.getCSSAsync();
 
-  const styleResult = buildNodeStyle(sceneNode);
+  const styleResult = await buildNodeStyle(sceneNode);
   if (!styleResult) {
     return [null, { fontNames }];
   }

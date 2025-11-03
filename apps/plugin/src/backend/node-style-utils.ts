@@ -3,9 +3,9 @@ import { hasLayoutMode, isTopLevelNode } from "./node-utils";
 /**
  * @returns [cssStyles, options]
  */
-export function buildNodeStyle(
+export async function buildNodeStyle(
   node: SceneNode
-): [Record<string, string>, { fontNames: string[] }] | null {
+): Promise<[Record<string, string>, { fontNames: string[] }] | null> {
   if (!node.visible) {
     return null;
   }
@@ -21,7 +21,7 @@ export function buildNodeStyle(
       getFlexStyle(node),
       getPositionStyles(node),
       getAlignItemsStyle(node),
-      getBackgroundStyle(node),
+      await getBackgroundStyle(node),
       getGapStyle(node),
       getPaddingStyle(node),
       getJustifyContentStyle(node),
@@ -187,9 +187,9 @@ function getMinMaxSizeStyles(node: BaseNode): {
   }
 }
 
-function getBackgroundStyle(
+async function getBackgroundStyle(
   node: BaseNode
-): { "background-color": string; "background-image"?: string } | null {
+): Promise<{ "background-color": string; "background-image"?: string } | null> {
   if (node.type === "TEXT") {
     return null;
   }
@@ -250,16 +250,38 @@ function getBackgroundStyle(
     }
 
     case "IMAGE": {
-      // TODO: handle image fill
-      return {
-        "background-color": "#f0f0f0", // Placeholder
-        "background-image": "/* Image fill detected */",
-      };
+      const img = figma.getImageByHash(fill.imageHash);
+      if (!img) {
+        console.error("expected_image_for_fill");
+        return {
+          "background-color": "#f0f0f0",
+        };
+      }
+      return await getImageStyles(img);
     }
 
     default:
       return null;
   }
+}
+
+async function getImageStyles(img: Image): Promise<{
+  "background-color": string;
+  "background-image": string;
+  "background-size": string;
+  "background-position": string;
+  "background-repeat": string;
+}> {
+  const bytes = await img.getBytesAsync();
+  const base64 = figma.base64Encode(bytes);
+  return {
+    "background-color": "#f0f0f0", // Placeholder
+    "background-image": `url(data:image/png;base64,${base64})`,
+    // TODO: handle background-size, background-position, background-repeat
+    "background-size": "contain",
+    "background-position": "center",
+    "background-repeat": "no-repeat",
+  };
 }
 
 function getGapStyle(node: BaseNode): { gap: string } | null {
