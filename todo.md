@@ -35,7 +35,6 @@
 
 ## Webapp
 
-<<<<<<< HEAD
 "table" with list of templates
 Show template thumbnail
 
@@ -59,4 +58,3 @@ Later - Render templates with dummy data
 ## Server
 
 - introduce api.templetto.com subdomain
-  > > > > > > > 9c64e54 (update todo)
