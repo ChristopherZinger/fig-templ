@@ -17,6 +17,8 @@
   .content {
     flex: 1;
     border-right: 1px solid var(--light-gray);
+    height: 100%;
+    overflow-y: auto;
   }
 
   .right {
