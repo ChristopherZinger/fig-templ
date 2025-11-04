@@ -22,6 +22,7 @@ export async function buildNodeStyle(
       getPositionStyles(node),
       getAlignItemsStyle(node),
       getTextDecorationStyle(node),
+      getTextAlignHorizontalStyle(node),
       await getBackgroundStyle(node),
       getGapStyle(node),
       getPaddingStyle(node),
@@ -587,6 +588,28 @@ function getTextDecorationStyle(
       };
     default:
       console.error("text_decoration_not_supported", node);
+      return null;
+  }
+}
+
+function getTextAlignHorizontalStyle(
+  node: BaseNode
+): { "text-align": string } | null {
+  if (node.type !== "TEXT") {
+    return null;
+  }
+
+  switch (node.textAlignHorizontal) {
+    case "LEFT":
+      return { "text-align": "left" };
+    case "CENTER":
+      return { "text-align": "center" };
+    case "RIGHT":
+      return { "text-align": "right" };
+    case "JUSTIFIED":
+      return { "text-align": "justify" };
+    default:
+      console.error("text_align_horizontal_not_supported", node);
       return null;
   }
 }
