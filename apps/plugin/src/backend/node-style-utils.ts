@@ -273,7 +273,6 @@ async function getBackgroundStyle(node: BaseNode): Promise<
 }
 
 async function getImageStyles(img: Image): Promise<{
-  "background-color": string;
   "background-image": string;
   "background-size": string;
   "background-position": string;
@@ -282,7 +281,6 @@ async function getImageStyles(img: Image): Promise<{
   const bytes = await img.getBytesAsync();
   const base64 = figma.base64Encode(bytes);
   return {
-    "background-color": "#f0f0f0", // Placeholder
     "background-image": `url(data:image/png;base64,${base64})`,
     // TODO: handle background-size, background-position, background-repeat
     "background-size": "contain",
