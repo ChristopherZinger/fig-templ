@@ -21,6 +21,7 @@ export async function buildNodeStyle(
       getFlexStyle(node),
       getPositionStyles(node),
       getAlignItemsStyle(node),
+      getTextDecorationStyle(node),
       await getBackgroundStyle(node),
       getGapStyle(node),
       getPaddingStyle(node),
@@ -557,5 +558,35 @@ function getFontColorStyle(node: BaseNode): { color: string } | null {
       }
       return null;
     }
+  }
+  return null;
+}
+
+function getTextDecorationStyle(
+  node: BaseNode
+): { "text-decoration": string } | null {
+  if (node.type !== "TEXT") {
+    return null;
+  }
+
+  if (node.textDecoration === figma.mixed) {
+    console.warn("mixed_text_decoration", node.id);
+    return null;
+  }
+
+  switch (node.textDecoration) {
+    case "NONE":
+      return null;
+    case "UNDERLINE":
+      return {
+        "text-decoration": "underline",
+      };
+    case "STRIKETHROUGH":
+      return {
+        "text-decoration": "line-through",
+      };
+    default:
+      console.error("text_decoration_not_supported", node);
+      return null;
   }
 }
