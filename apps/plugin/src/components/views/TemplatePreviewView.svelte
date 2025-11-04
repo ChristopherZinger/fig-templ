@@ -70,6 +70,25 @@
     }
   }
 
+  function onClickDownloadTemplate({
+    fileName,
+    content,
+  }: {
+    fileName: string;
+    content: string;
+  }) {
+    var element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," + encodeURIComponent(content)
+    );
+    element.setAttribute("download", `${fileName}.html`);
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
+
   function onMessage(event: MessageEvent) {
     const { type, data } = event.data.pluginMessage;
     if (type === MainThreadMsg.PostFrameNodes) {
@@ -95,6 +114,19 @@
 
     <div>
       <div class="save-template-container">
+        <button
+          onclick={() => {
+            if (htmlString && templateNameInput) {
+              onClickDownloadTemplate({
+                fileName: templateNameInput,
+                content: htmlString,
+              });
+            }
+          }}
+          disabled={!htmlString || !templateNameInput}
+        >
+          Download</button
+        >
         <button
           disabled={!htmlString ||
             !templateNameInput ||
