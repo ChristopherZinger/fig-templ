@@ -23,6 +23,7 @@ export async function buildNodeStyle(
       getAlignItemsStyle(node),
       getTextDecorationStyle(node),
       getTextAlignHorizontalStyle(node),
+      getTextAlignVerticalStyle(node),
       await getBackgroundStyle(node),
       getGapStyle(node),
       getPaddingStyle(node),
@@ -610,6 +611,40 @@ function getTextAlignHorizontalStyle(
       return { "text-align": "justify" };
     default:
       console.error("text_align_horizontal_not_supported", node);
+      return null;
+  }
+}
+
+function getTextAlignVerticalStyle(node: BaseNode): {
+  display: string;
+  "align-items": string;
+  "justify-content": string;
+} | null {
+  if (node.type !== "TEXT") {
+    return null;
+  }
+
+  switch (node.textAlignVertical) {
+    case "TOP":
+      return {
+        display: "flex",
+        "align-items": "flex-start",
+        "justify-content": "center",
+      };
+    case "CENTER":
+      return {
+        display: "flex",
+        "align-items": "center",
+        "justify-content": "center",
+      };
+    case "BOTTOM":
+      return {
+        display: "flex",
+        "align-items": "flex-end",
+        "justify-content": "center",
+      };
+    default:
+      console.error("text_align_vertical_not_supported", node);
       return null;
   }
 }
