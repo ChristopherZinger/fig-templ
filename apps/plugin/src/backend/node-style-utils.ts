@@ -187,9 +187,16 @@ function getMinMaxSizeStyles(node: BaseNode): {
   }
 }
 
-async function getBackgroundStyle(
-  node: BaseNode
-): Promise<{ "background-color": string; "background-image"?: string } | null> {
+async function getBackgroundStyle(node: BaseNode): Promise<
+  | { "background-color": string }
+  | {
+      "background-image": string;
+      "background-size": string;
+      "background-position": string;
+      "background-repeat": string;
+    }
+  | null
+> {
   if (node.type === "TEXT") {
     return null;
   }
