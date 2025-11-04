@@ -415,6 +415,7 @@ type FontCssStyles = {
   "font-size"?: string;
   "font-style"?: string;
   "font-weight"?: string;
+  color?: string;
 };
 function getFontStyle(
   node: BaseNode
@@ -434,6 +435,7 @@ function getFontStyle(
       {},
       getFontWeightStyle(node),
       getFontSizeStyle(node),
+      getFontColorStyle(node),
       fontFamilyStyle
     ),
     { fontNames },
@@ -493,4 +495,62 @@ function getFontFamilyStyle(
     };
   }
   return null;
+}
+
+function getFontColorStyle(node: BaseNode): { color: string } | null {
+  if (!("fills" in node) || !node.fills || !Array.isArray(node.fills)) {
+    return null;
+  }
+
+  const fill = node.fills.find((fill) => fill.visible === true);
+
+  if (!fill) {
+    return null;
+  }
+
+  switch (fill.type) {
+    case "SOLID": {
+      const solidFill = fill as SolidPaint;
+      const { r, g, b } = solidFill.color;
+      const alpha = solidFill.opacity !== undefined ? solidFill.opacity : 1;
+
+      // Convert from 0-1 range to 0-255 range
+      const red = Math.round(r * 255);
+      const green = Math.round(g * 255);
+      const blue = Math.round(b * 255);
+
+      if (alpha < 1) {
+        return {
+          color: `rgba(${red}, ${green}, ${blue}, ${alpha})`,
+        };
+      } else {
+        return {
+          color: `rgb(${red}, ${green}, ${blue})`,
+        };
+      }
+    }
+
+    case "GRADIENT_LINEAR":
+    case "GRADIENT_RADIAL":
+    case "GRADIENT_ANGULAR":
+    case "GRADIENT_DIAMOND": {
+      // For gradients, you could generate CSS gradients
+      // For now, just use the first gradient stop color
+      const gradientFill = fill as GradientPaint;
+      if (gradientFill.gradientStops && gradientFill.gradientStops.length > 0) {
+        const firstStop = gradientFill.gradientStops[0];
+        const { r, g, b } = firstStop.color;
+        const alpha = firstStop.color.a || 1;
+
+        const red = Math.round(r * 255);
+        const green = Math.round(g * 255);
+        const blue = Math.round(b * 255);
+
+        return {
+          color: `rgba(${red}, ${green}, ${blue}, ${alpha})`,
+        };
+      }
+      return null;
+    }
+  }
 }
