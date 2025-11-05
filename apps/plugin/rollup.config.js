@@ -22,6 +22,7 @@ const fileUrl = new URL("./package.json", import.meta.url);
 const pkg = JSON.parse(await readFile(fileUrl, "utf8"));
 
 const production = process.env.NODE_ENV === "production";
+const shouldEnableApiCalls = process.env.SHOULD_ENABLE_API_CALLS === "true";
 
 export default [
   {
@@ -39,6 +40,7 @@ export default [
           "process.env.NODE_ENV": JSON.stringify(
             production ? "production" : "development"
           ),
+          "process.env.SHOULD_ENABLE_API_CALLS": shouldEnableApiCalls,
         },
       }),
       svelte({

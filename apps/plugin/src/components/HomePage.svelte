@@ -11,6 +11,7 @@
   import TemplatesView from "./views/TemplatesView.svelte";
   import TemplatePreviewView from "./views/TemplatePreviewView.svelte";
   import SidebarItem from "./sidebar/SidebarItem.svelte";
+  import { featuresStore } from "../lib/stores/enabledFeaturesStore";
 
   let organizations: { id: string; name: string }[] | null | undefined =
     undefined;
@@ -45,21 +46,25 @@
 <BaseLayout>
   <div slot="sidebar" class="sidebar">
     <div class="panel">
-      <OrgSelectorItem
-        orgInfos={organizations}
-        {selectedOrgId}
-        onSelect={(orgId) => {
-          selectedOrgId = orgId;
-        }}
-      />
-      <TemplateListItem onClick={() => (view = "templates")} />
-      <SidebarItem onClick={() => (view = "preview")}>
-        <div slot="header" class="header">
-          <div>Preview</div>
-        </div>
-      </SidebarItem>
+      {#if $featuresStore.apiCalls}
+        <OrgSelectorItem
+          orgInfos={organizations}
+          {selectedOrgId}
+          onSelect={(orgId) => {
+            selectedOrgId = orgId;
+          }}
+        />
+        <TemplateListItem onClick={() => (view = "templates")} />
+        <SidebarItem onClick={() => (view = "preview")}>
+          <div slot="header" class="header">
+            <div>Preview</div>
+          </div>
+        </SidebarItem>
+      {/if}
     </div>
-    <LogoutButton />
+    {#if $featuresStore.apiCalls}
+      <LogoutButton />
+    {/if}
   </div>
 
   <div slot="content" class="content">
