@@ -11,8 +11,7 @@
     "allowedDomains": [
       "https://*.google.com/",
       "https://fonts.gstatic.com/",
-      "https://fonts.googleapis.com",
-      "https://api.templetto.com"
+      "https://fonts.googleapis.com"
     ]
   }
 }
