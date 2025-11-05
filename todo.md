@@ -5,14 +5,13 @@
 ### Auth
 
 - use redirect url
-- test expiration date comparisons
 - bug: investigate why is the plugin constantly logging out.
 - Create user org when Google Auth callback fires
 - "Architect" auth flow to get the whole flow working well
-- Use new user-organizations-join-table table in app
 - pdf size:
   - Atm all pdf have A4 paper size. It should be defined by top level node e.g frame node.
 - When creating new user they should be automatically assigned to a new organization
+  - firebase auth trigger or explicit creation on login e.g when handling pkce key?
 
 ### The translator (figma -> html)
 
@@ -23,7 +22,6 @@
 
 #### Various
 
-- handle jpg and other images
 - handle svg shapes nodes
 - handle boolean operation shapes nodes
 
@@ -32,6 +30,8 @@
 - border styles
   - partial border (left, right etc.)
   - border with
+- handle rich text
+- handle mixed text styles
 
 ## Webapp
 
@@ -56,5 +56,3 @@ Later - Render templates with dummy data
 - invite user to a org
 
 ## Server
-
-- introduce api.templetto.com subdomain
