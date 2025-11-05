@@ -14,11 +14,14 @@ import postcss from "rollup-plugin-postcss";
 import svelte from "rollup-plugin-svelte";
 import svg from "rollup-plugin-svg";
 import sveltePreprocess from "svelte-preprocess";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const fileUrl = new URL("./package.json", import.meta.url);
 const pkg = JSON.parse(await readFile(fileUrl, "utf8"));
 
-const production = process.env.ENV === "PRODUCTION";
+const production = process.env.NODE_ENV === "production";
 
 export default [
   {
