@@ -47,19 +47,20 @@
     undefined;
   function onMessage(event: MessageEvent) {
     const { type, data } = event.data.pluginMessage;
-    if (type === MainThreadMsg.PostFrameNodes) {
-      const _templateInfo = data.node as [
-        AppNode | null,
-        { fontNames: string[] },
-      ];
-      templateInfo = _templateInfo;
-    }
-    if (type === MainThreadMsg.PostFrameInfosForSelector) {
-      // TODO: update only if array changed
-      frameSelectOptions = data.frames as { id: string; name: string }[];
-      if (!selectedFrameId && frameSelectOptions.length > 0) {
-        selectedFrameId = frameSelectOptions[0].id;
-      }
+    switch (type) {
+      case MainThreadMsg.PostFrameNodes:
+        const _templateInfo = data.node as [
+          AppNode | null,
+          { fontNames: string[] },
+        ];
+        templateInfo = _templateInfo;
+        break;
+      case MainThreadMsg.PostFrameInfosForSelector:
+        frameSelectOptions = data.frames as { id: string; name: string }[];
+        if (!selectedFrameId && frameSelectOptions.length > 0) {
+          selectedFrameId = frameSelectOptions[0].id;
+        }
+        break;
     }
   }
   window.addEventListener("message", onMessage);
