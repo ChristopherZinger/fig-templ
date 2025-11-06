@@ -11,7 +11,8 @@ export function setMessageRouter(figma: PluginAPI) {
         postSessionCookieMessage();
         break;
       case UiMsg.ShowPreview:
-        makeFrames();
+        const frameId = msg.data.frameId || null;
+        makeFrames(frameId);
         break;
       case UiMsg.Logout:
         logoutMessage();
@@ -25,6 +26,10 @@ export function setMessageRouter(figma: PluginAPI) {
         });
         saveSessionTokenMessage(msg.data.sessionToken);
         break;
+      case UiMsg.RequestSelectableFrames:
+        const frames = getSelectableFrames();
+        sendToUiThread(MainThreadMsg.PostFrameInfosForSelector, { frames });
+        break;
       default:
         console.log("got_unknown_message_in_main_thread", msg);
         break;
@@ -32,8 +37,26 @@ export function setMessageRouter(figma: PluginAPI) {
   };
 }
 
+function getSelectableFrames(): { id: string; name: string }[] {
+  const currentPage = figma.currentPage;
+  if (!currentPage) {
+    console.error("expected_current_page", { currentPage: figma.currentPage });
+    return [];
+  }
+
+  const topLevelNodes = currentPage.findAll((node) => {
+    return !!node.parent && node.parent.id === currentPage.id;
+  }) as SceneNode[];
+
+  return topLevelNodes.map((node) => {
+    return {
+      id: node.id,
+      name: node.name,
+    };
+  });
+}
+
 async function postSessionCookieMessage() {
-  console.log("postSessionCookieMessage");
   try {
     const session =
       (await figma.clientStorage.getAsync(SESSION_TOKEN_KEY)) || null;
