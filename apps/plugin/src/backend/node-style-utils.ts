@@ -389,6 +389,10 @@ function getBorderStyle(node: BaseNode): {
     node.strokes.length > 0
   ) {
     const stroke = node.strokes.find((stroke) => stroke.visible === true);
+    if (!stroke) {
+      return null;
+    }
+
     return Object.assign({}, getBorderWidthStyle(node), {
       "border-style": "solid",
       "border-color":
