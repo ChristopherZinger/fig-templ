@@ -12,6 +12,7 @@
   import TemplatePreviewView from "./views/TemplatePreviewView.svelte";
   import SidebarItem from "./sidebar/SidebarItem.svelte";
   import { featuresStore } from "../lib/stores/enabledFeaturesStore";
+  import PreviewOptions from "./sidebar/PreviewOptions.svelte";
 
   let organizations: { id: string; name: string }[] | null | undefined =
     undefined;
@@ -46,6 +47,7 @@
 <BaseLayout>
   <div slot="sidebar" class="sidebar">
     <div class="panel">
+      <PreviewOptions />
       {#if $featuresStore.apiCalls}
         <OrgSelectorItem
           orgInfos={organizations}
