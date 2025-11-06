@@ -1,11 +1,9 @@
 import h from "hyperscript";
 import type { AppNode } from "./types";
 
-export function getHtmlDocumentFromAppNode(
-  node: AppNode,
-  fontNames: Set<string>
-): HTMLElement {
+export function getHtmlDocumentFromAppNode(node: AppNode): HTMLElement {
   const hsScript = getHscriptFromAppNode(node);
+  const fontNames = getFontFamilies(node);
 
   const fontLinks = [...fontNames].map(
     (fontName) =>
@@ -85,4 +83,19 @@ function getGenericNode(appNode: AppNode): HTMLElement {
 
 function getBaseStyle(appNode: AppNode) {
   return appNode.style;
+}
+
+function getFontFamilies(node: AppNode): Set<string> {
+  if (!node.children.length) {
+    return new Set([node.style["font-family"]]);
+  }
+
+  let fonts: Set<string> = new Set();
+  node.children.forEach((child: AppNode) => {
+    getFontFamilies(child).forEach((font) => {
+      fonts.add(font);
+    });
+  });
+
+  return fonts;
 }

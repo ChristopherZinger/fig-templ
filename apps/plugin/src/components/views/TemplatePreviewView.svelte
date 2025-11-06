@@ -7,12 +7,15 @@
   import { featuresStore } from "../../lib/stores/enabledFeaturesStore";
 
   export let orgId: string | undefined | null;
-  export let templateInfo:
-    | null
-    | undefined
-    | [AppNode, { fontNames: string[] }] = null;
   export let onClickShowPreview: () => void;
   export let htmlString: string | undefined;
+  export let previewInfo:
+    | {
+        width: number;
+        height: number;
+      }
+    | undefined
+    | null;
 
   let iframeRef: HTMLIFrameElement | undefined;
   function onHtmlStringChange(htmlString: string | undefined) {
@@ -85,14 +88,14 @@
   <div class="iframe-container">
     <iframe
       bind:this={iframeRef}
-      class:hidden={!templateInfo}
+      class:hidden={!previewInfo}
       title="iframe"
-      style={`width: ${templateInfo?.[0]?.style.width || "100px"}; height: ${templateInfo?.[0]?.style.height || "100px"};`}
+      style={`width: ${previewInfo?.width || "100px"}; height: ${previewInfo?.height || "100px"};`}
     ></iframe>
-    {#if templateInfo === undefined}
+    {#if previewInfo === undefined}
       <p>Loading...</p>
     {/if}
-    {#if templateInfo === null}
+    {#if previewInfo === null}
       <p>No template selected</p>
     {/if}
   </div>

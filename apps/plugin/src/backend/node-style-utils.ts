@@ -1,41 +1,33 @@
 import { hasLayoutMode, isTopLevelNode } from "./node-utils";
 
-/**
- * @returns [cssStyles, options]
- */
 export async function buildNodeStyle(
   node: SceneNode,
   options: { isRoot: boolean } = { isRoot: false }
-): Promise<[Record<string, string>, { fontNames: string[] }] | null> {
+): Promise<Record<string, string> | null> {
   if (!node.visible && !options.isRoot) {
     return null;
   }
 
-  const [fontStyles, { fontNames }] = getFontStyle(node);
-
-  return [
-    Object.assign(
-      { "box-sizing": "border-box" },
-      getBaseStyles(node),
-      getSizeStyles(node),
-      getMinMaxSizeStyles(node),
-      getFlexStyle(node),
-      getPositionStyles(node),
-      getAlignItemsStyle(node),
-      getTextDecorationStyle(node),
-      getTextAlignHorizontalStyle(node),
-      getTextAlignVerticalStyle(node),
-      await getBackgroundStyle(node),
-      getGapStyle(node),
-      getPaddingStyle(node),
-      getJustifyContentStyle(node),
-      getBorderStyle(node),
-      getBorderRadiusStyle(node),
-      node.type === "TEXT" ? { "white-space": "pre-wrap" } : {},
-      fontStyles
-    ),
-    { fontNames },
-  ];
+  return Object.assign(
+    { "box-sizing": "border-box" },
+    getBaseStyles(node),
+    getSizeStyles(node),
+    getMinMaxSizeStyles(node),
+    getFlexStyle(node),
+    getPositionStyles(node),
+    getAlignItemsStyle(node),
+    getTextDecorationStyle(node),
+    getTextAlignHorizontalStyle(node),
+    getTextAlignVerticalStyle(node),
+    await getBackgroundStyle(node),
+    getGapStyle(node),
+    getPaddingStyle(node),
+    getJustifyContentStyle(node),
+    getBorderStyle(node),
+    getBorderRadiusStyle(node),
+    node.type === "TEXT" ? { "white-space": "pre-wrap" } : {},
+    getFontStyle(node)
+  );
 }
 
 function getFlexStyle(node: BaseNode):
@@ -430,29 +422,19 @@ type FontCssStyles = {
   "font-weight"?: string;
   color?: string;
 };
-function getFontStyle(
-  node: BaseNode
-): [FontCssStyles | null, { fontNames: string[] }] {
-  const fontNames: string[] = [];
+function getFontStyle(node: BaseNode): FontCssStyles | null {
   if (node.type !== "TEXT") {
-    return [null, { fontNames }];
+    return null;
   }
 
-  const fontFamilyStyle = getFontFamilyStyle(node);
-  if (fontFamilyStyle) {
-    fontNames.push(fontFamilyStyle["font-family"]);
-  }
+  return Object.assign(
+    {},
+    getFontWeightStyle(node),
+    getFontSizeStyle(node),
+    getFontColorStyle(node),
 
-  return [
-    Object.assign(
-      {},
-      getFontWeightStyle(node),
-      getFontSizeStyle(node),
-      getFontColorStyle(node),
-      fontFamilyStyle
-    ),
-    { fontNames },
-  ];
+    getFontFamilyStyle(node)
+  );
 }
 
 function getFontSizeStyle(node: TextNode): { "font-size": string } | null {
