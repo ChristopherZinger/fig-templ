@@ -2,40 +2,43 @@ import { MainThreadMsg } from "../lib/utils/shared/messages";
 import { buildNodeStyle } from "./node-style-utils";
 import type { AppNode } from "../types";
 import { sendToUiThread } from "./message-utils";
-import { isTopLevelNode } from "./node-utils";
 
-export async function makeFrames() {
-  const frame = getVisibleTopLevelNodes(figma.currentPage)[0];
+export async function makeFrames(frameId: string | null) {
+  if (!frameId) {
+    console.error("expected_frame_id");
+    sendToUiThread(MainThreadMsg.FailedToMakeFrames, {
+      message: "No frame id provided",
+    });
+    return;
+  }
+
+  const frame = figma.currentPage.findOne((node) => {
+    return node.id === frameId;
+  });
 
   if (!frame) {
+    console.error("missing_frame_for_id", { frameId });
     sendToUiThread(MainThreadMsg.FailedToMakeFrames, {
       message: "No frame found",
     });
     return;
   }
 
-  const [rootAppNode, { fontNames }] = await buildAppNodeFromSceneNode(frame, {
-    fontNames: new Set(),
-  });
+  const [rootAppNode, { fontNames }] = await buildAppNodeFromSceneNode(
+    frame,
+    { fontNames: new Set() },
+    { isRoot: true }
+  );
+
   sendToUiThread(MainThreadMsg.PostFrameNodes, {
     node: [rootAppNode, { fontNames: [...fontNames] }],
   });
 }
 
-function getVisibleTopLevelNodes(page: PageNode): SceneNode[] {
-  const allFrames: SceneNode[] = [];
-
-  const getVisibleTopLevelNodes = page.findAll((node) => {
-    return isTopLevelNode(node) && node.visible;
-  }) as SceneNode[];
-  allFrames.push(...getVisibleTopLevelNodes);
-
-  return allFrames;
-}
-
 async function buildAppNodeFromSceneNode(
   sceneNode: SceneNode,
-  { fontNames }: { fontNames: Set<string> }
+  { fontNames }: { fontNames: Set<string> },
+  options: { isRoot: boolean } = { isRoot: false }
 ): Promise<[AppNode | null, { fontNames: Set<string> }]> {
   const isLayoutMode =
     "layoutMode" in sceneNode && sceneNode.layoutMode !== "NONE";
@@ -52,7 +55,9 @@ async function buildAppNodeFromSceneNode(
 
   const css = await sceneNode.getCSSAsync();
 
-  const styleResult = await buildNodeStyle(sceneNode);
+  const styleResult = await buildNodeStyle(sceneNode, {
+    isRoot: options.isRoot,
+  });
   if (!styleResult) {
     return [null, { fontNames }];
   }

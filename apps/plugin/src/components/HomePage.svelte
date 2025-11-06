@@ -42,6 +42,9 @@
 
   type TemplateInfo = [AppNode, { fontNames: string[] }];
   let templateInfo: null | undefined | TemplateInfo = null;
+  let selectedFrameId: string | undefined = undefined;
+  let frameSelectOptions: { id: string; name: string }[] | undefined =
+    undefined;
   function onMessage(event: MessageEvent) {
     const { type, data } = event.data.pluginMessage;
     if (type === MainThreadMsg.PostFrameNodes) {
@@ -50,6 +53,13 @@
         { fontNames: string[] },
       ];
       templateInfo = _templateInfo;
+    }
+    if (type === MainThreadMsg.PostFrameInfosForSelector) {
+      // TODO: update only if array changed
+      frameSelectOptions = data.frames as { id: string; name: string }[];
+      if (!selectedFrameId && frameSelectOptions.length > 0) {
+        selectedFrameId = frameSelectOptions[0].id;
+      }
     }
   }
   window.addEventListener("message", onMessage);
@@ -70,6 +80,7 @@
     if ($featuresStore.apiCalls) {
       await loadOrganizations();
     }
+    sendToMainThread(UiMsg.RequestSelectableFrames);
   });
 
   onDestroy(() => {
@@ -92,6 +103,14 @@
             return;
           }
           onClickDownloadTemplate({ htmlString });
+        }}
+        onSelectFrame={(frameId) => {
+          selectedFrameId = frameId;
+        }}
+        frameInfos={frameSelectOptions}
+        {selectedFrameId}
+        onClickOnSelectElement={() => {
+          sendToMainThread(UiMsg.RequestSelectableFrames);
         }}
       />
       {#if $featuresStore.apiCalls}
@@ -124,7 +143,7 @@
         {templateInfo}
         onClickShowPreview={() => {
           templateInfo = undefined;
-          sendToMainThread(UiMsg.ShowPreview);
+          sendToMainThread(UiMsg.ShowPreview, { frameId: selectedFrameId });
         }}
         {htmlString}
       />

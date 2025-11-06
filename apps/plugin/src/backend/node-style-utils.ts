@@ -4,9 +4,10 @@ import { hasLayoutMode, isTopLevelNode } from "./node-utils";
  * @returns [cssStyles, options]
  */
 export async function buildNodeStyle(
-  node: SceneNode
+  node: SceneNode,
+  options: { isRoot: boolean } = { isRoot: false }
 ): Promise<[Record<string, string>, { fontNames: string[] }] | null> {
-  if (!node.visible) {
+  if (!node.visible && !options.isRoot) {
     return null;
   }
 
