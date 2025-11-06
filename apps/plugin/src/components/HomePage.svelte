@@ -18,6 +18,7 @@
   import { sendToMainThread } from "../lib/utils/messages";
   import { getHtmlDocumentFromAppNode } from "../app-node-to-hscript";
   import { onClickDownloadTemplate } from "../lib/utils/download";
+  import { isEqual } from "lodash";
 
   let organizations: { id: string; name: string }[] | null | undefined =
     undefined;
@@ -56,7 +57,11 @@
         templateInfo = _templateInfo;
         break;
       case MainThreadMsg.PostFrameInfosForSelector:
-        frameSelectOptions = data.frames as { id: string; name: string }[];
+        const newFrames = data.frames as { id: string; name: string }[];
+        if (isEqual(newFrames, frameSelectOptions)) {
+          return;
+        }
+        frameSelectOptions = newFrames;
         if (!selectedFrameId && frameSelectOptions.length > 0) {
           selectedFrameId = frameSelectOptions[0].id;
         }
