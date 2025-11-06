@@ -1,46 +1,29 @@
 <script lang="ts">
-  import { onDestroy } from "svelte";
-  import { getHtmlDocumentFromAppNode } from "../../app-node-to-hscript";
   import type { AppNode } from "../../types";
-  import { MainThreadMsg, UiMsg } from "../../lib/utils/shared/messages";
-  import { sendToMainThread } from "../../lib/utils/messages";
   import {
     callTemplettoApi,
     TemplettoApiActions,
   } from "../../lib/utils/plugin-api-endpoint";
-
-  type TemplateInfo = [AppNode, { fontNames: string[] }];
+  import { featuresStore } from "../../lib/stores/enabledFeaturesStore";
 
   export let orgId: string | undefined | null;
+  export let templateInfo:
+    | null
+    | undefined
+    | [AppNode, { fontNames: string[] }] = null;
+  export let onClickShowPreview: () => void;
+  export let htmlString: string | undefined;
 
-  let templateNameInput = "";
-  let templateInfo: null | undefined | TemplateInfo = null;
   let iframeRef: HTMLIFrameElement | undefined;
-
-  function onClickShowPreview() {
-    templateInfo = undefined;
-    sendToMainThread(UiMsg.ShowPreview);
-  }
-
-  function onTemplateInfoChange(templateInfo: null | undefined | TemplateInfo) {
+  function onHtmlStringChange(htmlString: string | undefined) {
     if (!iframeRef?.contentDocument) {
       console.error("expected_iframeRef_contentDocument");
       return;
     }
-
-    if (!templateInfo) {
-      iframeRef.contentDocument.body.innerHTML = "";
-      return;
-    }
-
-    const [rootAppNode, { fontNames }] = templateInfo;
-    const html = getHtmlDocumentFromAppNode(rootAppNode, new Set(fontNames));
-    htmlString = html.outerHTML;
-    iframeRef.contentDocument.body.innerHTML = htmlString;
+    iframeRef.contentDocument.body.innerHTML = htmlString || "";
   }
-  $: onTemplateInfoChange(templateInfo);
+  $: onHtmlStringChange(htmlString);
 
-  let htmlString: string | undefined = undefined;
   let isSavingTemplate = false;
   async function onClickSaveTemplate({
     name,
@@ -69,41 +52,6 @@
       isSavingTemplate = false;
     }
   }
-
-  function onClickDownloadTemplate({
-    fileName,
-    content,
-  }: {
-    fileName: string;
-    content: string;
-  }) {
-    var element = document.createElement("a");
-    element.setAttribute(
-      "href",
-      "data:text/plain;charset=utf-8," + encodeURIComponent(content)
-    );
-    element.setAttribute("download", `${fileName}.html`);
-    element.style.display = "none";
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-  }
-
-  function onMessage(event: MessageEvent) {
-    const { type, data } = event.data.pluginMessage;
-    if (type === MainThreadMsg.PostFrameNodes) {
-      const _templateInfo = data.node as [
-        AppNode | null,
-        { fontNames: string[] },
-      ];
-      templateInfo = _templateInfo;
-    }
-  }
-  window.addEventListener("message", onMessage);
-
-  onDestroy(() => {
-    window.removeEventListener("message", onMessage);
-  });
 </script>
 
 <main>
@@ -114,38 +62,22 @@
 
     <div>
       <div class="save-template-container">
-        <button
-          onclick={() => {
-            if (htmlString && templateNameInput) {
-              onClickDownloadTemplate({
-                fileName: templateNameInput,
-                content: htmlString,
-              });
-            }
-          }}
-          disabled={!htmlString || !templateNameInput}
-        >
-          Download</button
-        >
-        <button
-          disabled={!htmlString ||
-            !templateNameInput ||
-            !orgId ||
-            isSavingTemplate}
-          onclick={() => {
-            if (htmlString && templateNameInput && orgId) {
-              onClickSaveTemplate({
-                name: templateNameInput,
-                htmlString,
-                orgId,
-              });
-            }
-          }}
-        >
-          Save Template
-        </button>
-
-        <input type="text" bind:value={templateNameInput} />
+        {#if $featuresStore.apiCalls}
+          <button
+            disabled={!htmlString || !orgId || isSavingTemplate}
+            onclick={() => {
+              if (htmlString && orgId) {
+                onClickSaveTemplate({
+                  name: "index.html",
+                  htmlString,
+                  orgId,
+                });
+              }
+            }}
+          >
+            Save Template
+          </button>
+        {/if}
       </div>
     </div>
   </div>

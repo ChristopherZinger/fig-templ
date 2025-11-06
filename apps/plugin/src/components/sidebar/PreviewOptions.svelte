@@ -1,5 +1,8 @@
 <script lang="ts">
   import SidebarItem from "./SidebarItem.svelte";
+
+  export let onClickDownload: () => void;
+  export let isDownloadEnabled: boolean;
 </script>
 
 <SidebarItem>
@@ -10,7 +13,11 @@
     <div>select frame</div>
     <div>show preview</div>
     <div>show code</div>
-    <button class="download-button" onclick={() => {}}>Download HTML</button>
+    <button
+      disabled={!isDownloadEnabled}
+      class="download-button"
+      onclick={onClickDownload}>Download HTML</button
+    >
   </div>
 </SidebarItem>
 

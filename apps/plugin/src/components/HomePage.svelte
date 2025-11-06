@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import BaseLayout from "./BaseLayout.svelte";
   import {
     callTemplettoApi,
@@ -13,6 +13,11 @@
   import SidebarItem from "./sidebar/SidebarItem.svelte";
   import { featuresStore } from "../lib/stores/enabledFeaturesStore";
   import PreviewOptions from "./sidebar/PreviewOptions.svelte";
+  import { MainThreadMsg, UiMsg } from "../lib/utils/shared/messages";
+  import type { AppNode } from "../types";
+  import { sendToMainThread } from "../lib/utils/messages";
+  import { getHtmlDocumentFromAppNode } from "../app-node-to-hscript";
+  import { onClickDownloadTemplate } from "../lib/utils/download";
 
   let organizations: { id: string; name: string }[] | null | undefined =
     undefined;
@@ -35,8 +40,38 @@
     selectedOrgId = null;
   }
 
+  type TemplateInfo = [AppNode, { fontNames: string[] }];
+  let templateInfo: null | undefined | TemplateInfo = null;
+  function onMessage(event: MessageEvent) {
+    const { type, data } = event.data.pluginMessage;
+    if (type === MainThreadMsg.PostFrameNodes) {
+      const _templateInfo = data.node as [
+        AppNode | null,
+        { fontNames: string[] },
+      ];
+      templateInfo = _templateInfo;
+    }
+  }
+  window.addEventListener("message", onMessage);
+
+  let htmlString: string | undefined = undefined;
+  function onTemplateInfoChange(templateInfo: null | undefined | TemplateInfo) {
+    if (!templateInfo) {
+      htmlString = undefined;
+      return;
+    }
+    const [rootAppNode, { fontNames }] = templateInfo;
+    const html = getHtmlDocumentFromAppNode(rootAppNode, new Set(fontNames));
+    htmlString = html.outerHTML;
+  }
+  $: onTemplateInfoChange(templateInfo);
+
   onMount(async () => {
     await loadOrganizations();
+  });
+
+  onDestroy(() => {
+    window.removeEventListener("message", onMessage);
   });
 
   let view: View = "preview";
@@ -47,7 +82,16 @@
 <BaseLayout>
   <div slot="sidebar" class="sidebar">
     <div class="panel">
-      <PreviewOptions />
+      <PreviewOptions
+        isDownloadEnabled={!!htmlString}
+        onClickDownload={() => {
+          if (!htmlString) {
+            console.error("expected_htmlString");
+            return;
+          }
+          onClickDownloadTemplate({ htmlString });
+        }}
+      />
       {#if $featuresStore.apiCalls}
         <OrgSelectorItem
           orgInfos={organizations}
@@ -73,7 +117,15 @@
     {#if view === "templates"}
       <TemplatesView orgId={selectedOrgId} />
     {:else if view === "preview"}
-      <TemplatePreviewView orgId={selectedOrgId} />
+      <TemplatePreviewView
+        orgId={selectedOrgId}
+        {templateInfo}
+        onClickShowPreview={() => {
+          templateInfo = undefined;
+          sendToMainThread(UiMsg.ShowPreview);
+        }}
+        {htmlString}
+      />
     {/if}
   </div>
 </BaseLayout>
