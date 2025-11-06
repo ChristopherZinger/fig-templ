@@ -24,22 +24,14 @@ export async function makeFrames(frameId: string | null) {
     return;
   }
 
-  const [rootAppNode, { fontNames }] = await buildAppNodeFromSceneNode(
-    frame,
-    { fontNames: new Set() },
-    { isRoot: true }
-  );
-
-  sendToUiThread(MainThreadMsg.PostFrameNodes, {
-    node: [rootAppNode, { fontNames: [...fontNames] }],
-  });
+  const rootAppNode = await buildAppNodeFromSceneNode(frame, { isRoot: true });
+  sendToUiThread(MainThreadMsg.PostFrameNodes, { node: rootAppNode });
 }
 
 async function buildAppNodeFromSceneNode(
   sceneNode: SceneNode,
-  { fontNames }: { fontNames: Set<string> },
   options: { isRoot: boolean } = { isRoot: false }
-): Promise<[AppNode | null, { fontNames: Set<string> }]> {
+): Promise<AppNode | null> {
   const isLayoutMode =
     "layoutMode" in sceneNode && sceneNode.layoutMode !== "NONE";
 
@@ -50,44 +42,25 @@ async function buildAppNodeFromSceneNode(
     sceneNode.children.length > 0
   ) {
     console.error("containers_without_layout_are_unsupported", sceneNode);
-    return [null, { fontNames }];
+    return null;
   }
 
   const css = await sceneNode.getCSSAsync();
 
-  const styleResult = await buildNodeStyle(sceneNode, {
+  const style = await buildNodeStyle(sceneNode, {
     isRoot: options.isRoot,
   });
-  if (!styleResult) {
-    return [null, { fontNames }];
-  }
-  const [style, { fontNames: _fontNames }] = styleResult;
-
-  fontNames = fontNames || new Set();
-  for (const fontName of _fontNames) {
-    fontNames.add(fontName);
+  if (!style) {
+    return null;
   }
 
   const children: AppNode[] = [];
   if ("children" in sceneNode) {
-    const childNodes = await Promise.all(
-      sceneNode.children.map(
-        async (childNode) =>
-          await buildAppNodeFromSceneNode(childNode, {
-            fontNames,
-          })
-      )
+    await Promise.all(
+      sceneNode.children.map(async (childNode) => {
+        children.push(await buildAppNodeFromSceneNode(childNode));
+      })
     );
-
-    for (const [node, { fontNames: childFontNames }] of childNodes) {
-      if (!node) {
-        continue;
-      }
-      children.push(node);
-      for (const fontName of childFontNames) {
-        fontNames.add(fontName);
-      }
-    }
   }
 
   const result: AppNode = {
@@ -102,5 +75,5 @@ async function buildAppNodeFromSceneNode(
     result.innerText = sceneNode.characters;
   }
 
-  return [result, { fontNames: fontNames || new Set() }];
+  return result;
 }

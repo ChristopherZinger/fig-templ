@@ -41,8 +41,7 @@
     selectedOrgId = null;
   }
 
-  type TemplateInfo = [AppNode, { fontNames: string[] }];
-  let templateInfo: null | undefined | TemplateInfo = null;
+  let rootNode: null | undefined | AppNode = null;
   let selectedFrameId: string | undefined = undefined;
   let frameSelectOptions: { id: string; name: string }[] | undefined =
     undefined;
@@ -50,11 +49,7 @@
     const { type, data } = event.data.pluginMessage;
     switch (type) {
       case MainThreadMsg.PostFrameNodes:
-        const _templateInfo = data.node as [
-          AppNode | null,
-          { fontNames: string[] },
-        ];
-        templateInfo = _templateInfo;
+        rootNode = data.node as AppNode | null;
         break;
       case MainThreadMsg.PostFrameInfosForSelector:
         const newFrames = data.frames as { id: string; name: string }[];
@@ -71,16 +66,15 @@
   window.addEventListener("message", onMessage);
 
   let htmlString: string | undefined = undefined;
-  function onTemplateInfoChange(templateInfo: null | undefined | TemplateInfo) {
-    if (!templateInfo) {
+  function onTemplateInfoChange(appNode: null | undefined | AppNode) {
+    if (!appNode) {
       htmlString = undefined;
       return;
     }
-    const [rootAppNode, { fontNames }] = templateInfo;
-    const html = getHtmlDocumentFromAppNode(rootAppNode, new Set(fontNames));
-    htmlString = html.outerHTML;
+
+    htmlString = getHtmlDocumentFromAppNode(appNode).outerHTML;
   }
-  $: onTemplateInfoChange(templateInfo);
+  $: onTemplateInfoChange(rootNode);
 
   onMount(async () => {
     if ($featuresStore.apiCalls) {
@@ -146,9 +140,14 @@
     {:else if view === "preview"}
       <TemplatePreviewView
         orgId={selectedOrgId}
-        {templateInfo}
+        previewInfo={rootNode
+          ? {
+              width: rootNode.style.width,
+              height: rootNode.style.height,
+            }
+          : rootNode}
         onClickShowPreview={() => {
-          templateInfo = undefined;
+          rootNode = undefined;
           sendToMainThread(UiMsg.ShowPreview, { frameId: selectedFrameId });
         }}
         {htmlString}
