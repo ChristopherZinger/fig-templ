@@ -67,7 +67,9 @@
   $: onTemplateInfoChange(templateInfo);
 
   onMount(async () => {
-    await loadOrganizations();
+    if ($featuresStore.apiCalls) {
+      await loadOrganizations();
+    }
   });
 
   onDestroy(() => {
