@@ -1,13 +1,8 @@
 import { hasLayoutMode, isTopLevelNode } from "./node-utils";
 
 export async function buildNodeStyle(
-  node: SceneNode,
-  options: { isRoot: boolean } = { isRoot: false }
-): Promise<Record<string, string> | null> {
-  if (!node.visible && !options.isRoot) {
-    return null;
-  }
-
+  node: SceneNode
+): Promise<Record<string, string>> {
   return Object.assign(
     { "box-sizing": "border-box" },
     getBaseStyles(node),

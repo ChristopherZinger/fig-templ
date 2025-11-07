@@ -42,23 +42,24 @@ async function buildAppNodeFromSceneNode(
     sceneNode.children.length > 0
   ) {
     console.error("containers_without_layout_are_unsupported", sceneNode);
+    // TODO: non-layouts should be exported as a picture
+    return null;
+  }
+
+  if (sceneNode.visible === false && !options.isRoot) {
     return null;
   }
 
   const css = await sceneNode.getCSSAsync();
-
-  const style = await buildNodeStyle(sceneNode, {
-    isRoot: options.isRoot,
-  });
-  if (!style) {
-    return null;
-  }
-
+  const style = await buildNodeStyle(sceneNode);
   const children: AppNode[] = [];
   if ("children" in sceneNode) {
     await Promise.all(
       sceneNode.children.map(async (childNode) => {
-        children.push(await buildAppNodeFromSceneNode(childNode));
+        const n = await buildAppNodeFromSceneNode(childNode);
+        if (n) {
+          children.push(n);
+        }
       })
     );
   }
