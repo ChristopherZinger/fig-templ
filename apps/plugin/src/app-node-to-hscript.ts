@@ -87,7 +87,12 @@ function getBaseStyle(appNode: AppNode) {
 
 function getFontFamilies(node: AppNode): Set<string> {
   if (!node.children.length) {
-    return new Set([node.style["font-family"]]);
+    const result = new Set<string>();
+    const font = node.style["font-family"];
+    if (font) {
+      result.add(font);
+    }
+    return result;
   }
 
   let fonts: Set<string> = new Set();
