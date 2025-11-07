@@ -269,12 +269,10 @@ async function getImageStyles(img: Image): Promise<{
   "background-position": string;
   "background-repeat": string;
 }> {
-  const bytes = await img.getBytesAsync();
-  const base64 = figma.base64Encode(bytes);
   return {
-    "background-image": `url(data:image/png;base64,${base64})`,
+    "background-image": "", // this style is handled in UI thread for performance reasons
     // TODO: handle background-size, background-position, background-repeat
-    "background-size": "contain",
+    "background-size": "cover",
     "background-position": "center",
     "background-repeat": "no-repeat",
   };

@@ -5,6 +5,9 @@
     TemplettoApiActions,
   } from "../../lib/utils/plugin-api-endpoint";
   import { featuresStore } from "../../lib/stores/enabledFeaturesStore";
+  import { MainThreadMsg } from "../../lib/utils/shared/messages";
+  import { onDestroy } from "svelte";
+  import { getMessageEventListener } from "../../lib/utils/window-ev-listener-utils";
 
   export let orgId: string | undefined | null;
   export let onClickShowPreview: () => void;
@@ -24,6 +27,7 @@
       return;
     }
     iframeRef.contentDocument.body.innerHTML = htmlString || "";
+    setBgImages(blobStore);
   }
   $: onHtmlStringChange(htmlString);
 
@@ -55,6 +59,50 @@
       isSavingTemplate = false;
     }
   }
+
+  let blobStore: Record<string, Blob> = {};
+  function onMessage(event: MessageEvent) {
+    const { type, data } = event.data.pluginMessage;
+    switch (type) {
+      case MainThreadMsg.PostImageInfo:
+        const { hash, bytes } = data;
+        blobStore = {
+          ...blobStore,
+          [hash]: new Blob([bytes], { type: "image/png" }),
+        };
+        break;
+    }
+  }
+  const unsub = getMessageEventListener(onMessage);
+
+  function setBgImages(blobStore: Record<string, Blob>) {
+    if (!iframeRef?.contentDocument) {
+      console.error("expected_iframeRef_contentDocument");
+      return;
+    }
+
+    for (const [hash, blob] of Object.entries(blobStore)) {
+      const elements = iframeRef.contentDocument.querySelectorAll(
+        `[data-image-hash="${hash}"]`
+      );
+
+      const blobUrl = URL.createObjectURL(blob);
+
+      elements.forEach((element) => {
+        if ("style" in element) {
+          (element as unknown as HTMLElement).style.setProperty(
+            "background-image",
+            `url(${blobUrl})`
+          );
+        }
+      });
+    }
+  }
+  $: setBgImages(blobStore);
+
+  onDestroy(() => {
+    unsub();
+  });
 </script>
 
 <main>

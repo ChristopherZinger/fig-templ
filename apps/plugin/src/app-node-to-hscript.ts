@@ -61,6 +61,7 @@ function getTextNode<T extends Extract<AppNode, { type: "TEXT" }>>(appNode: T) {
     appNode.innerText,
     {
       style: getBaseStyle(appNode),
+      ...appNode.attributes,
     }
   );
 }
@@ -69,15 +70,15 @@ function getFrameNode<T extends Extract<AppNode, { type: "FRAME" }>>(
   appNode: T
 ) {
   return h("div", ...appNode.children.map(getHscriptFromAppNode), {
-    style: {
-      ...getBaseStyle(appNode),
-    },
+    style: getBaseStyle(appNode),
+    ...appNode.attributes,
   });
 }
 
 function getGenericNode(appNode: AppNode): HTMLElement {
   return h("div", ...appNode.children.map(getHscriptFromAppNode), {
     style: getBaseStyle(appNode),
+    ...appNode.attributes,
   });
 }
 

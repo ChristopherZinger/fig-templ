@@ -50,8 +50,11 @@ async function buildAppNodeFromSceneNode(
     return null;
   }
 
-  const css = await sceneNode.getCSSAsync();
-  const style = await buildNodeStyle(sceneNode);
+  const [css, style, attributes] = await Promise.all([
+    sceneNode.getCSSAsync(),
+    buildNodeStyle(sceneNode),
+    getAttributes(sceneNode),
+  ]);
   const children: AppNode[] = [];
   if ("children" in sceneNode) {
     await Promise.all(
@@ -70,6 +73,7 @@ async function buildAppNodeFromSceneNode(
     children,
     css,
     style,
+    attributes,
   };
 
   if (sceneNode.type === "TEXT") {
@@ -77,4 +81,26 @@ async function buildAppNodeFromSceneNode(
   }
 
   return result;
+}
+
+async function getAttributes(node: SceneNode): Promise<Record<string, string>> {
+  if (!("fills" in node) || !node.fills || !Array.isArray(node.fills)) {
+    return {};
+  }
+
+  const fill = node.fills.find((fill) => fill.visible === true);
+  if (!fill || fill.type !== "IMAGE") {
+    return {};
+  }
+
+  const img = figma.getImageByHash(fill.imageHash);
+  if (!img) {
+    return {};
+  }
+
+  // TODO: this side effect should happen somewhere else
+  const bytes = await img.getBytesAsync();
+  sendToUiThread(MainThreadMsg.PostImageInfo, { hash: img.hash, bytes });
+
+  return { "data-image-hash": img.hash };
 }
