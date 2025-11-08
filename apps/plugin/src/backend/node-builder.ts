@@ -105,5 +105,5 @@ async function getAttributes(node: SceneNode): Promise<Record<string, string>> {
   const bytes = await img.getBytesAsync();
   sendToUiThread(MainThreadMsg.PostImageInfo, { hash: img.hash, bytes });
 
-  return { "data-image-hash": img.hash };
+  return { "data-image-hash": img.hash, id: node.name };
 }
