@@ -6,6 +6,7 @@ export NODE_ENV=production
 source "$(dirname "$0")/build.env"
 
 pushd ../..
+
 # Build the Docker image
 echo "Building Docker image $IMAGE_NAME:$TAG..."
 docker build --platform linux/amd64 -f apps/starter-app/Dockerfile -t $IMAGE_NAME:$TAG .
@@ -25,7 +26,7 @@ gcloud run deploy $SERVICE \
     --image $IMAGE_URL \
     --allow-unauthenticated \
     --concurrency 80 \
-    --description "Templetto Starter App - SvelteKit web application" \
+    --description "Web app" \
     --max-instances 3 \
     --min-instances 0 \
     --region europe-west3 \
