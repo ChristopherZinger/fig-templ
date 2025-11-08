@@ -1,7 +1,8 @@
 <script lang="ts">
+  export let isActive: boolean = false;
   export let onClick: () => void;
   export let isDisabled: boolean = false;
-  export let variant: "primary" | "secondary" = "primary";
+  export let variant: "primary" | "secondary" | "naked" = "primary";
   export let options: {
     fullWidth?: boolean;
   } = {
@@ -12,7 +13,9 @@
 <button
   class:primary={variant === "primary"}
   class:secondary={variant === "secondary"}
+  class:naked={variant === "naked"}
   disabled={isDisabled}
+  class:active={isActive}
   onclick={onClick}
   class:fullWidth={options.fullWidth}
 >
@@ -37,6 +40,17 @@
     border: 1px solid gray;
     background-color: transparent;
     color: lightgray;
+  }
+
+  .naked {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+  }
+  .naked.active {
+    text-decoration: underline;
   }
 
   button:disabled {
