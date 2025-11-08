@@ -363,11 +363,22 @@ function getBorderRadiusStyle(
   return null;
 }
 
-function getBorderStyle(node: BaseNode): {
-  "border-width": string;
-  "border-style": string;
-  "border-color": string;
-} | null {
+function getBorderStyle(node: BaseNode):
+  | ((
+      | {
+          "border-width": string;
+        }
+      | {
+          "border-top-width": string;
+          "border-right-width": string;
+          "border-bottom-width": string;
+          "border-left-width": string;
+        }
+    ) & {
+      "border-style": string;
+      "border-color": string;
+    })
+  | null {
   if (
     "strokes" in node &&
     Array.isArray(node.strokes) &&
@@ -388,9 +399,15 @@ function getBorderStyle(node: BaseNode): {
   return null;
 }
 
-function getBorderWidthStyle(
-  node: BaseNode
-): { "border-width": string } | null {
+function getBorderWidthStyle(node: BaseNode):
+  | { "border-width": string }
+  | {
+      "border-top-width": string;
+      "border-right-width": string;
+      "border-bottom-width": string;
+      "border-left-width": string;
+    }
+  | null {
   if (!("strokeWeight" in node)) {
     return null;
   }
@@ -399,10 +416,12 @@ function getBorderWidthStyle(
       "border-width": node.strokeWeight + "px",
     };
   }
-  if ("topStrokeWeight" in node) {
-    // TODO: handle stroke weights per side
+  if ("strokeBottomWeight" in node) {
     return {
-      "border-width": node.topStrokeWeight + "px",
+      "border-top-width": node.strokeTopWeight + "px",
+      "border-right-width": node.strokeRightWeight + "px",
+      "border-bottom-width": node.strokeBottomWeight + "px",
+      "border-left-width": node.strokeLeftWeight + "px",
     };
   }
   return null;
