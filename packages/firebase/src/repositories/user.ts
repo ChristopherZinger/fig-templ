@@ -1,8 +1,10 @@
 import {
   getUserOrgJoinTableCollectionRef,
   getTemplatesCollectionRef,
+  getUsersCollectionRef,
 } from "../utils/collection-refs";
-import type { Template_FsDoc } from "../utils/collections";
+import { addUserToOrg, createOrgWithName } from "./organization";
+import type { Organization_FsDoc, Template_FsDoc } from "../utils/collections";
 
 export async function getUserOrgIds({
   uid,
@@ -32,15 +34,73 @@ export async function userHasAccessToOrg({
 export async function getUserOrgTemplateDocs({
   uid,
   orgId,
+  limit,
+  sortByCreatedAt,
 }: {
   uid: string;
   orgId: string;
+  limit?: number;
+  sortByCreatedAt?: "asc" | "desc";
 }): Promise<Template_FsDoc[]> {
   const hasAccess = await userHasAccessToOrg({ uid, orgId });
   if (!hasAccess) {
     return [];
   }
-  return (await getTemplatesCollectionRef({ orgId }).get()).docs.map((doc) =>
-    doc.data()
-  );
+
+  let query = getTemplatesCollectionRef({ orgId });
+
+  if (sortByCreatedAt) {
+    query = query.orderBy("createdAt", sortByCreatedAt) as any;
+  }
+
+  if (limit) {
+    query = query.limit(limit) as any;
+  }
+
+  return (await query.get()).docs.map((doc) => doc.data());
+}
+
+export async function createUserPersonalOrg({
+  userId,
+}: {
+  userId: string;
+}): Promise<Organization_FsDoc> {
+  const userPersonalOrg = await createOrgWithName("Personal Workspace");
+  await addUserToOrg({ userId, orgId: userPersonalOrg.id });
+  return userPersonalOrg;
+}
+
+export async function updateUserDefaultOrg({
+  userId,
+  orgId,
+}: {
+  userId: string;
+  orgId: string;
+}): Promise<void> {
+  await getUsersCollectionRef().doc(userId).update({ defaultOrgId: orgId });
+}
+
+export async function getUserDefaultOrgId({
+  userId,
+}: {
+  userId: string;
+}): Promise<string | null> {
+  const userDoc = (await getUsersCollectionRef().doc(userId).get()).data();
+  if (!userDoc) {
+    return null;
+  }
+  if (userDoc?.defaultOrgId) {
+    return userDoc.defaultOrgId;
+  }
+  // if no default org is set, either use the first org as default
+  const userOrgs = await getUserOrgIds({ uid: userId });
+  if (userOrgs.length > 0) {
+    await updateUserDefaultOrg({ userId, orgId: userOrgs[0] });
+    return userOrgs[0];
+  } else {
+    // or create a personal org and set it as the default
+    const userPersonalOrg = await createUserPersonalOrg({ userId });
+    await updateUserDefaultOrg({ userId, orgId: userPersonalOrg.id });
+    return userPersonalOrg.id;
+  }
 }

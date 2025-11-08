@@ -86,7 +86,6 @@ const authGuard: Handle = async ({ event, resolve }) => {
       // Keep firebaseUser as null
     }
   }
-  console.log("event.locals.firebaseUser", event.locals.firebaseUser)
   return resolve(event)
 }
 /*

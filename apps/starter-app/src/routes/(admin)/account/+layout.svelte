@@ -12,7 +12,4 @@
   })
 </script>
 
-<h1>Account</h1>
-<p>Welcome {data?.firebaseUser?.email}</p>
-<p>Templates: {JSON.stringify(data?.userTemplates)}</p>
 {@render children?.()}

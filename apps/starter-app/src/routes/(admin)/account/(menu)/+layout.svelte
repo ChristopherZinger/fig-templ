@@ -2,12 +2,14 @@
   import { writable } from "svelte/store"
   import { setContext } from "svelte"
   import { WebsiteName } from "../../../../config"
+  import type { Organization_FsDoc } from "@templetto/firebase"
   interface Props {
     children?: import("svelte").Snippet
+    data: { firebaseUser: DecodedIdToken; userTemplates: Template_FsDoc[]; currentOrg: Organization_FsDoc }
   }
 
-  let { children }: Props = $props()
-
+  let { children, data }: Props = $props()
+  let { firebaseUser, currentOrg } = data
   const adminSectionStore = writable("")
   setContext("adminSection", adminSectionStore)
   let adminSection: string | undefined = $state()
@@ -92,6 +94,25 @@
       </li>
       <li>
         <a
+          href="/account/templates"
+          class={adminSection === "templates" ? "active" : ""}
+          onclick={closeDrawer}
+        >
+          <svg
+            class="h-5 w-5"
+            viewBox="0 0 24 24"
+            stroke="none"
+            fill="currentColor"
+          >
+            <path
+              d="M18,2H10L4,8V20a2,2,0,0,0,2,2H18a2,2,0,0,0,2-2V4A2,2,0,0,0,18,2ZM6,20V9.414L9.586,6H18V20Z M10,6V9H7Z"
+            />
+          </svg>
+          Templates
+        </a>
+      </li>
+      <li>
+        <a
           href="/account/billing"
           class={adminSection === "billing" ? "active" : ""}
           onclick={closeDrawer}
@@ -140,6 +161,8 @@
       </li>
 
       <li class="mt-auto">
+        {currentOrg?.name}<br/>
+        {firebaseUser?.email}
         <a href="/account/sign_out" class="mt-auto text-base">Sign Out</a>
       </li>
     </ul>

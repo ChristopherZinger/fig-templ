@@ -5,9 +5,8 @@ import {
 } from "../../subscription_helpers.server"
 import type { PageServerLoad } from "./$types"
 
-export const load: PageServerLoad = async ({
-  locals: { safeGetSession, supabaseServiceRole },
-}) => {
+export const load: PageServerLoad = async ({ locals: { firebaseUser } }) => {
+  /*
   const { session, user } = await safeGetSession()
   if (!session || !user?.id) {
     redirect(303, "/login")
@@ -36,6 +35,13 @@ export const load: PageServerLoad = async ({
     error(500, {
       message: "Unknown error. If issue persists, please contact us.",
     })
+  }
+  */
+
+  return {
+    isActiveCustomer: false,
+    hasEverHadSubscription: false,
+    currentPlanId: null,
   }
 
   return {

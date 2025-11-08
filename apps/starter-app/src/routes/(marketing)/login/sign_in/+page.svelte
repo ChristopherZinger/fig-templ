@@ -25,6 +25,7 @@
       // TODO: set persistence to NONE
       // auth.setPersistence({ type: "NONE" })
       const result = await signInWithPopup(auth, provider)
+      goto('/account')
     } catch (error) {
       console.error({ error })
       hasPluginLoginFailed = true

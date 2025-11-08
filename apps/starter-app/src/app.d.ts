@@ -8,6 +8,7 @@ declare global {
   namespace App {
     interface Locals {
       firebaseUser: DecodedIdToken | null
+      currentOrg: Organization_FsDoc | null
     }
     interface PageData {
       session: Session | null

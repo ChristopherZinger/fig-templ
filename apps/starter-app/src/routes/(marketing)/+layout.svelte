@@ -14,15 +14,15 @@
   </div>
   <div class="flex-none">
     <ul class="menu menu-horizontal px-1 hidden sm:flex font-bold text-lg">
+        <li><a href="/blog">Docs</a></li>
+        <li><a href="/pricing">Pricing</a></li>
+        <li><a href="/login/sign_in">Log in</a></li>
       <li class="md:mx-4">
         <a
           href="/login/sign_up"
-          class="border border-primary">Try Templetto</a
+          class="border border-primary">Sign up</a
         >
       </li>
-      <li class="md:mx-2"><a href="/blog">Blog</a></li>
-      <li class="md:mx-2"><a href="/pricing">Pricing</a></li>
-      <li class="md:mx-2"><a href="/account">Account</a></li>
       <li class="md:mx-0">
         <a href="/search" aria-label="Search">
           <svg
@@ -61,9 +61,10 @@
         tabindex="0"
         class="menu menu-lg dropdown-content mt-3 z-1 p-2 shadow-sm bg-base-100 rounded-box w-52 font-bold"
       >
-        <li><a href="/blog">Blog</a></li>
+        <li><a href="/login/sign_in">Log in </a></li>
+        <li><a href="/login/sign_up">Sign up</a></li>
+        <li><a href="/blog">Docs</a></li>
         <li><a href="/pricing">Pricing</a></li>
-        <li><a href="/account">Account</a></li>
         <li><a href="/search">Search</a></li>
         <li>
           <a
