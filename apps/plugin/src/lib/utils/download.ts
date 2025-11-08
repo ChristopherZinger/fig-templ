@@ -3,7 +3,7 @@ export function onClickDownloadTemplate({
 }: {
   htmlString: string;
 }) {
-  var element = document.createElement("a");
+  const element = document.createElement("a");
   element.setAttribute(
     "href",
     "data:text/plain;charset=utf-8," + encodeURIComponent(htmlString)
