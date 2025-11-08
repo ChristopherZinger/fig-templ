@@ -57,14 +57,17 @@ async function buildAppNodeFromSceneNode(
   ]);
   const children: AppNode[] = [];
   if ("children" in sceneNode) {
-    await Promise.all(
-      sceneNode.children.map(async (childNode) => {
-        const n = await buildAppNodeFromSceneNode(childNode);
-        if (n) {
-          children.push(n);
-        }
-      })
-    );
+    (
+      await Promise.all(
+        sceneNode.children.map(async (childNode) => {
+          return await buildAppNodeFromSceneNode(childNode);
+        })
+      )
+    )
+      .filter((val: AppNode | null) => !!val)
+      .forEach((val: AppNode) => {
+        children.push(val);
+      });
   }
 
   const result: AppNode = {
