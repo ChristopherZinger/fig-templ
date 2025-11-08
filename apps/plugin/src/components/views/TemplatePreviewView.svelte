@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { AppNode } from "../../types";
   import {
     callTemplettoApi,
     TemplettoApiActions,
@@ -8,6 +7,9 @@
   import { MainThreadMsg } from "../../lib/utils/shared/messages";
   import { onDestroy } from "svelte";
   import { getMessageEventListener } from "../../lib/utils/window-ev-listener-utils";
+  import CodePreviewView from "./CodePreviewView.svelte";
+  import PreviewModeSelector from "../PreviewModeSelector.svelte";
+  import VisualPreviewView from "./VisualPreviewView.svelte";
 
   export let orgId: string | undefined | null;
   export let htmlString: string | undefined;
@@ -19,16 +21,7 @@
     | undefined
     | null;
 
-  let iframeRef: HTMLIFrameElement | undefined;
-  function onHtmlStringChange(htmlString: string | undefined) {
-    if (!iframeRef?.contentDocument) {
-      console.error("expected_iframeRef_contentDocument");
-      return;
-    }
-    iframeRef.contentDocument.body.innerHTML = htmlString || "";
-    setBgImages(blobStore);
-  }
-  $: onHtmlStringChange(htmlString);
+  let viewMode: "preview" | "code" = "preview";
 
   let isSavingTemplate = false;
   async function onClickSaveTemplate({
@@ -73,39 +66,20 @@
   }
   const unsub = getMessageEventListener(onMessage);
 
-  function setBgImages(blobStore: Record<string, Blob>) {
-    if (!iframeRef?.contentDocument) {
-      console.error("expected_iframeRef_contentDocument");
-      return;
-    }
-
-    for (const [hash, blob] of Object.entries(blobStore)) {
-      const elements = iframeRef.contentDocument.querySelectorAll(
-        `[data-image-hash="${hash}"]`
-      );
-
-      const blobUrl = URL.createObjectURL(blob);
-
-      elements.forEach((element) => {
-        if ("style" in element) {
-          (element as unknown as HTMLElement).style.setProperty(
-            "background-image",
-            `url(${blobUrl})`
-          );
-        }
-      });
-    }
-  }
-  $: setBgImages(blobStore);
-
   onDestroy(() => {
     unsub();
   });
 </script>
 
 <main>
-  {#if $featuresStore.apiCalls}
-    <div class="header">
+  <div class="header">
+    <PreviewModeSelector
+      {viewMode}
+      onSelectMode={(mode) => {
+        viewMode = mode;
+      }}
+    />
+    {#if $featuresStore.apiCalls}
       <button
         disabled={!htmlString || !orgId || isSavingTemplate}
         onclick={() => {
@@ -120,26 +94,26 @@
       >
         Save Template
       </button>
-    </div>
-  {/if}
-
-  <div class="iframe-container">
-    <iframe
-      bind:this={iframeRef}
-      class:hidden={!previewInfo}
-      title="iframe"
-      style={`width: ${previewInfo?.width || "100px"}; height: ${previewInfo?.height || "100px"};`}
-    ></iframe>
-    {#if previewInfo === undefined}
-      <p>Loading...</p>
     {/if}
-    {#if previewInfo === null}
-      <p>No template selected</p>
+  </div>
+
+  <div class="content">
+    {#if viewMode === "preview"}
+      <VisualPreviewView {htmlString} imgHashToBlob={blobStore} {previewInfo} />
+    {:else}
+      <CodePreviewView {htmlString} />
     {/if}
   </div>
 </main>
 
 <style>
+  main {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
   .header {
     display: flex;
     justify-content: space-between;
@@ -149,22 +123,11 @@
     max-height: 50px;
     height: 50px;
   }
-  .iframe-container {
-    display: flex;
-    padding: 40px 0;
-    justify-content: center;
-  }
-  .iframe-container iframe {
-    background-color: white;
-    border: none;
-  }
 
-  .hidden {
-    display: none;
-  }
-  .save-template-container {
+  .content {
+    flex: 1;
+    overflow: auto;
     display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
   }
 </style>
