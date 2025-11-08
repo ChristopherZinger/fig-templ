@@ -594,20 +594,32 @@ function getTextDecorationStyle(
 
 function getTextAlignHorizontalStyle(
   node: BaseNode
-): { "text-align": string } | null {
+): { display: string; "justify-content": string } | null {
   if (node.type !== "TEXT") {
     return null;
   }
 
   switch (node.textAlignHorizontal) {
     case "LEFT":
-      return { "text-align": "left" };
+      return {
+        display: "flex",
+        "justify-content": "left",
+      };
     case "CENTER":
-      return { "text-align": "center" };
+      return {
+        display: "flex",
+        "justify-content": "center",
+      };
     case "RIGHT":
-      return { "text-align": "right" };
+      return {
+        display: "flex",
+        "justify-content": "right",
+      };
     case "JUSTIFIED":
-      return { "text-align": "justify" };
+      return {
+        display: "flex",
+        "justify-content": "justify",
+      };
     default:
       console.error("text_align_horizontal_not_supported", node);
       return null;
@@ -617,7 +629,6 @@ function getTextAlignHorizontalStyle(
 function getTextAlignVerticalStyle(node: BaseNode): {
   display: string;
   "align-items": string;
-  "justify-content": string;
 } | null {
   if (node.type !== "TEXT") {
     return null;
@@ -628,19 +639,16 @@ function getTextAlignVerticalStyle(node: BaseNode): {
       return {
         display: "flex",
         "align-items": "flex-start",
-        "justify-content": "center",
       };
     case "CENTER":
       return {
         display: "flex",
         "align-items": "center",
-        "justify-content": "center",
       };
     case "BOTTOM":
       return {
         display: "flex",
         "align-items": "flex-end",
-        "justify-content": "center",
       };
     default:
       console.error("text_align_vertical_not_supported", node);
