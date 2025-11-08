@@ -14,7 +14,7 @@
   </div>
   <div class="flex-none">
     <ul class="menu menu-horizontal px-1 hidden sm:flex font-bold text-lg">
-        <li><a href="/blog">Docs</a></li>
+        <li><a href="/docs">Docs</a></li>
         <li><a href="/pricing">Pricing</a></li>
         <li><a href="/login/sign_in">Log in</a></li>
       <li class="md:mx-4">
@@ -63,7 +63,7 @@
       >
         <li><a href="/login/sign_in">Log in </a></li>
         <li><a href="/login/sign_up">Sign up</a></li>
-        <li><a href="/blog">Docs</a></li>
+        <li><a href="/docs">Docs</a></li>
         <li><a href="/pricing">Pricing</a></li>
         <li><a href="/search">Search</a></li>
         <li>
@@ -92,7 +92,7 @@
       <span class="footer-title opacity-80">Explore</span>
       <a class="link link-hover mb-1" href="/">Overview</a>
       <a class="link link-hover my-1" href="/pricing">Pricing</a>
-      <a class="link link-hover my-1" href="/blog">Blog</a>
+      <a class="link link-hover my-1" href="/docs">Docs</a>
       <a class="link link-hover my-1" href="/contact_us">Contact Us</a>
     </nav>
     <aside>
