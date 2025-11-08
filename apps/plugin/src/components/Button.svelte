@@ -8,6 +8,7 @@
   } = {
     fullWidth: false,
   };
+  export let style: Record<string, string> = {};
 </script>
 
 <button
@@ -18,6 +19,9 @@
   class:active={isActive}
   onclick={onClick}
   class:fullWidth={options.fullWidth}
+  style={Object.entries(style)
+    .map(([key, value]) => `${key}: ${value}`)
+    .join("; ")}
 >
   <slot />
 </button>

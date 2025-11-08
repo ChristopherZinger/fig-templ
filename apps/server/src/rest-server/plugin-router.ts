@@ -7,6 +7,7 @@ import {
   createTemplateHandler,
   logoutHandler,
   readSessionTokenHandler,
+  getPluginInfoHandler,
 } from "./plugin-rounte-handlers";
 import cors from "cors";
 import { pluginAuthMiddleware } from "./middleware";
@@ -35,6 +36,7 @@ pluginRouter.use(
   })
 );
 
+pluginRouter.get("/get-plugin-info", getPluginInfoHandler);
 pluginRouter.get("/get-pkce-keys", getPkceKeysHandler);
 pluginRouter.post("/read-session-token", readSessionTokenHandler);
 pluginRouter.post("/save-token", createSessionTokenHandler);

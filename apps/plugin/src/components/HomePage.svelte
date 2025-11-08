@@ -136,6 +136,7 @@
     {#if $featuresStore.apiCalls}
       <LogoutButton />
     {/if}
+    <GetHelpButton />
   </div>
 
   <div slot="content" class="content">

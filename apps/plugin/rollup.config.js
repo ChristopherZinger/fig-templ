@@ -23,6 +23,7 @@ const pkg = JSON.parse(await readFile(fileUrl, "utf8"));
 
 const production = process.env.NODE_ENV === "production";
 const shouldEnableApiCalls = process.env.SHOULD_ENABLE_API_CALLS === "true";
+const pluginVersion = process.env.PLUGIN_VERSION;
 
 export default [
   {
@@ -41,6 +42,7 @@ export default [
             production ? "production" : "development"
           ),
           "process.env.SHOULD_ENABLE_API_CALLS": shouldEnableApiCalls,
+          "process.env.PLUGIN_VERSION": JSON.stringify(pluginVersion),
         },
       }),
       svelte({

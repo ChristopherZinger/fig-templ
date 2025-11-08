@@ -352,3 +352,10 @@ export async function createTemplateHandler(req: Request, res: Response) {
     return;
   }
 }
+
+export async function getPluginInfoHandler(_: Request, res: Response) {
+  res.status(200).json({
+    version: "0.0.0",
+    webappUrl: "https://templetto.com",
+  });
+}

@@ -8,6 +8,7 @@ export enum TemplettoApiActions {
   Logout = "logout",
   getTemplates = "get-templates",
   getOrganizations = "get-organizations",
+  getPluginInfo = "get-plugin-info",
 }
 
 export async function callTemplettoApi({
@@ -49,10 +50,7 @@ export async function callTemplettoApi({
   return response;
 }
 
-function getUrlForAction(
-  action: TemplettoApiActions,
-  body?: Record<string, any> | undefined
-): {
+function getUrlForAction(action: TemplettoApiActions): {
   url: string;
   headers: Record<string, string>;
 } {
@@ -85,6 +83,11 @@ function getUrlForAction(
       return {
         url: `${baseUrl}/get-organizations`,
         headers: { ...headers, ...getAuthHeader() },
+      };
+    case TemplettoApiActions.getPluginInfo:
+      return {
+        url: `${baseUrl}/get-plugin-info`,
+        headers,
       };
   }
 }
