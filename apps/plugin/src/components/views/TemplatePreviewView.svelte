@@ -52,7 +52,6 @@
         console.error("failed_to_save_template", response);
         return;
       }
-      console.log("create_template_response", await response.json());
     } catch (error) {
       console.error("failed_to_save_template", error);
     } finally {
@@ -160,10 +159,13 @@
     height: 50px;
   }
   .iframe-container {
-    margin: 20px 0;
+    display: flex;
+    padding: 40px 0;
+    justify-content: center;
   }
   .iframe-container iframe {
     background-color: white;
+    border: none;
   }
 
   .hidden {
