@@ -19,6 +19,10 @@
   import { getHtmlDocumentFromAppNode } from "../app-node-to-hscript";
   import { onClickDownloadTemplate } from "../lib/utils/download";
   import { isEqual } from "lodash";
+  import GetHelpButton from "./GetHelpButton.svelte";
+  import { getMessageEventListener } from "../lib/utils/window-ev-listener-utils";
+  import { replaceBgImgStyleUrlsWithBase64 } from "../lib/utils/html-string-utils";
+
 
   let organizations: { id: string; name: string }[] | null | undefined =
     undefined;
@@ -43,8 +47,9 @@
 
   let rootNode: null | undefined | AppNode = null;
   let selectedFrameId: string | undefined = undefined;
-  let frameSelectOptions: { id: string; name: string }[] | undefined =
-    undefined;
+  let frameSelectOptions: { id: string; name: string }[] | undefined;
+  let imgHashToBlob: Record<string, Blob> = {};
+
   function onMessage(event: MessageEvent) {
     const { type, data } = event.data.pluginMessage;
     switch (type) {
@@ -61,9 +66,16 @@
           selectedFrameId = frameSelectOptions[0].id;
         }
         break;
+      case MainThreadMsg.PostImageInfo:
+        const { hash, bytes } = data;
+        imgHashToBlob = {
+          ...imgHashToBlob,
+          [hash]: new Blob([bytes], { type: "image/png" }),
+        };
+        break;
     }
   }
-  window.addEventListener("message", onMessage);
+  const unsub = getMessageEventListener(onMessage);
 
   let htmlString: string | undefined = undefined;
   function onTemplateInfoChange(appNode: null | undefined | AppNode) {
@@ -76,6 +88,18 @@
   }
   $: onTemplateInfoChange(rootNode);
 
+  async function onClickDownloadHtml(htmlStringInput: string): Promise<void> {
+    const htmlResult = await replaceBgImgStyleUrlsWithBase64({
+      htmlStringInput,
+      imgHashToBlob,
+    });
+    if (!htmlResult) {
+      console.error("failed_to_replace_bg_img_style_urls_with_base64");
+      return;
+    }
+    onClickDownloadTemplate({ htmlString: htmlResult });
+  }
+
   onMount(async () => {
     if ($featuresStore.apiCalls) {
       await loadOrganizations();
@@ -84,7 +108,7 @@
   });
 
   onDestroy(() => {
-    window.removeEventListener("message", onMessage);
+    unsub();
   });
 
   let view: View = "preview";
@@ -97,13 +121,8 @@
     <div class="panel">
       <PreviewOptions
         isDownloadEnabled={!!htmlString}
-        onClickDownload={() => {
-          if (!htmlString) {
-            console.error("expected_htmlString");
-            return;
-          }
-          onClickDownloadTemplate({ htmlString });
-        }}
+        onClickDownload={async () =>
+          await onClickDownloadHtml(htmlString ?? "")}
         onSelectFrame={(frameId) => {
           selectedFrameId = frameId;
         }}
@@ -152,6 +171,7 @@
             }
           : rootNode}
         {htmlString}
+        {imgHashToBlob}
       />
     {/if}
   </div>

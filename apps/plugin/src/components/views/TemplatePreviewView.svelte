@@ -4,15 +4,13 @@
     TemplettoApiActions,
   } from "../../lib/utils/plugin-api-endpoint";
   import { featuresStore } from "../../lib/stores/enabledFeaturesStore";
-  import { MainThreadMsg } from "../../lib/utils/shared/messages";
-  import { onDestroy } from "svelte";
-  import { getMessageEventListener } from "../../lib/utils/window-ev-listener-utils";
   import CodePreviewView from "./CodePreviewView.svelte";
   import PreviewModeSelector from "../PreviewModeSelector.svelte";
   import VisualPreviewView from "./VisualPreviewView.svelte";
 
   export let orgId: string | undefined | null;
   export let htmlString: string | undefined;
+  export let imgHashToBlob: Record<string, Blob>;
   export let previewInfo:
     | {
         width: number;
@@ -50,25 +48,6 @@
       isSavingTemplate = false;
     }
   }
-
-  let blobStore: Record<string, Blob> = {};
-  function onMessage(event: MessageEvent) {
-    const { type, data } = event.data.pluginMessage;
-    switch (type) {
-      case MainThreadMsg.PostImageInfo:
-        const { hash, bytes } = data;
-        blobStore = {
-          ...blobStore,
-          [hash]: new Blob([bytes], { type: "image/png" }),
-        };
-        break;
-    }
-  }
-  const unsub = getMessageEventListener(onMessage);
-
-  onDestroy(() => {
-    unsub();
-  });
 </script>
 
 <main>
@@ -99,7 +78,7 @@
 
   <div class="content">
     {#if viewMode === "preview"}
-      <VisualPreviewView {htmlString} imgHashToBlob={blobStore} {previewInfo} />
+      <VisualPreviewView {htmlString} {imgHashToBlob} {previewInfo} />
     {:else}
       <CodePreviewView {htmlString} />
     {/if}

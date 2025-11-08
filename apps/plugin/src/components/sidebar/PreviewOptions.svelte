@@ -3,13 +3,15 @@
   import FrameSelector from "../FrameSelector.svelte";
   import SidebarItem from "./SidebarItem.svelte";
 
-  export let onClickDownload: () => void;
+  export let onClickDownload: () => void | Promise<void>;
   export let isDownloadEnabled: boolean;
   export let frameInfos: { id: string; name: string }[] = [];
   export let selectedFrameId: string | undefined;
   export let onSelectFrame: (frameId: string) => void;
   export let onClickOnSelectElement: () => void;
   export let onClickShowPreview: () => void;
+
+  let isDownloading = false;
 </script>
 
 <SidebarItem>
@@ -27,9 +29,18 @@
       >Show Preview</Button
     >
     <Button
-      isDisabled={!isDownloadEnabled}
+      isDisabled={!isDownloadEnabled || isDownloading}
       variant="primary"
-      onClick={onClickDownload}
+      onClick={async () => {
+        isDownloading = true;
+        try {
+          await onClickDownload();
+        } catch (error) {
+          console.error("failed_to_download_html");
+        } finally {
+          isDownloading = false;
+        }
+      }}
     >
       Download HTML
     </Button>

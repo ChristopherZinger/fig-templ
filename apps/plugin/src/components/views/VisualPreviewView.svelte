@@ -9,13 +9,13 @@
     | null;
   export let imgHashToBlob: Record<string, Blob>;
 
-  function setBgImages(blobStore: Record<string, Blob>) {
+  function setBgImages(imgHashToBlob: Record<string, Blob>) {
     if (!contentDoc) {
       console.error("expected_iframeRef_contentDocument");
       return;
     }
 
-    for (const [hash, blob] of Object.entries(blobStore)) {
+    for (const [hash, blob] of Object.entries(imgHashToBlob)) {
       const elements = contentDoc.querySelectorAll(
         `[data-image-hash="${hash}"]`
       );
