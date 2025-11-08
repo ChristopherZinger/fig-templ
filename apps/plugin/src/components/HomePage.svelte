@@ -112,6 +112,10 @@
         onClickOnSelectElement={() => {
           sendToMainThread(UiMsg.RequestSelectableFrames);
         }}
+        onClickShowPreview={() => {
+          rootNode = undefined;
+          sendToMainThread(UiMsg.ShowPreview, { frameId: selectedFrameId });
+        }}
       />
       {#if $featuresStore.apiCalls}
         <OrgSelectorItem
@@ -146,10 +150,6 @@
               height: rootNode.style.height,
             }
           : rootNode}
-        onClickShowPreview={() => {
-          rootNode = undefined;
-          sendToMainThread(UiMsg.ShowPreview, { frameId: selectedFrameId });
-        }}
         {htmlString}
       />
     {/if}

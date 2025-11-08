@@ -10,7 +10,6 @@
   import { getMessageEventListener } from "../../lib/utils/window-ev-listener-utils";
 
   export let orgId: string | undefined | null;
-  export let onClickShowPreview: () => void;
   export let htmlString: string | undefined;
   export let previewInfo:
     | {
@@ -105,32 +104,24 @@
 </script>
 
 <main>
-  <div class="header">
-    <div>
-      <button onclick={onClickShowPreview}>Show Preview</button>
+  {#if $featuresStore.apiCalls}
+    <div class="header">
+      <button
+        disabled={!htmlString || !orgId || isSavingTemplate}
+        onclick={() => {
+          if (htmlString && orgId) {
+            onClickSaveTemplate({
+              name: "index.html",
+              htmlString,
+              orgId,
+            });
+          }
+        }}
+      >
+        Save Template
+      </button>
     </div>
-
-    <div>
-      <div class="save-template-container">
-        {#if $featuresStore.apiCalls}
-          <button
-            disabled={!htmlString || !orgId || isSavingTemplate}
-            onclick={() => {
-              if (htmlString && orgId) {
-                onClickSaveTemplate({
-                  name: "index.html",
-                  htmlString,
-                  orgId,
-                });
-              }
-            }}
-          >
-            Save Template
-          </button>
-        {/if}
-      </div>
-    </div>
-  </div>
+  {/if}
 
   <div class="iframe-container">
     <iframe

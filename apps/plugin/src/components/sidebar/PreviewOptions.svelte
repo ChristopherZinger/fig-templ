@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from "../Button.svelte";
   import FrameSelector from "../FrameSelector.svelte";
   import SidebarItem from "./SidebarItem.svelte";
 
@@ -8,6 +9,7 @@
   export let selectedFrameId: string | undefined;
   export let onSelectFrame: (frameId: string) => void;
   export let onClickOnSelectElement: () => void;
+  export let onClickShowPreview: () => void;
 </script>
 
 <SidebarItem>
@@ -21,11 +23,16 @@
       onSelect={onSelectFrame}
       {onClickOnSelectElement}
     />
-    <button
-      disabled={!isDownloadEnabled}
-      class="download-button"
-      onclick={onClickDownload}>Download HTML</button
+    <Button variant="secondary" onClick={onClickShowPreview}
+      >Show Preview</Button
     >
+    <Button
+      isDisabled={!isDownloadEnabled}
+      variant="primary"
+      onClick={onClickDownload}
+    >
+      Download HTML
+    </Button>
   </div>
 </SidebarItem>
 
@@ -40,15 +47,5 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-  }
-
-  .download-button {
-    background-color: #0c8ce9;
-    padding: 0.5rem 1rem;
-    width: 100%;
-    text-align: center;
-    outline: none;
-    border: none;
-    border-radius: 0.5rem;
   }
 </style>
