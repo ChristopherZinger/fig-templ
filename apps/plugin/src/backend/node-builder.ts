@@ -35,6 +35,10 @@ async function buildAppNodeFromSceneNode(
   const isLayoutMode =
     "layoutMode" in sceneNode && sceneNode.layoutMode !== "NONE";
 
+  if (sceneNode.visible === false && !options.isRoot) {
+    return null;
+  }
+
   if (!isLayoutMode && sceneNode.type !== "TEXT") {
     console.warn(
       "containers_without_layout_are_unsupported__exporting_as_picture",
@@ -66,10 +70,6 @@ async function buildAppNodeFromSceneNode(
     };
 
     return result;
-  }
-
-  if (sceneNode.visible === false && !options.isRoot) {
-    return null;
   }
 
   const [css, style, attributes] = await Promise.all([
