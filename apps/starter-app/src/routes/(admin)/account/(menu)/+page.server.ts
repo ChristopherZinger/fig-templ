@@ -18,6 +18,7 @@ export const actions = {
 }
 
 export const load: PageServerLoad = async ({ locals: { firebaseUser } }) => {
+  // Session here is from authGuard hook
   if (!firebaseUser) {
     return {
       firebaseUser: null,

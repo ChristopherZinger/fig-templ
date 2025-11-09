@@ -3,9 +3,10 @@
 
   interface Props {
     children?: import("svelte").Snippet
+    data: { isLoggedIn: boolean }
   }
 
-  let { children }: Props = $props()
+  let { children, data }: Props = $props()
 </script>
 
 <div class="navbar bg-base-100 container mx-auto">
@@ -17,13 +18,17 @@
         <li><a href="/blog">Blog</a></li>
         <li><a href="/docs">Docs</a></li>
         <li><a href="/pricing">Pricing</a></li>
-        <li><a href="/login/sign_in">Log in</a></li>
-      <li class="md:mx-4">
-        <a
-          href="/login/sign_up"
-          class="border border-primary">Sign up</a
-        >
-      </li>
+        {#if data.isLoggedIn}
+          <li><a href="/account">Account</a></li>
+        {:else}
+          <li><a href="/login/sign_in">Log in</a></li>
+          <li class="md:mx-4">
+            <a
+              href="/login/sign_up"
+              class="border border-primary">Sign up</a
+            >
+          </li>
+        {/if}
       <li class="md:mx-0">
         <a href="/search" aria-label="Search">
           <svg
@@ -62,18 +67,16 @@
         tabindex="0"
         class="menu menu-lg dropdown-content mt-3 z-1 p-2 shadow-sm bg-base-100 rounded-box w-52 font-bold"
       >
-        <li><a href="/login/sign_in">Log in </a></li>
-        <li><a href="/login/sign_up">Sign up</a></li>
+        {#if data.isLoggedIn}
+          <li><a href="/account">Account</a></li>
+        {:else}
+          <li><a href="/login/sign_in">Log in </a></li>
+          <li><a href="/login/sign_up">Sign up</a></li>
+        {/if}
         <li><a href="/blog">Blog</a></li>
         <li><a href="/docs">Docs</a></li>
         <li><a href="/pricing">Pricing</a></li>
         <li><a href="/search">Search</a></li>
-        <li>
-          <a
-            href="https://github.com/CriticalMoments/CMSaasStarter"
-            class="border border-primary">Try Templetto</a
-          >
-        </li>
       </ul>
     </div>
   </div>
