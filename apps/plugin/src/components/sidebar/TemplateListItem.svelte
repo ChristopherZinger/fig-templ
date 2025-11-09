@@ -1,11 +1,10 @@
 <script lang="ts">
   import SidebarItem from "./SidebarItem.svelte";
 
-  export let onClick: () => void;
-  export let isOpen: boolean;
+  export let onClick: () => {};
 </script>
 
-<SidebarItem {onClick} {isOpen}>
+<SidebarItem {onClick}>
   <div slot="header" class="header">
     <div>Templates</div>
   </div>
