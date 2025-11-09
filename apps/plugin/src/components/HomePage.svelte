@@ -22,6 +22,7 @@
   import GetHelpButton from "./GetHelpButton.svelte";
   import { getMessageEventListener } from "../lib/utils/window-ev-listener-utils";
   import { replaceBgImgStyleUrlsWithBase64 } from "../lib/utils/html-string-utils";
+  import About from "./sidebar/About.svelte";
 
 
   let organizations: { id: string; name: string }[] | null | undefined =
@@ -136,6 +137,7 @@
           sendToMainThread(UiMsg.ShowPreview, { frameId: selectedFrameId });
         }}
       />
+      <About />
       {#if $featuresStore.apiCalls}
         <OrgSelectorItem
           orgInfos={organizations}

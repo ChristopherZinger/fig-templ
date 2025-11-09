@@ -14,7 +14,7 @@
   let isDownloading = false;
 </script>
 
-<SidebarItem>
+<SidebarItem isOpen={true}>
   <div slot="header" class="header">
     <div>Templates</div>
   </div>

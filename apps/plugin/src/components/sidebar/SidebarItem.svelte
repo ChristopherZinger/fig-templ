@@ -1,5 +1,6 @@
 <script lang="ts">
-  export let onClick: (() => {}) | undefined = undefined;
+  export let onClick: (() => void) | undefined = undefined;
+  export let isOpen: boolean = false;
 </script>
 
 <div class="sidebar-item">
@@ -13,7 +14,8 @@
   >
     <slot name="header" />
   </div>
-  {#if $$slots.content}
+
+  {#if $$slots.content && isOpen}
     <div class="content">
       <slot name="content" />
     </div>
