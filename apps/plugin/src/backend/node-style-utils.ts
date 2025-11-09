@@ -9,7 +9,7 @@ export async function buildNodeStyle(
     getSizeStyles(node),
     getMinMaxSizeStyles(node),
     getFlexStyle(node),
-    getPositionStyles(node),
+    getPositionStyles(),
     getAlignItemsStyle(node),
     getTextDecorationStyle(node),
     getTextAlignHorizontalStyle(node),
@@ -58,13 +58,7 @@ function getFlexStyle(node: BaseNode):
   }
 }
 
-function getPositionStyles(node: BaseNode) {
-  if (isTopLevelNode(node)) {
-    return { position: "absolute" };
-  }
-  if (node.parent && isTopLevelNode(node.parent)) {
-    return { position: "absolute" };
-  }
+function getPositionStyles() {
   return { position: "static" };
 }
 
