@@ -2,15 +2,15 @@ function getUrls(mode: "development" | "production"): {
   webapp: string;
   server: string;
 } {
-  if (mode === "development") {
-    return {
-      webapp: "http://localhost:5173",
-      server: "http://localhost:3000",
-    };
-  } else {
+  if (mode === "production") {
     return {
       webapp: "https://templetto.com",
       server: "https://api.templetto.com",
+    };
+  } else {
+    return {
+      webapp: "http://localhost:5173",
+      server: "http://localhost:3000",
     };
   }
 }
