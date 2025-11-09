@@ -36,12 +36,6 @@ export async function callTemplettoApi({
 
   if (!response.ok) {
     const responseBody = await response.json();
-    console.log(
-      "bad_response",
-      response.status,
-      response.statusText,
-      responseBody
-    );
     if (responseBody.message === "session_cookie_expired") {
       sessionTokenStore.set(null);
     }
