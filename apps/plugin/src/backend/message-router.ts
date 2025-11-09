@@ -1,6 +1,7 @@
 import { MainThreadMsg, UiMsg } from "../lib/utils/shared/messages";
 import { sendToUiThread } from "./message-utils";
 import { makeFrames } from "./node-builder";
+import { PLUGIN_WINDOW_OPTIONS } from "./utils/plugin-window";
 
 const SESSION_TOKEN_KEY = "session_token";
 
@@ -19,11 +20,7 @@ export function setMessageRouter(figma: PluginAPI) {
         break;
       // message from webapp; UiMsg is local type not shared with webapp repo
       case "post_session_cookie_to_ui_thread":
-        figma.showUI(__html__, {
-          width: 600,
-          height: 600,
-          title: "Figma Template",
-        });
+        figma.showUI(__html__, PLUGIN_WINDOW_OPTIONS);
         saveSessionTokenMessage(msg.data.sessionToken);
         break;
       case UiMsg.RequestSelectableFrames:
