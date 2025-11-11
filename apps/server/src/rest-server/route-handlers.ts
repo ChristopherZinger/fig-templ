@@ -39,33 +39,23 @@ export async function createPdfHandler(req: Request, res: Response) {
     return;
   }
 
-  try {
-    log.info("fetching_from_puppeteer_worker");
-    const response = await callPuppeteerWorker({
-      templateId,
-      orgId: apiTokenOrgId,
-      jsonData: req.body,
-    });
+  log.info("fetching_from_puppeteer_worker");
+  const response = await callPuppeteerWorker({
+    templateId,
+    orgId: apiTokenOrgId,
+    jsonData: req.body,
+  });
 
-    const {
-      data: { downloadUrl },
-    } = z
-      .object({ data: z.object({ downloadUrl: z.string() }) })
-      .parse(response);
+  const {
+    data: { downloadUrl },
+  } = z.object({ data: z.object({ downloadUrl: z.string() }) }).parse(response);
 
-    log.debug("puppeteer_worker_response", { downloadUrl });
+  log.debug("puppeteer_worker_response", { downloadUrl });
 
-    res.status(200).json({ downloadUrl });
-    log.info("rest_server_response", {
-      httpRequest: getRequestLogInfo(req, res),
-    });
-  } catch (error) {
-    log.error("failed_to_process_request", { error });
-    res.status(500).json({ error: "Internal server error" });
-    log.error("rest_server_response", {
-      httpRequest: getRequestLogInfo(req, res),
-    });
-  }
+  res.status(200).json({ downloadUrl });
+  log.info("rest_server_response", {
+    httpRequest: getRequestLogInfo(req, res),
+  });
 }
 
 function getRequestLogInfo(req: Request, res: Response) {
