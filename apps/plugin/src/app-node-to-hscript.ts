@@ -34,6 +34,15 @@ export function getHtmlDocumentFromAppNode(node: AppNode): HTMLElement {
         content: "width=device-width, initial-scale=1.0",
       }),
       h("title", "Templetto"),
+      h(
+        "style",
+        `body {
+          padding: 0;
+          margin: 0;
+          border: none;
+          outline: none;
+        }`
+      ),
     ]),
     h("body", [hsScript]),
   ]);
