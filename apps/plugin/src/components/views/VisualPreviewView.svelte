@@ -2,8 +2,8 @@
   export let htmlString: string | undefined | null;
   export let previewInfo:
     | {
-        width: number;
-        height: number;
+        width: string; // e.g "100px"
+        height: string;
       }
     | undefined
     | null;
@@ -53,45 +53,82 @@
     setBgImages(imgHashToBlob);
   }
   $: setContentDocInnerHtml(htmlString, contentDoc);
+
+  function getIframeTransformScale(
+    previewInfo: { width: string; height: string } | null | undefined
+  ): number {
+    const MAX_PREVIEW_WIDTH_PX = 800;
+    if (previewInfo) {
+      const w = parseInt(previewInfo.width.split("px")[0]);
+      if (w > MAX_PREVIEW_WIDTH_PX) {
+        const scale = MAX_PREVIEW_WIDTH_PX / w;
+        return scale;
+      }
+    }
+    return 1;
+  }
+
+  $: iframeScale = getIframeTransformScale(previewInfo);
+  $: iframeWrapperWidth = previewInfo
+    ? `${parseInt(previewInfo.width) * iframeScale}px`
+    : "100px";
+  $: iframeWrapperHeight = previewInfo
+    ? `${parseInt(previewInfo.height) * iframeScale}px`
+    : "100px";
 </script>
 
 <div class="iframe-container">
-  <iframe
-    bind:this={iframeRef}
+  <div
+    class="iframe-wrapper"
     class:hidden={!previewInfo}
-    title="iframe"
-    style={`width: ${previewInfo?.width || "100px"}; height: ${previewInfo?.height || "100px"};`}
-  ></iframe>
-  {#if !previewInfo}
-    <div class="info-container">
-      {#if previewInfo === undefined}
-        <div>Loading...</div>
-      {/if}
-      {#if previewInfo === null}
-        <div>Select a frame and click "Show Preview" to see the preview</div>
-      {/if}
-    </div>
-  {/if}
+    style={`width: ${iframeWrapperWidth}; height: ${iframeWrapperHeight};`}
+  >
+    <iframe
+      bind:this={iframeRef}
+      title="iframe"
+      style={`width: ${previewInfo?.width || "100px"}; height: ${previewInfo?.height || "100px"}; transform: scale(${iframeScale}); transform-origin: top left;`}
+    ></iframe>
+  </div>
 </div>
 
+{#if !previewInfo}
+  <div class="message-container">
+    {#if previewInfo === undefined}
+      <div>Loading...</div>
+    {/if}
+    {#if previewInfo === null}
+      <div>Select a frame and click "Show Preview" to see the preview</div>
+    {/if}
+  </div>
+{/if}
+
 <style>
-  .iframe-container {
+  .message-container {
     display: flex;
     padding: 40px 0;
+    align-items: center;
     justify-content: center;
     flex: 1;
-  }
-
-  .iframe-container iframe {
-    background-color: white;
-    border: none;
-  }
-
-  .info-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     height: 100%;
+  }
+
+  .iframe-container {
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  .iframe-wrapper {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+  }
+
+  iframe {
+    border: none;
+    padding: 0;
+    margin: 0;
   }
 
   .hidden {
