@@ -2,6 +2,7 @@ import z from "zod";
 import {
   apiTokenParser,
   artifactParser,
+  billableApiCallLogParser,
   organizationParser,
   pkceKeyParser,
   pluginSessionTokenParser,
@@ -19,6 +20,7 @@ export enum CollectionName {
   templates = "templates",
   apiTokens = "api-tokens",
   artifacts = "artifacts",
+  billableApiCallLogs = "billable-api-call-logs",
 }
 
 export type PkceKey_FsDoc = z.infer<typeof pkceKeyParser>;
@@ -29,3 +31,4 @@ export type UserOrgJoinTable_FsDoc = z.infer<typeof userOrgJoinTableParser>;
 export type Template_FsDoc = z.infer<typeof templateParser>;
 export type ApiToken_FsDoc = z.infer<typeof apiTokenParser>;
 export type Artifact_FsDoc = z.infer<typeof artifactParser>;
+export type BillableApiCallLog_FsDoc = z.infer<typeof billableApiCallLogParser>;

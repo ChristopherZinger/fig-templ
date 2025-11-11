@@ -73,3 +73,14 @@ export const artifactParser = z.object({
   createdAt: firestoreDateField,
   templateId: z.string(),
 });
+
+export enum BillableApiCallLog {
+  createPdf = "createPdf",
+}
+// organizations/{orgId}/billableApiCallLogs/{id}
+export const billableApiCallLogParser = z.object({
+  id: z.string(),
+  orgId: z.string(),
+  type: z.enum(BillableApiCallLog),
+  createdAt: firestoreDateField,
+});

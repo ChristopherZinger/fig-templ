@@ -8,6 +8,7 @@ import type {
 import type {
   ApiToken_FsDoc,
   Artifact_FsDoc,
+  BillableApiCallLog_FsDoc,
   Organization_FsDoc,
   PkceKey_FsDoc,
   PluginSessionToken_FsDoc,
@@ -19,6 +20,7 @@ import z from "zod";
 import {
   apiTokenParser,
   artifactParser,
+  billableApiCallLogParser,
   organizationParser,
   pkceKeyParser,
   pluginSessionTokenParser,
@@ -110,5 +112,17 @@ export function getArtifactsCollectionRef({
     collectionName: CollectionName.artifacts,
     getBase: () => getOrgCollectionRef().doc(orgId),
     parser: artifactParser,
+  });
+}
+
+export function getBillableApiCallLogsCollectionRef({
+  orgId,
+}: {
+  orgId: string;
+}): CollectionReference<BillableApiCallLog_FsDoc> {
+  return getCollectionRef({
+    collectionName: CollectionName.billableApiCallLogs,
+    getBase: () => getOrgCollectionRef().doc(orgId),
+    parser: billableApiCallLogParser,
   });
 }
