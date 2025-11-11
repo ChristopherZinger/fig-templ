@@ -7,6 +7,7 @@ import express, {
 import { auth, getOrgApiTokensCollectionRef } from "@templetto/firebase";
 import { getTokenFromReqAuthHeader } from "../utils/plugin-session-token";
 import { isFirebaseAuthError } from "@templetto/firebase/errors";
+import { AppError } from "@templetto/app-error";
 
 export const logMiddleware: express.RequestHandler = (
   req: Request,
@@ -21,6 +22,28 @@ export const logMiddleware: express.RequestHandler = (
   });
   next();
 };
+
+export function logErrorsMiddleware(
+  error: Error,
+  _req: Request,
+  _res: Response,
+  next: NextFunction
+) {
+  let message = "unknown_error";
+  const info: Record<string, unknown> = {};
+  if (error instanceof AppError) {
+    message = "AppError: " + (error.message || "unnamed_app_error");
+    info.appErrorInfo = error.info;
+  }
+  if (error instanceof Error) {
+    message = "Error: " + (error.message || "unknown_error");
+    info.errorStack = error.stack;
+    info.errorName = error.name;
+    info.errorCause = error.cause;
+  }
+  log.error("failed_to_handle_request", message, info, error);
+  next(error);
+}
 
 export const pluginAuthMiddleware: express.RequestHandler = async (
   req: Request,
