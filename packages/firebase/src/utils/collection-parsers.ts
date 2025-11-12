@@ -84,3 +84,10 @@ export const billableApiCallLogParser = z.object({
   type: z.enum(BillableApiCallLog),
   createdAt: firestoreDateField,
 });
+
+// emailSubscriptions/{id}
+export const emailSubscriptionParser = z.object({
+  email: z.string(),
+  createdAt: firestoreDateField,
+  updatedAt: firestoreDateField,
+});

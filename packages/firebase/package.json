@@ -5,7 +5,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./errors": "./src/utils/errors.ts",
-    "./repositories/user": "./src/repositories/user.ts"
+    "./repositories/user": "./src/repositories/user.ts",
+    "./repositories/email-subscription": "./src/repositories/email-subscription.ts"
   },
   "type": "module",
   "dependencies": {

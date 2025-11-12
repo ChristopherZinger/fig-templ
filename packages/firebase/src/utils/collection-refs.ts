@@ -9,6 +9,7 @@ import type {
   ApiToken_FsDoc,
   Artifact_FsDoc,
   BillableApiCallLog_FsDoc,
+  EmailSubscription_FsDoc,
   Organization_FsDoc,
   PkceKey_FsDoc,
   PluginSessionToken_FsDoc,
@@ -21,6 +22,7 @@ import {
   apiTokenParser,
   artifactParser,
   billableApiCallLogParser,
+  emailSubscriptionParser,
   organizationParser,
   pkceKeyParser,
   pluginSessionTokenParser,
@@ -124,5 +126,13 @@ export function getBillableApiCallLogsCollectionRef({
     collectionName: CollectionName.billableApiCallLogs,
     getBase: () => getOrgCollectionRef().doc(orgId),
     parser: billableApiCallLogParser,
+  });
+}
+
+export function getEmailSubscriptionsCollectionRef(): CollectionReference<EmailSubscription_FsDoc> {
+  return getCollectionRef({
+    collectionName: CollectionName.emailSubscriptions,
+    getBase: null,
+    parser: emailSubscriptionParser,
   });
 }
