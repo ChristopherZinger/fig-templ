@@ -2,38 +2,42 @@
 
 ## Plugin
 
+- JSON data preview
+  - new sidepaner where user can view all variables included in the template as a json file.
+
+- [??] Allow editing template before saving it in the db
+  - I am not sure about this one but maybe user can manually fix html / or add styles that are not supported by the figma->html translator.
+
 ### Auth
 
 - use redirect url
 - bug: investigate why is the plugin constantly logging out.
 - Create user org when Google Auth callback fires
 - "Architect" auth flow to get the whole flow working well
-- pdf size:
-  - Atm all pdf have A4 paper size. It should be defined by top level node e.g frame node.
 - When creating new user they should be automatically assigned to a new organization
   - firebase auth trigger or explicit creation on login e.g when handling pkce key?
 
-### The translator (figma -> html)
+### Various
 
 - Gather a set of test figma files
+
+### The translator (figma -> html)
+
 - Build snapshot tests for the test set
 - pdf size:
-  - Atm all pdf have A4 paper size. It should be defined by top level node e.g frame node.
-
-#### Various
-
-- handle svg shapes nodes
-- handle boolean operation shapes nodes
-
-#### Styles
-
-- border styles
-  - partial border (left, right etc.)
-  - border with
+  - ensure generated pdfs have correct size.
 - handle rich text
 - handle mixed text styles
+- handle mixed border width
+- handle links
+- handle templating loops
+  - I imagine this is a drag-drop component created by our plugin that will
+    have some additional metadata that tells transformation script to wrap stuff
+    in a {for each} loop
 
 ## Webapp
+
+- create email collector form and hide unused pages for now.
 
 "table" with list of templates
 Show template thumbnail
@@ -44,15 +48,12 @@ Show template thumbnail
 
 Later - Render templates with dummy data
 
-## Server
+### Doc site
 
-- [ ] make api.templetto.com work
-- [ ] keep track of API Call usage (with potential to rate limit)
+- [Amedee] API Docs
 
-## Doc site
-
-- API Docs
-- # General docs
 - invite user to a org
 
 ## Server
+
+- [Chris] keep track of API Call usage (with potential to rate limit)
