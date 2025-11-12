@@ -2,7 +2,7 @@
 
 ## Plugin Description for Figma Community
 
-Figma plugin for automated templating and pdf creation.
+> Transform Figma Designs into Production-Ready HTML Templates
 
 📝 Description
 
@@ -30,19 +30,17 @@ Whether you're building email templates, web components, or full page layouts, T
 
 3. **Be Mindful of Image Sizes** - Designs that include large images may take longer to generate.
 
-4. **Generate Template** - Click the export button to generate your HTML template with associated CSS.
+4. **Choose Preview Mode** - Click "Show Preview" button and switch between visual and template view to verify your output.
 
-5. **Choose Preview Mode** - Switch between visual and template preview to verify your output.
+5. **Generate Template** - Click the export button to generate your HTML template with associated CSS.
 
 6. **Export & Integrate** - Copy the generated code and integrate it with your templating engine of choice.
 
 💡 Tips for Best Results
 
-**Leverage Auto-Layout**: Use Figma's auto-layout for all frames and components you want to export as responsive HTML. This ensures proper flexbox/grid conversion.
+**Leverage Auto-Layout**: Use Figma's auto-layout for all frames and components you want to export as responsive HTML. This ensures proper flexbox conversion.
 
 **Control Image Export**: Elements and groups without auto-layout will be exported as base64-encoded images. Use this strategically for decorative elements or complex graphics.
-
-**Semantic Naming**: Use descriptive names for your frames and layers—this helps generate more readable and maintainable code.
 
 🔧 Future Updates
 
