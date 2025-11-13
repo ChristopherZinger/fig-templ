@@ -2,8 +2,10 @@
 
 ## Plugin
 
+- Allow multiple frames per template
+
 - JSON data preview
-  - new sidepaner where user can view all variables included in the template as a json file.
+  - new sidepanel where user can view all variables included in the template as a json file.
 
 - [??] Allow editing template before saving it in the db
   - I am not sure about this one but maybe user can manually fix html / or add styles that are not supported by the figma->html translator.
