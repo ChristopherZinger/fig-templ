@@ -3,10 +3,10 @@
     callTemplettoApi,
     TemplettoApiActions,
   } from "../../lib/utils/plugin-api-endpoint";
-  import { featuresStore } from "../../lib/stores/enabledFeaturesStore";
   import CodePreviewView from "./CodePreviewView.svelte";
   import PreviewModeSelector from "../PreviewModeSelector.svelte";
   import VisualPreviewView from "./VisualPreviewView.svelte";
+  import { sessionTokenStore } from "../../lib/stores/sessionTokenStore";
 
   export let orgId: string | undefined | null;
   export let htmlString: string | undefined;
@@ -58,7 +58,7 @@
         viewMode = mode;
       }}
     />
-    {#if $featuresStore.apiCalls}
+    {#if $sessionTokenStore}
       <button
         disabled={!htmlString || !orgId || isSavingTemplate}
         onclick={() => {

@@ -11,7 +11,6 @@
   import TemplatesView from "./views/TemplatesView.svelte";
   import TemplatePreviewView from "./views/TemplatePreviewView.svelte";
   import SidebarItem from "./sidebar/SidebarItem.svelte";
-  import { featuresStore } from "../lib/stores/enabledFeaturesStore";
   import PreviewOptions from "./sidebar/PreviewOptions.svelte";
   import { MainThreadMsg, UiMsg } from "../lib/utils/shared/messages";
   import type { AppNode } from "../types";
@@ -23,27 +22,40 @@
   import { getMessageEventListener } from "../lib/utils/window-ev-listener-utils";
   import { replaceBgImgStyleUrlsWithBase64 } from "../lib/utils/html-string-utils";
   import About from "./sidebar/About.svelte";
-
+  import { sessionTokenStore } from "../lib/stores/sessionTokenStore";
+  import LoginButton from "./LoginButton.svelte";
 
   let organizations: { id: string; name: string }[] | null | undefined =
     undefined;
   let selectedOrgId: string | undefined | null = undefined;
-  async function loadOrganizations() {
-    const response = await callTemplettoApi({
-      action: TemplettoApiActions.getOrganizations,
-    });
-    if (!response.ok) {
-      console.error("failed_to_get_organizations", response);
-      return null;
-    }
-    const _organizations = await response.json();
-    if (_organizations && _organizations.length > 0) {
-      organizations = _organizations;
-      selectedOrgId = _organizations[0].id;
+  async function loadOrganizations(token: string | null | undefined) {
+    organizations = undefined;
+    selectedOrgId = undefined;
+    if (!sessionTokenStore) {
+      organizations = null;
+      selectedOrgId = null;
       return;
     }
-    organizations = null;
-    selectedOrgId = null;
+    try {
+      const response = await callTemplettoApi({
+        action: TemplettoApiActions.getOrganizations,
+      });
+
+      if (!response.ok) {
+        throw new Error("failed_to_get_organizations");
+      }
+      const _organizations = await response.json();
+      // TODO: parse response with zod
+      if (!_organizations || _organizations.length === 0) {
+        throw new Error("no_organizations");
+      }
+      organizations = _organizations;
+      selectedOrgId = _organizations[0].id;
+    } catch (error) {
+      console.error("failed_to_load_organizations", error);
+      organizations = null;
+      selectedOrgId = null;
+    }
   }
 
   let rootNode: null | undefined | AppNode = null;
@@ -101,10 +113,9 @@
     onClickDownloadTemplate({ htmlString: htmlResult });
   }
 
+  $: loadOrganizations($sessionTokenStore);
+
   onMount(async () => {
-    if ($featuresStore.apiCalls) {
-      await loadOrganizations();
-    }
     sendToMainThread(UiMsg.RequestSelectableFrames);
   });
 
@@ -138,8 +149,7 @@
           sendToMainThread(UiMsg.ShowPreview, { frameId: selectedFrameId });
         }}
       />
-      <About />
-      {#if $featuresStore.apiCalls}
+      {#if $sessionTokenStore}
         <OrgSelectorItem
           orgInfos={organizations}
           {selectedOrgId}
@@ -149,11 +159,25 @@
         />
         <TemplateListItem onClick={() => (view = "templates")} />
       {/if}
+      <About />
     </div>
-    {#if $featuresStore.apiCalls}
-      <LogoutButton />
-    {/if}
-    <GetHelpButton />
+
+    <div class="panel-footer">
+      <SidebarItem isOpen={true}>
+        <div slot="header">
+          <div>Account</div>
+        </div>
+        <div slot="content">
+          {#if $sessionTokenStore}
+            <LogoutButton />
+          {:else}
+            <LoginButton />
+          {/if}
+        </div>
+      </SidebarItem>
+
+      <GetHelpButton />
+    </div>
   </div>
 
   <div slot="content" class="content">
@@ -184,6 +208,11 @@
   }
 
   .panel {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel-footer {
     display: flex;
     flex-direction: column;
   }
