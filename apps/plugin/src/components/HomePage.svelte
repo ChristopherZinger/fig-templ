@@ -121,6 +121,7 @@
   <div slot="sidebar" class="sidebar">
     <div class="panel">
       <PreviewOptions
+        onSelectSection={() => (view = "preview")}
         isDownloadEnabled={!!htmlString}
         onClickDownload={async () =>
           await onClickDownloadHtml(htmlString ?? "")}
@@ -147,11 +148,6 @@
           }}
         />
         <TemplateListItem onClick={() => (view = "templates")} />
-        <SidebarItem onClick={() => (view = "preview")}>
-          <div slot="header" class="header">
-            <div>Preview</div>
-          </div>
-        </SidebarItem>
       {/if}
     </div>
     {#if $featuresStore.apiCalls}

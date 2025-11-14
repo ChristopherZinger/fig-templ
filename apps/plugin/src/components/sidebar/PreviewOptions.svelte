@@ -3,6 +3,7 @@
   import FrameSelector from "../FrameSelector.svelte";
   import SidebarItem from "./SidebarItem.svelte";
 
+  export let onSelectSection: () => void;
   export let onClickDownload: () => void | Promise<void>;
   export let isDownloadEnabled: boolean;
   export let frameInfos: { id: string; name: string }[] = [];
@@ -14,9 +15,9 @@
   let isDownloading = false;
 </script>
 
-<SidebarItem isOpen={true}>
+<SidebarItem isOpen={true} onClick={onSelectSection}>
   <div slot="header" class="header">
-    <div>Templates</div>
+    <div>Preview</div>
   </div>
   <div slot="content" class="content">
     <FrameSelector
