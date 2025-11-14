@@ -13,8 +13,8 @@
   export let imgHashToBlob: Record<string, Blob>;
   export let previewInfo:
     | {
-        width: number;
-        height: number;
+        width: string;
+        height: string;
       }
     | undefined
     | null;
