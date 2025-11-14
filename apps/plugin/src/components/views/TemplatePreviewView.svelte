@@ -7,6 +7,7 @@
   import PreviewModeSelector from "../PreviewModeSelector.svelte";
   import VisualPreviewView from "./VisualPreviewView.svelte";
   import { sessionTokenStore } from "../../lib/stores/sessionTokenStore";
+  import Button from "../Button.svelte";
 
   export let orgId: string | undefined | null;
   export let htmlString: string | undefined;
@@ -20,6 +21,7 @@
     | null;
 
   let viewMode: "preview" | "code" = "preview";
+  let templateNameInput: string = "My HTML Template";
 
   let isSavingTemplate = false;
   async function onClickSaveTemplate({
@@ -59,20 +61,36 @@
       }}
     />
     {#if $sessionTokenStore}
-      <button
-        disabled={!htmlString || !orgId || isSavingTemplate}
-        onclick={() => {
-          if (htmlString && orgId) {
-            onClickSaveTemplate({
-              name: "index.html",
-              htmlString,
-              orgId,
-            });
-          }
-        }}
-      >
-        Save Template
-      </button>
+      <div class="save-template-container">
+        <div>
+          <label for="template-name">Template Name</label>
+          <input
+            type="text"
+            id="template-name"
+            bind:value={templateNameInput}
+          />
+        </div>
+        <Button
+          isDisabled={!htmlString ||
+            !orgId ||
+            isSavingTemplate ||
+            !templateNameInput}
+          onClick={() => {
+            if (htmlString && orgId) {
+              onClickSaveTemplate({
+                name: `${templateNameInput} .html`,
+                htmlString,
+                orgId,
+              });
+            }
+          }}
+          style={{
+            padding: "8px 16px",
+          }}
+        >
+          Save Template
+        </Button>
+      </div>
     {/if}
   </div>
 
@@ -108,5 +126,22 @@
     overflow: auto;
     display: flex;
     flex-direction: column;
+  }
+
+  .save-template-container {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+
+  .save-template-container input {
+    font-size: 12px;
+    padding: 8px;
+    border: 1px solid oldlace;
+    border-radius: 8px;
+  }
+
+  .save-template-container label {
+    font-size: 12px;
   }
 </style>
