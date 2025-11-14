@@ -58,7 +58,7 @@
             data: { sessionToken: sessionKey },
           },
           // pluginId must correspond to the ids in the manifest.json file.
-          pluginId: "templetto-plugin",
+          pluginId: "1570159248956206169",
         },
         "https://www.figma.com",
       )
