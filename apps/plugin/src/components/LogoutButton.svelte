@@ -6,6 +6,7 @@
     TemplettoApiActions,
   } from "../lib/utils/plugin-api-endpoint";
   import { UiMsg } from "../lib/utils/shared/messages";
+  import Button from "./Button.svelte";
 
   $: sessionToken = $sessionTokenStore;
 
@@ -35,4 +36,6 @@
   }
 </script>
 
-<button onclick={logout} disabled={!sessionToken}>Logout</button>
+<Button variant="secondary" onClick={logout} isDisabled={!sessionToken}
+  >Logout</Button
+>

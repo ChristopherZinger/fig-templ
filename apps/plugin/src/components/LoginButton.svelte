@@ -1,5 +1,6 @@
 <script lang="ts">
   import { URLS } from "../lib/utils/shared/urls";
+  import Button from "./Button.svelte";
 
   async function goToLogin() {
     const baseUrl = URLS.webapp;
@@ -8,4 +9,4 @@
   }
 </script>
 
-<button onclick={goToLogin}>Login</button>
+<Button onClick={goToLogin}>Login</Button>
