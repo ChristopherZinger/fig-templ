@@ -27,7 +27,7 @@ gcloud run deploy $SERVICE \
     --allow-unauthenticated \
     --concurrency 80 \
     --description "Web app" \
-    --max-instances 3 \
+    --max-instances 1 \
     --min-instances 0 \
     --region europe-west3 \
     --timeout "60s" \
