@@ -3,6 +3,8 @@
 ## Plugin
 
 - Allow multiple frames per template
+- UX save template feedback
+  - Navigate to templates list and highlight saved template after a template was saved
 
 - JSON data preview
   - new sidepanel where user can view all variables included in the template as a json file.
