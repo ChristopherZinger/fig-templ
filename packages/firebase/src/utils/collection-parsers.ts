@@ -39,7 +39,7 @@ export const apiTokenParser = z.object({
 export const userParser = z.object({
   uid: z.string(),
   name: z.string(),
-  defaultOrgId: z.string().optional(),
+  defaultOrgId: z.string(),
 });
 
 // /organizations/{id}

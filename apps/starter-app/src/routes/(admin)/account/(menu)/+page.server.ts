@@ -1,11 +1,9 @@
-import { redirect } from "@sveltejs/kit"
 import type { PageServerLoad } from "./$types"
 import { getUsersTemplate } from "$lib/server/firebase-queries"
-import {
-  getUserDefaultOrgId,
-  getUserOrgTemplateDocs,
-} from "@templetto/firebase/repositories/user"
-import { getOrgById } from "../../../../../../../packages/firebase/src/repositories/organization"
+import { getUserOrgTemplateDocs } from "@templetto/firebase/repositories/user"
+import { error, redirect } from "@sveltejs/kit"
+import { log } from "@templetto/logging"
+import { getUsersCollectionRef } from "@templetto/firebase"
 
 export const actions = {
   // signout: async ({ locals: { supabase, safeGetSession } }) => {
@@ -20,33 +18,28 @@ export const actions = {
 export const load: PageServerLoad = async ({ locals: { firebaseUser } }) => {
   // Session here is from authGuard hook
   if (!firebaseUser) {
-    return {
-      firebaseUser: null,
-      userTemplates: [],
-      recentTemplates: [],
-      session: null,
-    }
+    redirect(307, "/")
   }
 
-  const userDefaultOrgId = await getUserDefaultOrgId({
-    userId: firebaseUser.uid,
-  })
-  const userDefaultOrg = userDefaultOrgId
-    ? await getOrgById(userDefaultOrgId)
-    : null
+  const userDoc = (
+    await getUsersCollectionRef().doc(firebaseUser.uid).get()
+  ).data()
+  if (!userDoc) {
+    log.error("missing_user_doc_for_auth_user", { uid: firebaseUser.uid })
+    error(500, "Internal server error")
+  }
+
   const userTemplates = await getUsersTemplate(firebaseUser.uid)
 
-  const recentTemplates = userDefaultOrgId
-    ? await getUserOrgTemplateDocs({
-        uid: firebaseUser.uid,
-        orgId: userDefaultOrgId,
-        limit: 5,
-        sortByCreatedAt: "desc",
-      })
-    : []
+  const recentTemplates = await getUserOrgTemplateDocs({
+    uid: firebaseUser.uid,
+    orgId: userDoc.defaultOrgId,
+    limit: 5,
+    sortByCreatedAt: "desc",
+  })
 
   return {
-    currentOrg: userDefaultOrg,
+    currentOrg: userDoc.defaultOrgId,
     firebaseUser,
     userTemplates,
     recentTemplates,

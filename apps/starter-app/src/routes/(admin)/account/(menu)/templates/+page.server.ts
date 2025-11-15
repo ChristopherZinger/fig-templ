@@ -1,26 +1,25 @@
 import type { PageServerLoad } from "./$types"
-import { getUserDefaultOrgId, getUserOrgTemplateDocs } from "@templetto/firebase/repositories/user"
+import { getUsersCollectionRef } from "@templetto/firebase"
+import { getUserOrgTemplateDocs } from "@templetto/firebase/repositories/user"
+import { error, redirect } from "@sveltejs/kit"
+import { log } from "@templetto/logging"
 
 export const load: PageServerLoad = async ({ locals: { firebaseUser } }) => {
   if (!firebaseUser) {
-    return {
-      templates: [],
-    }
+    redirect(307, "/")
   }
 
-  const userDefaultOrgId = await getUserDefaultOrgId({
-    userId: firebaseUser.uid,
-  })
-
-  if (!userDefaultOrgId) {
-    return {
-      templates: [],
-    }
+  const userDoc = (
+    await getUsersCollectionRef().doc(firebaseUser.uid).get()
+  ).data()
+  if (!userDoc) {
+    log.error("missing_user_doc_for_auth_user", { uid: firebaseUser.uid })
+    error(500, "Internal server error")
   }
 
   const templates = await getUserOrgTemplateDocs({
     uid: firebaseUser.uid,
-    orgId: userDefaultOrgId,
+    orgId: userDoc.defaultOrgId,
     sortByCreatedAt: "desc",
   })
 
@@ -28,4 +27,3 @@ export const load: PageServerLoad = async ({ locals: { firebaseUser } }) => {
     templates,
   }
 }
-

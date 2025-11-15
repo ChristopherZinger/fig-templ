@@ -79,28 +79,3 @@ export async function updateUserDefaultOrg({
 }): Promise<void> {
   await getUsersCollectionRef().doc(userId).update({ defaultOrgId: orgId });
 }
-
-export async function getUserDefaultOrgId({
-  userId,
-}: {
-  userId: string;
-}): Promise<string | null> {
-  const userDoc = (await getUsersCollectionRef().doc(userId).get()).data();
-  if (!userDoc) {
-    return null;
-  }
-  if (userDoc?.defaultOrgId) {
-    return userDoc.defaultOrgId;
-  }
-  // if no default org is set, either use the first org as default
-  const userOrgs = await getUserOrgIds({ uid: userId });
-  if (userOrgs.length > 0) {
-    await updateUserDefaultOrg({ userId, orgId: userOrgs[0] });
-    return userOrgs[0];
-  } else {
-    // or create a personal org and set it as the default
-    const userPersonalOrg = await createUserPersonalOrg({ userId });
-    await updateUserDefaultOrg({ userId, orgId: userPersonalOrg.id });
-    return userPersonalOrg.id;
-  }
-}
