@@ -18,6 +18,7 @@ import type { DocumentReference, Transaction } from "firebase-admin/firestore";
 import { expectPluginSessionUid } from "../utils/plugin-session-token";
 import { AppError } from "@templetto/app-error";
 import { PkceError } from "./pkce-errors";
+import { ensureUserAndOrgForAuthUser } from "@templetto/firebase/repositories/user";
 
 export async function getPkceKeysHandler(_: Request, res: Response) {
   // TODO check if request comes from templetto.com/plugin/login
@@ -173,6 +174,13 @@ export async function createSessionTokenHandler(req: Request, res: Response) {
     res.status(400).json({ error: "invalid_write_key" });
     return;
   }
+
+  await firestore.runTransaction(async (t) => {
+    await ensureUserAndOrgForAuthUser(t, {
+      uid: decodedToken.uid,
+      userName: decodedToken.name || "New User",
+    });
+  });
 
   res.status(200).json({ message: "session_token_created" });
   return;
