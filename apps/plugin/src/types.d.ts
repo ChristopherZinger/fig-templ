@@ -1,13 +1,13 @@
 export type AppNode =
-  | AppNodeBase<{
+  | (AppNodeBase & {
       type: string;
-    }>
-  | AppNodeBase<{
+    })
+  | (AppNodeBase & {
       type: "TEXT";
       innerText: string;
-    }>;
+    });
 
-type AppNodeBase<T extends { type: string }> = T & {
+type AppNodeBase = {
   name: string;
   style: Record<string, unknown>;
   attributes: Record<string, unknown>;
