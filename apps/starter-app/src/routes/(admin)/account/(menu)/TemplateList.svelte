@@ -38,6 +38,7 @@
           <th>ID</th>
           <th>Name</th>
           <th>Created At</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -46,6 +47,7 @@
             <td class="font-mono text-sm">{template.id}</td>
             <td>{template.name || "Unnamed Template"}</td>
             <td>{formatDate(template.createdAt)}</td>
+            <td><a href="/account/api/templates/{template.orgId}/{template.id}/download" class="btn btn-outline btn-sm">Download HTML</a></td>
           </tr>
         {/each}
       </tbody>

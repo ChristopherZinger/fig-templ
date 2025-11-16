@@ -7,6 +7,7 @@
   adminSection.set("home")
   let { data } = $props()
   let { firebaseUser, userTemplates, recentTemplates } = data
+  let showStats = false;
 </script>
 
 <svelte:head>
@@ -15,6 +16,7 @@
 
 <h1 class="text-2xl font-bold mb-1">Dashboard</h1>
 
+{#if showStats}
 <div class="my-6">
   <h1 class="text-xl font-bold mb-1">Stats</h1>
   <div class="stats shadow-sm stats-vertical sm:stats-horizontal sm:w-[840px]">
@@ -53,7 +55,8 @@
     </div>
   </div>
 </div>
+{/if}
 <div class="my-6">
   <h1 class="text-xl font-bold mb-3">Recent Templates</h1>
-  <TemplateList templates={recentTemplates} limit={5} showViewAll={true} />
+  <TemplateList templates={recentTemplates} limit={20} showViewAll={true} />
 </div>

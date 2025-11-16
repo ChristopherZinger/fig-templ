@@ -92,6 +92,7 @@
           Home
         </a>
       </li>
+      <!--
       <li>
         <a
           href="/account/templates"
@@ -159,7 +160,7 @@
           Settings
         </a>
       </li>
-
+      -->
       <li class="mt-auto">
         {currentOrg?.name}<br/>
         {firebaseUser?.email}

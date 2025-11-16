@@ -3,7 +3,6 @@
   import { onMount } from "svelte"
 
   let { data, children } = $props()
-  console.log(data)
 
   onMount(() => {
     if (!data.firebaseUser) {
