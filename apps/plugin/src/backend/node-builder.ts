@@ -46,30 +46,7 @@ async function buildAppNodeFromSceneNode(
       sceneNode.id
     );
 
-    const bytes = await sceneNode.exportAsync({
-      format: "PNG",
-      constraint: { type: "SCALE", value: 2 },
-    });
-    const image = figma.createImage(bytes);
-
-    sendToUiThread(MainThreadMsg.PostImageInfo, { hash: image.hash, bytes });
-
-    const result: AppNode = {
-      name: sceneNode.name,
-      type: sceneNode.type,
-      children: [],
-      css: {},
-      style: {
-        "background-size": "cover",
-        "background-position": "center",
-        "background-repeat": "no-repeat",
-        width: `${sceneNode.width}px`,
-        height: `${sceneNode.height}px`,
-      },
-      attributes: { "data-image-hash": image.hash, id: sceneNode.name },
-    };
-
-    return result;
+    return await createRasterizedAppNode(sceneNode);
   }
 
   const [css, style, attributes] = await Promise.all([
@@ -104,6 +81,33 @@ async function buildAppNodeFromSceneNode(
   if (sceneNode.type === "TEXT") {
     result.innerText = sceneNode.characters;
   }
+
+  return result;
+}
+
+async function createRasterizedAppNode(sceneNode: SceneNode): Promise<AppNode> {
+  const bytes = await sceneNode.exportAsync({
+    format: "PNG",
+    constraint: { type: "SCALE", value: 2 },
+  });
+  const image = figma.createImage(bytes);
+
+  sendToUiThread(MainThreadMsg.PostImageInfo, { hash: image.hash, bytes });
+
+  const result: AppNode = {
+    name: sceneNode.name,
+    type: sceneNode.type,
+    children: [],
+    css: {},
+    style: {
+      "background-size": "cover",
+      "background-position": "center",
+      "background-repeat": "no-repeat",
+      width: `${sceneNode.width}px`,
+      height: `${sceneNode.height}px`,
+    },
+    attributes: { "data-image-hash": image.hash, id: sceneNode.name },
+  };
 
   return result;
 }
