@@ -97,16 +97,19 @@
   }
   const unsub = getMessageEventListener(onMessage);
 
-  let htmlString: string | undefined = undefined;
+  let htmlString: string | null | undefined = undefined;
   function onTemplateInfoChange(appNode: null | undefined | AppNode) {
     if (!appNode) {
-      htmlString = undefined;
+      htmlString = appNode === null ? null : undefined;
       return;
     }
 
     htmlString = getHtmlDocumentFromAppNode(appNode).outerHTML;
   }
   $: onTemplateInfoChange(rootNode);
+  $: if (rootNode === undefined) {
+    htmlBuildLogs = [];
+  }
 
   async function onClickDownloadHtml(htmlStringInput: string): Promise<void> {
     const htmlResult = await replaceBgImgStyleUrlsWithBase64({

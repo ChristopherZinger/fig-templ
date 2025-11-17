@@ -24,18 +24,26 @@ export async function makeFrames(frameId: string | null) {
     return;
   }
 
-  const rootAppNode = await buildAppNodeFromSceneNode(frame, { isRoot: true });
+  const rootAppNode = await buildAppNodeFromSceneNode(frame);
+
+  if (!rootAppNode) {
+    sendToUiThread(MainThreadMsg.PostHtmlBuildMessage, {
+      severity: "error",
+      message:
+        "Failed to build HTML from frame. Frame is not selected or hidden. Please select a visible frame and try again.",
+    });
+  }
+
   sendToUiThread(MainThreadMsg.PostFrameNodes, { node: rootAppNode });
 }
 
 async function buildAppNodeFromSceneNode(
-  sceneNode: SceneNode,
-  options: { isRoot: boolean } = { isRoot: false }
+  sceneNode: SceneNode
 ): Promise<AppNode | null> {
   const isLayoutMode =
     "layoutMode" in sceneNode && sceneNode.layoutMode !== "NONE";
 
-  if (sceneNode.visible === false && !options.isRoot) {
+  if (sceneNode.visible === false) {
     return null;
   }
 

@@ -12,7 +12,7 @@
   import { SelectedViewMode } from "../../lib/utils/shared/preview-tabs";
 
   export let orgId: string | undefined | null;
-  export let htmlString: string | undefined;
+  export let htmlString: string | undefined | null;
   export let imgHashToBlob: Record<string, Blob>;
   export let previewInfo:
     | {
@@ -55,6 +55,10 @@
     } finally {
       isSavingTemplate = false;
     }
+  }
+
+  $: if (htmlBuildLogs.length > 0 && htmlString === null) {
+    selectedViewMode = SelectedViewMode.warnings;
   }
 </script>
 
