@@ -1,23 +1,32 @@
 <script lang="ts">
+  import _ from "lodash";
+
   export let htmlBuildLogs: {
     severity: "error" | "warning" | "info";
     message: string;
   }[] = [];
 
-  const warnings = htmlBuildLogs.filter((log) => log.severity === "warning");
-  const errors = htmlBuildLogs.filter((log) => log.severity === "error");
-  const infos = htmlBuildLogs.filter((log) => log.severity === "info");
-
-  const buildLogs = [...errors, ...warnings, ...infos];
+  $: buildLogs = [
+    ...htmlBuildLogs.filter((log) => log.severity === "warning"),
+    ...htmlBuildLogs.filter((log) => log.severity === "error"),
+    ...htmlBuildLogs.filter((log) => log.severity === "info"),
+  ];
 </script>
 
 <div class="build-logs-container">
-  {#each buildLogs as log}
-    <div class={`build-log ${log.severity}`}>
-      <div class="build-log-severity">{log.severity}</div>
-      <div class="build-log-message">{log.message}</div>
+  {#if buildLogs.length > 0}
+    {#each buildLogs as log}
+      <div class={`build-log ${log.severity}`}>
+        <div class="build-log-severity">{log.severity}</div>
+        <div class="build-log-message">{log.message}</div>
+      </div>
+    {/each}
+  {:else}
+    <div class={`build-log info`}>
+      <div class="build-log-severity">Info</div>
+      <div class="build-log-message">No warnings.</div>
     </div>
-  {/each}
+  {/if}
 </div>
 
 <style>
@@ -26,6 +35,7 @@
     flex-direction: column;
     gap: 8px;
     font-size: 12px;
+    padding: 12px;
   }
 
   .build-log {
