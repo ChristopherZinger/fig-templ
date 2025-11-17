@@ -1,26 +1,35 @@
 <script lang="ts">
+  import { SelectedViewMode } from "../lib/utils/shared/preview-tabs";
   import Button from "./Button.svelte";
 
-  export let viewMode: "preview" | "code" = "preview";
-  export let onSelectMode: (mode: "preview" | "code") => void;
+  export let selectedViewMode: SelectedViewMode;
+  export let viewModes: {
+    label: string;
+    value: SelectedViewMode;
+  }[];
+  export let onSelectMode: (mode: SelectedViewMode) => void;
+  export let numWarnings: number;
+
+  $: selectableViewModes = viewModes.filter((vm) =>
+    numWarnings > 0 ? true : vm.value !== SelectedViewMode.warnings
+  );
 </script>
 
 <div class="view-mode-selector">
   Select Mode:
-  <Button
-    onClick={() => onSelectMode("preview")}
-    variant="naked"
-    isActive={viewMode === "preview"}
-  >
-    Preview
-  </Button>
-  <Button
-    variant="naked"
-    isActive={viewMode === "code"}
-    onClick={() => onSelectMode("code")}
-  >
-    Code
-  </Button>
+  {#each selectableViewModes as viewMode}
+    <Button
+      onClick={() => onSelectMode(viewMode.value)}
+      variant="naked"
+      isActive={viewMode.value === selectedViewMode}
+    >
+      {#if viewMode.value === SelectedViewMode.warnings}
+        {viewMode.label} [{numWarnings}]
+      {:else}
+        {viewMode.label}
+      {/if}
+    </Button>
+  {/each}
 </div>
 
 <style>

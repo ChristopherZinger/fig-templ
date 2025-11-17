@@ -62,6 +62,10 @@
   let selectedFrameId: string | undefined = undefined;
   let frameSelectOptions: { id: string; name: string }[] | undefined;
   let imgHashToBlob: Record<string, Blob> = {};
+  let htmlBuildLogs: {
+    severity: "error" | "warning" | "info";
+    message: string;
+  }[] = [];
 
   function onMessage(event: MessageEvent) {
     const { type, data } = event.data.pluginMessage;
@@ -85,6 +89,9 @@
           ...imgHashToBlob,
           [hash]: new Blob([bytes], { type: "image/png" }),
         };
+        break;
+      case MainThreadMsg.PostHtmlBuildMessage:
+        htmlBuildLogs = [...htmlBuildLogs, data];
         break;
     }
   }
@@ -194,6 +201,7 @@
           : rootNode}
         {htmlString}
         {imgHashToBlob}
+        {htmlBuildLogs}
       />
     {/if}
   </div>

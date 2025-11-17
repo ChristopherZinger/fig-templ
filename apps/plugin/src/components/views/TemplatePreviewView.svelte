@@ -8,6 +8,8 @@
   import VisualPreviewView from "./VisualPreviewView.svelte";
   import { sessionTokenStore } from "../../lib/stores/sessionTokenStore";
   import Button from "../Button.svelte";
+  import PreviewBuildLogs from "./PreviewBuildLogs.svelte";
+  import { SelectedViewMode } from "../../lib/utils/shared/preview-tabs";
 
   export let orgId: string | undefined | null;
   export let htmlString: string | undefined;
@@ -19,8 +21,12 @@
       }
     | undefined
     | null;
+  export let htmlBuildLogs: {
+    severity: "error" | "warning" | "info";
+    message: string;
+  }[] = [];
 
-  let viewMode: "preview" | "code" = "preview";
+  let selectedViewMode: SelectedViewMode = SelectedViewMode.preview;
   let templateNameInput: string = "My HTML Template";
 
   let isSavingTemplate = false;
@@ -55,10 +61,15 @@
 <main>
   <div class="header">
     <PreviewModeSelector
-      {viewMode}
+      {selectedViewMode}
+      viewModes={Object.values(SelectedViewMode).map((mode) => ({
+        label: mode,
+        value: mode,
+      }))}
       onSelectMode={(mode) => {
-        viewMode = mode;
+        selectedViewMode = mode;
       }}
+      numWarnings={htmlBuildLogs.length}
     />
     {#if $sessionTokenStore}
       <div class="save-template-container">
@@ -95,10 +106,12 @@
   </div>
 
   <div class="content">
-    {#if viewMode === "preview"}
+    {#if selectedViewMode === "preview"}
       <VisualPreviewView {htmlString} {imgHashToBlob} {previewInfo} />
-    {:else}
+    {:else if selectedViewMode === "code"}
       <CodePreviewView {htmlString} />
+    {:else if selectedViewMode === "warnings"}
+      <PreviewBuildLogs {htmlBuildLogs} />
     {/if}
   </div>
 </main>

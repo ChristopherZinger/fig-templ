@@ -1,3 +1,5 @@
+import { MainThreadMsg } from "../lib/utils/shared/messages";
+import { sendToUiThread } from "./message-utils";
 import { hasLayoutMode, isTopLevelNode } from "./node-utils";
 
 export async function buildNodeStyle(
@@ -35,7 +37,12 @@ function getFlexStyle(node: BaseNode):
     }
   | null {
   if (!hasLayoutMode(node) || node.layoutMode === "NONE") {
-    console.warn("layout_mode_not_supported", node);
+    if (node.type !== "TEXT") {
+      sendToUiThread(MainThreadMsg.PostHtmlBuildMessage, {
+        severity: "warning",
+        message: `Can't get flex box style for node: "${node.name.slice(0, 50)}"; ${node.id}"`,
+      });
+    }
     return null;
   }
 

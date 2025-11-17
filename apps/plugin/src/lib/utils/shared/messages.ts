@@ -12,4 +12,5 @@ export enum MainThreadMsg {
   FailedToMakeFrames = "failed_to_make_frames",
   PostFrameInfosForSelector = "post_frame_infos_for_selector",
   PostImageInfo = "post_image_info",
+  PostHtmlBuildMessage = "post_html_build_message",
 }
