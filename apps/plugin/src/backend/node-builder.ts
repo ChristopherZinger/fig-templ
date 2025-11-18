@@ -93,10 +93,22 @@ async function buildAppNodeFromSceneNode(
   return result;
 }
 
-async function createRasterizedAppNode(sceneNode: SceneNode): Promise<AppNode> {
+async function createRasterizedAppNode(
+  sceneNode: SceneNode
+): Promise<AppNode | null> {
+  const MAX_IMG_SIZE = 4096;
+  const scaleX = Math.min(MAX_IMG_SIZE, sceneNode.width) / sceneNode.width;
+  const scaleY = Math.min(MAX_IMG_SIZE, sceneNode.height) / sceneNode.height;
+  const type = scaleX < scaleY ? "WIDTH" : "HEIGHT";
   const bytes = await sceneNode.exportAsync({
     format: "PNG",
-    constraint: { type: "SCALE", value: 2 },
+    constraint: {
+      type,
+      value: Math.floor(
+        type === "WIDTH" ? sceneNode.width * scaleX : sceneNode.height * scaleY
+      ),
+    },
+    useAbsoluteBounds: true,
   });
   const image = figma.createImage(bytes);
 
