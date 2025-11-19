@@ -2,6 +2,14 @@ import { MainThreadMsg } from "../lib/utils/shared/messages";
 import { buildNodeStyle } from "./node-style-utils";
 import type { AppNode } from "../types";
 import { sendToUiThread } from "./message-utils";
+import _ from "lodash";
+import { getImmediateChildren, hasChildren } from "./node-utils";
+import {
+  createFlexColumnNode,
+  getNodesGroupedByPosition,
+} from "./magic-layout-builder";
+
+const ENABLE_MAGIC_LAYOUT = false;
 
 export async function makeFrames(frameId: string | null) {
   if (!frameId) {
@@ -45,6 +53,16 @@ async function buildAppNodeFromSceneNode(
 
   if (sceneNode.visible === false) {
     return null;
+  }
+
+  if (!isLayoutMode && hasChildren(sceneNode) && ENABLE_MAGIC_LAYOUT) {
+    console.warn(
+      "containers_without_layout_are_unsupported__create_magic_layout",
+      sceneNode.name,
+      sceneNode.id
+    );
+    const magicLayoutNode = await createMagicLayoutAppNode(sceneNode);
+    return magicLayoutNode;
   }
 
   if (!isLayoutMode && sceneNode.type !== "TEXT") {
@@ -91,6 +109,37 @@ async function buildAppNodeFromSceneNode(
   }
 
   return result;
+}
+
+export async function createMagicLayoutAppNode(
+  node: SceneNode
+): Promise<AppNode | null> {
+  if ("layoutMode" in node && node.layoutMode !== "NONE") {
+    console.error("node_with_auto-layout_selected_for_magic_layout", node.name);
+    return buildAppNodeFromSceneNode(node);
+  }
+
+  const children = getImmediateChildren(node);
+  const childrenGroupedHorizontally = getNodesGroupedByPosition({
+    nodes: children,
+    direction: "y",
+  });
+
+  if (childrenGroupedHorizontally.length > 1) {
+    const appNode = await createFlexColumnNode({
+      parent: node,
+      childrenGroupedHorizontallyInYorder: childrenGroupedHorizontally,
+    });
+    return appNode;
+  }
+
+  console.error(
+    "unsupported magic layout, returning rasterized node",
+    node.name
+  );
+  return await createRasterizedAppNode(node);
+
+  // TODO: implement horizontal layout
 }
 
 async function createRasterizedAppNode(
