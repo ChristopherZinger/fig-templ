@@ -68,7 +68,10 @@ export async function createFlexColumnNode({
   );
 
   const baseStyle = await buildNodeStyle(parent);
-  const justifyContentStyle = getJustifyContentStyle(horizontalMarginsInOrder);
+  const justifyContentStyle = getJustifyContentStyle({
+    marginsInOrderPx: horizontalMarginsInOrder,
+    direction: "y",
+  });
   return {
     name: parent.name,
     type: "RECTANGLE",
@@ -90,8 +93,19 @@ export async function createFlexColumnNode({
   };
 }
 
-function getJustifyContentStyle(marginsInOrderPx: number[]) {
+function getJustifyContentStyle({
+  marginsInOrderPx,
+  direction,
+}: {
+  marginsInOrderPx: number[];
+  direction: "x" | "y";
+}) {
   // todo consier number of items - 0, 1, 2, N
+
+  const [paddingStart, paddingEnd] =
+    direction === "y"
+      ? ["padding-top", "padding-bottom"]
+      : ["padding-left", "padding-right"];
 
   const internalMargins = [...marginsInOrderPx];
   const lastMargin = internalMargins.pop();
@@ -111,21 +125,21 @@ function getJustifyContentStyle(marginsInOrderPx: number[]) {
     }
     return {
       "justify-content": "space-between",
-      "padding-top": firstMargin + "px",
-      "padding-bottom": lastMargin + "px",
+      [paddingStart]: firstMargin + "px",
+      [paddingEnd]: lastMargin + "px",
     };
   }
 
   if ((firstMargin || 0) > (lastMargin || 0)) {
     return {
       "justify-content": "flex-end",
-      "padding-bottom": lastMargin + "px",
+      [paddingEnd]: lastMargin + "px",
     };
   }
 
   return {
     "justify-content": "flex-start",
-    "padding-top": firstMargin + "px",
+    [paddingStart]: firstMargin + "px",
   };
 }
 
