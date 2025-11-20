@@ -48,7 +48,6 @@ export async function createFlexColumnNode({
       const h = maxY - minY;
 
       const node: AppNode = {
-        parent: null,
         children: [],
         attributes: {},
         style: Object.assign(
@@ -88,7 +87,6 @@ export async function createFlexColumnNode({
       justifyContentStyle
     ),
     attributes: {},
-    parent: null,
   };
 }
 
