@@ -8,7 +8,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "types": ["@figma/plugin-typings"]
+    "types": ["@figma/plugin-typings", "jest"]
   },
   "include": ["src/backend/**/*"],
   "exclude": ["node_modules", "dist"]
