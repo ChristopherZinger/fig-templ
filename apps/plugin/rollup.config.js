@@ -48,7 +48,7 @@ export default [
       svelte({
         preprocess: sveltePreprocess({
           sourceMap: !production,
-          postcss: true,
+          postcss: false,
           typescript: {
             tsconfigFile: "./tsconfig.app.json",
           },
