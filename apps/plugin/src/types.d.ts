@@ -11,6 +11,5 @@ type AppNodeBase = {
   name: string;
   style: Record<string, unknown>;
   attributes: Record<string, unknown>;
-  css: Record<string, unknown>;
   children: AppNode[];
 };

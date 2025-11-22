@@ -60,7 +60,6 @@ export async function createFlexColumnNode({
           marginBottom ? { "margin-bottom": marginBottom + "px" } : {}
         ),
         type: "RECTANGLE",
-        css: {},
         name: "tmpl_node",
       };
       return node;
@@ -76,7 +75,6 @@ export async function createFlexColumnNode({
     name: parent.name,
     type: "RECTANGLE",
     children,
-    css: {},
     style: Object.assign(
       baseStyle,
       {

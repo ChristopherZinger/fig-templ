@@ -75,8 +75,7 @@ async function buildAppNodeFromSceneNode(
     return await createRasterizedAppNode(sceneNode);
   }
 
-  const [css, style, attributes] = await Promise.all([
-    sceneNode.getCSSAsync(),
+  const [style, attributes] = await Promise.all([
     buildNodeStyle(sceneNode),
     getAttributes(sceneNode),
   ]);
@@ -99,7 +98,6 @@ async function buildAppNodeFromSceneNode(
     name: sceneNode.name,
     type: sceneNode.type,
     children,
-    css,
     style,
     attributes,
   };
@@ -167,7 +165,6 @@ async function createRasterizedAppNode(
     name: sceneNode.name,
     type: sceneNode.type,
     children: [],
-    css: {},
     style: {
       "background-size": "cover",
       "background-position": "center",
