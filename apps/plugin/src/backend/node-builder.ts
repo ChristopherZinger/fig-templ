@@ -140,9 +140,7 @@ export async function createMagicLayoutAppNode(
   // TODO: implement horizontal layout
 }
 
-async function createRasterizedAppNode(
-  sceneNode: SceneNode
-): Promise<AppNode | null> {
+async function createRasterizedAppNode(sceneNode: SceneNode): Promise<AppNode> {
   const MAX_IMG_SIZE = 4096;
   const scaleX = Math.min(MAX_IMG_SIZE, sceneNode.width) / sceneNode.width;
   const scaleY = Math.min(MAX_IMG_SIZE, sceneNode.height) / sceneNode.height;
