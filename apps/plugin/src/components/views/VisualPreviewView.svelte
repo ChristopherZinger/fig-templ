@@ -2,8 +2,8 @@
   export let htmlString: string | undefined | null;
   export let previewInfo:
     | {
-        width: string; // e.g "100px"
-        height: string;
+        width: number;
+        height: number;
       }
     | undefined
     | null;
@@ -55,11 +55,11 @@
   $: setContentDocInnerHtml(htmlString, contentDoc);
 
   function getIframeTransformScale(
-    previewInfo: { width: string; height: string } | null | undefined
+    previewInfo: { width: number; height: number } | null | undefined
   ): number {
     const MAX_PREVIEW_WIDTH_PX = 800;
     if (previewInfo) {
-      const w = parseInt(previewInfo.width.split("px")[0]);
+      const w = previewInfo.width;
       if (w > MAX_PREVIEW_WIDTH_PX) {
         const scale = MAX_PREVIEW_WIDTH_PX / w;
         return scale;
@@ -70,10 +70,10 @@
 
   $: iframeScale = getIframeTransformScale(previewInfo);
   $: iframeWrapperWidth = previewInfo
-    ? `${parseInt(previewInfo.width) * iframeScale}px`
+    ? `${previewInfo.width * iframeScale}px`
     : "100px";
   $: iframeWrapperHeight = previewInfo
-    ? `${parseInt(previewInfo.height) * iframeScale}px`
+    ? `${previewInfo.height * iframeScale}px`
     : "100px";
 </script>
 
@@ -86,7 +86,7 @@
     <iframe
       bind:this={iframeRef}
       title="iframe"
-      style={`width: ${previewInfo?.width || "100px"}; height: ${previewInfo?.height || "100px"}; transform: scale(${iframeScale}); transform-origin: top left;`}
+      style={`width: ${previewInfo?.width || 100}px; height: ${previewInfo?.height || 100}px; transform: scale(${iframeScale}); transform-origin: top left;`}
     ></iframe>
   </div>
 </div>
