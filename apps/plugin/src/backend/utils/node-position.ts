@@ -1,3 +1,5 @@
+import { PluginError } from "../../lib/utils/PluginError";
+
 export type Bbox = {
   minX: number;
   minY: number;
@@ -19,6 +21,14 @@ export function getBbox(nodes: SceneNode[]): Bbox | null {
   }
 
   return { minX, minY, maxX, maxY };
+}
+
+export function expectBbox(nodes: SceneNode[]): Bbox {
+  const bbox = getBbox(nodes);
+  if (!bbox) {
+    throw new PluginError("expected_bbox", { numNodes: nodes.length });
+  }
+  return bbox;
 }
 
 export function getBboxSpacing(
