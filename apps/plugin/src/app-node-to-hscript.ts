@@ -99,7 +99,7 @@ function getFontFamilies(node: AppNode): Set<string> {
   if (!node.children.length) {
     const result = new Set<string>();
     const font = node.style["font-family"];
-    if (font) {
+    if (typeof font === "string") {
       result.add(font);
     }
     return result;
