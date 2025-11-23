@@ -16,7 +16,7 @@
       return;
     }
 
-    sendToMainThread(UiMsg.Logout);
+    sendToMainThread(UiMsg.Logout, null);
 
     try {
       // TODO: pass session token in header

@@ -42,7 +42,15 @@ export async function makeFrames(frameId: string | null) {
     });
   }
 
-  sendToUiThread(MainThreadMsg.PostFrameNodes, { node: rootAppNode });
+  sendToUiThread(
+    MainThreadMsg.PostFrameNodes,
+    rootAppNode
+      ? {
+          rootNode: rootAppNode,
+          config: { width: frame.width, height: frame.height },
+        }
+      : null
+  );
 }
 
 async function buildAppNodeFromSceneNode(

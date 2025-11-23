@@ -1,14 +1,15 @@
 import { sessionTokenStore } from "../stores/sessionTokenStore";
-import { MainThreadMsg, type UiMsg } from "./shared/messages";
+import { MainThreadMsg, type MsgPayload, type UiMsg } from "./shared/messages";
+import type { AppMessageEvent } from "./window-ev-listener-utils";
 
-export function sendToMainThread(
-  msg: UiMsg,
-  payload?: Record<string, any>
+export function sendToMainThread<T extends UiMsg>(
+  msg: T,
+  payload: Extract<MsgPayload, { type: T }>["data"]
 ): void {
   parent.postMessage({ pluginMessage: { type: msg, data: payload } }, "*");
 }
 
-export function handleSessionTokenMessages(event: MessageEvent) {
+export function handleSessionTokenMessages(event: AppMessageEvent) {
   const { type, data } = event.data.pluginMessage;
   switch (type) {
     case MainThreadMsg.PostSessionCookie: {

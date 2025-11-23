@@ -79,5 +79,5 @@ async function saveSessionTokenMessage(sessionToken: string) {
 
 async function logoutMessage() {
   await figma.clientStorage.deleteAsync(SESSION_TOKEN_KEY);
-  sendToUiThread(MainThreadMsg.Logout, {});
+  sendToUiThread(MainThreadMsg.Logout, null);
 }

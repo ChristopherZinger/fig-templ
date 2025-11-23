@@ -11,7 +11,7 @@
   const unsub = getMessageEventListener(handleSessionTokenMessages);
 
   onMount(() => {
-    sendToMainThread(UiMsg.RequestSessionCookie);
+    sendToMainThread(UiMsg.RequestSessionCookie, null);
   });
 
   onDestroy(() => {

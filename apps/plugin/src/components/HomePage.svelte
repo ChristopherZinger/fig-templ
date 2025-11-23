@@ -19,7 +19,10 @@
   import { onClickDownloadTemplate } from "../lib/utils/download";
   import { isEqual } from "lodash";
   import GetHelpButton from "./GetHelpButton.svelte";
-  import { getMessageEventListener } from "../lib/utils/window-ev-listener-utils";
+  import {
+    getMessageEventListener,
+    type AppMessageEvent,
+  } from "../lib/utils/window-ev-listener-utils";
   import { replaceBgImgStyleUrlsWithBase64 } from "../lib/utils/html-string-utils";
   import About from "./sidebar/About.svelte";
   import { sessionTokenStore } from "../lib/stores/sessionTokenStore";
@@ -58,7 +61,10 @@
     }
   }
 
-  let rootNode: null | undefined | AppNode = null;
+  let rootNodeInfo:
+    | null
+    | undefined
+    | { rootNode: AppNode; config: { width: number; height: number } } = null;
   let selectedFrameId: string | undefined = undefined;
   let frameSelectOptions: { id: string; name: string }[] | undefined;
   let imgHashToBlob: Record<string, Blob> = {};
@@ -67,11 +73,15 @@
     message: string;
   }[] = [];
 
-  function onMessage(event: MessageEvent) {
+  function onMessage(event: AppMessageEvent) {
     const { type, data } = event.data.pluginMessage;
     switch (type) {
       case MainThreadMsg.PostFrameNodes:
-        rootNode = data.node as AppNode | null;
+        if (!data) {
+          rootNodeInfo = null;
+          return;
+        }
+        rootNodeInfo = data;
         break;
       case MainThreadMsg.PostFrameInfosForSelector:
         const newFrames = data.frames as { id: string; name: string }[];
@@ -106,8 +116,8 @@
 
     htmlString = getHtmlDocumentFromAppNode(appNode).outerHTML;
   }
-  $: onTemplateInfoChange(rootNode);
-  $: if (rootNode === undefined) {
+  $: onTemplateInfoChange(rootNodeInfo && rootNodeInfo.rootNode);
+  $: if (rootNodeInfo === undefined) {
     htmlBuildLogs = [];
   }
 
@@ -126,7 +136,7 @@
   $: loadOrganizations($sessionTokenStore);
 
   onMount(async () => {
-    sendToMainThread(UiMsg.RequestSelectableFrames);
+    sendToMainThread(UiMsg.RequestSelectableFrames, null);
   });
 
   onDestroy(() => {
@@ -152,10 +162,15 @@
         frameInfos={frameSelectOptions}
         {selectedFrameId}
         onClickOnSelectElement={() => {
-          sendToMainThread(UiMsg.RequestSelectableFrames);
+          sendToMainThread(UiMsg.RequestSelectableFrames, null);
         }}
         onClickShowPreview={() => {
-          rootNode = undefined;
+          rootNodeInfo = undefined;
+          if (!selectedFrameId) {
+            console.warn("no_frame_selected");
+            rootNodeInfo = null;
+            return;
+          }
           sendToMainThread(UiMsg.ShowPreview, { frameId: selectedFrameId });
         }}
       />
@@ -196,12 +211,7 @@
     {:else if view === "preview"}
       <TemplatePreviewView
         orgId={selectedOrgId}
-        previewInfo={rootNode
-          ? {
-              width: rootNode.style.width,
-              height: rootNode.style.height,
-            }
-          : rootNode}
+        previewInfo={rootNodeInfo ? rootNodeInfo.config : rootNodeInfo}
         {htmlString}
         {imgHashToBlob}
         {htmlBuildLogs}
