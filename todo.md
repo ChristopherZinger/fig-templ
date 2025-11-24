@@ -38,6 +38,11 @@
   - I imagine this is a drag-drop component created by our plugin that will
     have some additional metadata that tells transformation script to wrap stuff
     in a {for each} loop
+- [Chris] Magic layout
+  - [x] flex row and column
+  - [] tiles (grid)
+  - [] unstructured groups
+  - [] item containing itmes
 
 ## Webapp
 
