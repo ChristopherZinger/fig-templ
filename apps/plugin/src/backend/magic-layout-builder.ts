@@ -1,94 +1,135 @@
-import { AppNode } from "../types";
-import { buildNodeStyle } from "./node-style-utils";
-import { getBbox, getBboxSpacing } from "./utils/node-position";
+import { PluginError } from "../lib/utils/PluginError";
+import { Bbox, expectBbox, getBboxSpacing } from "./utils/node-position";
 import _ from "lodash";
 
-export async function createFlexColumnNode({
-  parent,
-  childrenGroupedHorizontallyInYorder,
-}: {
-  parent: SceneNode;
-  childrenGroupedHorizontallyInYorder: SceneNode[][];
-}): Promise<AppNode | null> {
-  const bboxes = _.compact(
-    childrenGroupedHorizontallyInYorder.map((group) => getBbox(group))
-  );
-
-  const bbox = getBbox(childrenGroupedHorizontallyInYorder.flat());
-  if (!bbox) {
-    console.error("failed to get bbox for children");
-    return null;
-  }
-
-  const marginLeft = bbox.minX;
-  const marginRight = parent.width - bbox.maxX;
-  const marginTop = bbox.minY;
-  const marginBottom = parent.height - bbox.maxY;
-
-  const horizontalMarginsInOrder: number[] = [marginTop];
-  for (let i = 0; i < bboxes.length - 1; i++) {
-    const marginPx = getBboxSpacing(bboxes[i], bboxes[i + 1]).y;
-    horizontalMarginsInOrder.push(marginPx);
-  }
-  horizontalMarginsInOrder.push(marginBottom);
-
-  const children: AppNode[] = _.compact(
-    childrenGroupedHorizontallyInYorder.map((group, i) => {
-      const bbox = getBbox(group);
-      if (!bbox) {
-        return null;
-      }
-
-      const [, ...margins] = horizontalMarginsInOrder;
-      margins.pop();
-      const marginBottom = margins[i];
-
-      const { minX, minY, maxX, maxY } = bbox;
-      const w = maxX - minX;
-      const h = maxY - minY;
-
-      const node: AppNode = {
-        children: [],
-        attributes: {},
-        style: Object.assign(
-          {
-            width: w + "px",
-            height: h + "px",
-            "margin-bottom": marginBottom + "px",
-            "background-color": "coral",
-          },
-          marginBottom ? { "margin-bottom": marginBottom + "px" } : {}
-        ),
-        type: "RECTANGLE",
-        name: "tmpl_node",
-      };
-      return node;
-    })
-  );
-
-  const baseStyle = await buildNodeStyle(parent);
-  const justifyContentStyle = getJustifyContentStyle({
-    marginsInOrderPx: horizontalMarginsInOrder,
-    direction: "y",
-  });
-  return {
-    name: parent.name,
-    type: "RECTANGLE",
-    children,
-    style: Object.assign(
-      baseStyle,
-      {
-        display: "flex",
-        "flex-direction": "column",
-        width: parent.width + "px",
-        height: parent.height + "px",
-        "padding-left": marginLeft + "px",
-        "padding-right": marginRight + "px",
-      },
-      justifyContentStyle
-    ),
-    attributes: {},
+export type PhantomNodeInfo = {
+  width: number;
+  height: number;
+  origin: {
+    x: number;
+    y: number;
   };
+};
+
+export enum LayoutDirection {
+  x = "x",
+  y = "y",
+}
+
+export function deductLayoutInformation({
+  container,
+  children,
+}: {
+  container: PhantomNodeInfo;
+  children: SceneNode[];
+}): {
+  groupInfos: {
+    nodes: SceneNode[];
+    styles?: Record<string, unknown>;
+  }[];
+  magicLayoutStyles: {
+    display: "flex";
+    "flex-direction": string;
+    "justify-content": string;
+    "padding-top"?: string;
+    "padding-right"?: string;
+    "padding-bottom"?: string;
+    "padding-left"?: string;
+  };
+  direction: LayoutDirection;
+} {
+  const { direction, groupedChildren } = deductFlexDirection(children);
+
+  const flexStyle =
+    direction === LayoutDirection.x
+      ? { "flex-direction": "row" }
+      : { "flex-direction": "column" };
+
+  const { marginsAlongDirection, margins } = getMarginsAlongDirection({
+    container,
+    groupedChildren,
+    direction,
+  });
+
+  const justifyContentStyle = getJustifyContentStyle({
+    marginsInOrderPx: marginsAlongDirection,
+    direction: direction,
+  });
+
+  const secondaryMarginStyles =
+    direction === LayoutDirection.x
+      ? {
+          "padding-top": margins.top + "px",
+          "padding-bottom": margins.bottom + "px",
+        }
+      : {
+          "padding-left": margins.left + "px",
+          "padding-right": margins.right + "px",
+        };
+
+  // TODO: refacor internal margins - encapsulate??
+  const JUSTIFY_CONTENT_STYLES_THAT_OVERRRIDE_INTERNAL_MARGINS = [
+    "space-evenly",
+    "space-between",
+    "space-around",
+  ];
+  const justifyContent = justifyContentStyle["justify-content"];
+  const shouldOverrideInternalMargins =
+    !JUSTIFY_CONTENT_STYLES_THAT_OVERRRIDE_INTERNAL_MARGINS.includes(
+      justifyContent
+    );
+  let internalMargins: number[] | undefined;
+  if (shouldOverrideInternalMargins) {
+    internalMargins = marginsAlongDirection.slice(1).slice(0, -1);
+  }
+
+  const groupInfos = groupedChildren.map((group, i) => {
+    return {
+      nodes: group,
+      styles: internalMargins
+        ? direction === LayoutDirection.x
+          ? { "margin-right": (internalMargins[i] || 0) + "px" }
+          : { "margin-bottom": (internalMargins[i] || 0) + "px" }
+        : undefined,
+    };
+  });
+
+  const magicLayoutStyles = Object.assign(
+    { display: "flex" as const },
+    flexStyle,
+    justifyContentStyle,
+    secondaryMarginStyles
+  );
+
+  return {
+    groupInfos,
+    magicLayoutStyles,
+    direction,
+  };
+}
+
+function deductFlexDirection(sceneNodes: SceneNode[]): {
+  direction: LayoutDirection;
+  groupedChildren: SceneNode[][];
+} {
+  const directionsInOrder = [LayoutDirection.y, LayoutDirection.x];
+  for (const direction of directionsInOrder) {
+    const groupedChildren = groupNodesAlongDirection({
+      nodes: sceneNodes,
+      direction,
+    });
+    if (groupedChildren.length > 1) {
+      return { direction, groupedChildren };
+    }
+  }
+
+  console.error("grid_layout_not_supported", {
+    nodes: sceneNodes.map((n) => n.name.slice(0, 30)),
+  });
+
+  throw new PluginError("grid_layout_not_supported", {
+    nodes: sceneNodes.map((n) => n.name.slice(0, 30)),
+  });
 }
 
 function getJustifyContentStyle({
@@ -141,12 +182,12 @@ function getJustifyContentStyle({
   };
 }
 
-export function getNodesGroupedByPosition({
+function groupNodesAlongDirection({
   nodes,
   direction,
 }: {
   nodes: readonly SceneNode[];
-  direction: "x" | "y";
+  direction: LayoutDirection;
 }): SceneNode[][] {
   let nodesGroupedByPosition: SceneNode[][] = [];
   for (const group of groupNodesByPositionGenerator({
@@ -185,3 +226,74 @@ function* groupNodesByPositionGenerator({
     yield currentGroup;
   }
 }
+
+function getMarginsAlongDirection({
+  container,
+  groupedChildren,
+  direction,
+}: {
+  container: PhantomNodeInfo;
+  groupedChildren: SceneNode[][];
+  direction: LayoutDirection;
+}): {
+  marginsAlongDirection: number[];
+  margins: {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+  };
+} {
+  const bbox = expectBbox(_.flatten(groupedChildren));
+
+  const { marginLeft, marginRight, marginTop, marginBottom } = getOuterMargins({
+    container,
+    bbox,
+  });
+
+  const marginsAlongDirection: number[] = [
+    direction === LayoutDirection.x ? marginLeft : marginTop,
+  ];
+  const bboxes = groupedChildren.map((group) => expectBbox(group));
+  for (let i = 0; i < bboxes.length - 1; i++) {
+    const marginPx = getBboxSpacing(bboxes[i], bboxes[i + 1])[direction];
+    marginsAlongDirection.push(marginPx);
+  }
+  marginsAlongDirection.push(
+    direction === LayoutDirection.x ? marginRight : marginBottom
+  );
+
+  return {
+    marginsAlongDirection,
+    margins: {
+      top: marginTop,
+      right: marginRight,
+      bottom: marginBottom,
+      left: marginLeft,
+    },
+  };
+}
+
+function getOuterMargins({
+  container,
+  bbox,
+}: {
+  container: PhantomNodeInfo;
+  bbox: Bbox;
+}): {
+  marginLeft: number;
+  marginRight: number;
+  marginTop: number;
+  marginBottom: number;
+} {
+  return {
+    marginLeft: bbox.minX - container.origin.x,
+    marginRight: container.width + container.origin.x - bbox.maxX,
+    marginTop: bbox.minY - container.origin.y,
+    marginBottom: container.height + container.origin.y - bbox.maxY,
+  };
+}
+
+export const testing = {
+  getOuterMargins,
+};

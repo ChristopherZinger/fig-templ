@@ -1,13 +1,26 @@
 import { MainThreadMsg } from "../lib/utils/shared/messages";
 import { buildNodeStyle } from "./node-style-utils";
-import type { AppNode } from "../types";
+import { AppNodeType, type AppNode } from "../types";
 import { sendToUiThread } from "./message-utils";
 import _ from "lodash";
-import { getImmediateChildren, hasChildren } from "./node-utils";
 import {
-  createFlexColumnNode,
-  getNodesGroupedByPosition,
+  getAllChildren,
+  getDirectChildren,
+  hasAutoLayoutMode,
+  hasChildren,
+} from "./node-utils";
+import {
+  deductLayoutInformation,
+  LayoutDirection,
+  PhantomNodeInfo,
 } from "./magic-layout-builder";
+import {
+  Bbox,
+  expectBbox,
+  getBboxDimensions,
+  getBboxOrigin,
+  getBboxShrinkedToHugContents,
+} from "./utils/node-position";
 
 const ENABLE_MAGIC_LAYOUT = false;
 
@@ -56,96 +69,189 @@ export async function makeFrames(frameId: string | null) {
 async function buildAppNodeFromSceneNode(
   sceneNode: SceneNode
 ): Promise<AppNode | null> {
-  const isLayoutMode =
-    "layoutMode" in sceneNode && sceneNode.layoutMode !== "NONE";
-
   if (sceneNode.visible === false) {
     return null;
   }
 
-  if (!isLayoutMode && hasChildren(sceneNode) && ENABLE_MAGIC_LAYOUT) {
-    console.warn(
-      "containers_without_layout_are_unsupported__create_magic_layout",
-      sceneNode.name,
-      sceneNode.id
-    );
-    const magicLayoutNode = await createMagicLayoutAppNode(sceneNode);
-    return magicLayoutNode;
+  if (!hasChildren(sceneNode) || hasAutoLayoutMode(sceneNode)) {
+    return await buildAppNodeWithAutoLayout(sceneNode);
   }
 
-  if (!isLayoutMode && sceneNode.type !== "TEXT") {
-    console.warn(
-      "containers_without_layout_are_unsupported__exporting_as_picture",
-      sceneNode.name,
-      sceneNode.id
-    );
-
+  if (!ENABLE_MAGIC_LAYOUT) {
     return await createRasterizedAppNode(sceneNode);
   }
 
-  const [style, attributes] = await Promise.all([
+  sendToUiThread(MainThreadMsg.PostHtmlBuildMessage, {
+    severity: "warning",
+    message: [
+      "applying magic layout to node: ",
+      sceneNode.name.slice(0, 20),
+      sceneNode.id,
+    ].join(" "),
+  });
+
+  const magicLayoutNode = await buildAppNodeWithMagicLayout({ sceneNode });
+
+  if (magicLayoutNode) {
+    sendToUiThread(MainThreadMsg.PostHtmlBuildMessage, {
+      severity: "warning",
+      message: [
+        "failed to apply magic layout to node: ",
+        sceneNode.name.slice(0, 20),
+        sceneNode.id,
+      ].join(" "),
+    });
+    return magicLayoutNode;
+  }
+  return await createRasterizedAppNode(sceneNode);
+}
+
+async function buildAppNodeWithAutoLayout(
+  sceneNode: SceneNode,
+  overrideStyles?: Record<string, unknown>
+): Promise<AppNode> {
+  const [baseStyles, attributes, ...children] = await Promise.all([
     buildNodeStyle(sceneNode),
     getAttributes(sceneNode),
+    ...getAllChildren(sceneNode).map(async (childNode) => {
+      return await buildAppNodeFromSceneNode(childNode);
+    }),
   ]);
-  const children: AppNode[] = [];
-  if ("children" in sceneNode) {
-    (
-      await Promise.all(
-        sceneNode.children.map(async (childNode) => {
-          return await buildAppNodeFromSceneNode(childNode);
-        })
-      )
-    )
-      .filter((val: AppNode | null) => !!val)
-      .forEach((val: AppNode) => {
-        children.push(val);
-      });
-  }
 
-  const result: AppNode = {
-    name: sceneNode.name,
-    type: sceneNode.type,
-    children,
+  const style = Object.assign(baseStyles, overrideStyles);
+
+  const result = makeAppNode({
+    sceneNode,
+    children: _.compact(children),
     style,
     attributes,
-  };
-
-  if (sceneNode.type === "TEXT") {
-    result.innerText = sceneNode.characters;
-  }
+  });
 
   return result;
 }
 
-export async function createMagicLayoutAppNode(
-  node: SceneNode
+async function buildAppNodeWithMagicLayout(
+  info:
+    | { sceneNode: SceneNode }
+    | {
+        sceneNodes: SceneNode[];
+        phantomNodeInfo: PhantomNodeInfo;
+        overrideStyles?: Record<string, unknown>;
+      }
 ): Promise<AppNode | null> {
-  if ("layoutMode" in node && node.layoutMode !== "NONE") {
-    console.error("node_with_auto-layout_selected_for_magic_layout", node.name);
-    return buildAppNodeFromSceneNode(node);
+  if ("sceneNode" in info) {
+    return await buildAppNodeWithMagicLayoutFromSceneNode(info.sceneNode);
+  }
+  return await buildAppNodeWitMagicLayoutFromSceneNodeGrouop(info);
+}
+
+async function buildAppNodeWithMagicLayoutFromSceneNode(
+  sceneNode: SceneNode
+): Promise<AppNode | null> {
+  if (hasAutoLayoutMode(sceneNode)) {
+    console.error(
+      "requested_magic_layout_for_node_with_auto_layout " +
+        sceneNode.name.slice(0, 20)
+    );
+    return await buildAppNodeWithAutoLayout(sceneNode);
   }
 
-  const children = getImmediateChildren(node);
-  const childrenGroupedHorizontally = getNodesGroupedByPosition({
-    nodes: children,
-    direction: "y",
+  if (!hasChildren(sceneNode)) {
+    return await buildAppNodeWithAutoLayout(sceneNode);
+  }
+
+  const directSceneNodeChildren = getDirectChildren(sceneNode);
+  const containerBbox = expectBbox(directSceneNodeChildren);
+  const { groupInfos, magicLayoutStyles, direction } = deductLayoutInformation({
+    children: directSceneNodeChildren,
+    container: {
+      width: sceneNode.width,
+      height: sceneNode.height,
+      origin: { x: 0, y: 0 },
+    },
   });
 
-  if (childrenGroupedHorizontally.length > 1) {
-    const appNode = await createFlexColumnNode({
-      parent: node,
-      childrenGroupedHorizontallyInYorder: childrenGroupedHorizontally,
+  const childrenPromises = groupInfos.map(async ({ nodes, styles }) => {
+    const result = await buildAppNodeWithMagicLayout({
+      sceneNodes: nodes,
+      phantomNodeInfo: getPhantomNodeInfo({ nodes, direction, containerBbox }),
+      overrideStyles: styles,
     });
-    return appNode;
+    return result;
+  });
+  const [baseStyle, ...children] = await Promise.all([
+    buildNodeStyle(sceneNode),
+    ...childrenPromises,
+  ]);
+
+  const style = Object.assign(baseStyle, magicLayoutStyles, {
+    width: direction === "x" ? "100%" : sceneNode.width + "px",
+    height: direction === "x" ? sceneNode.height + "px" : "100%",
+  });
+
+  const appNode: AppNode = makeAppNode({
+    sceneNode,
+    children: _.compact(children),
+    style,
+    attributes: {
+      id: sceneNode.id,
+      name: sceneNode.name.slice(0, 20),
+    },
+  });
+
+  return appNode;
+}
+
+export async function buildAppNodeWitMagicLayoutFromSceneNodeGrouop({
+  sceneNodes,
+  phantomNodeInfo,
+  overrideStyles,
+}: {
+  sceneNodes: SceneNode[];
+  phantomNodeInfo: PhantomNodeInfo;
+  overrideStyles?: Record<string, unknown>;
+}): Promise<AppNode> {
+  if (sceneNodes.length === 1) {
+    console.warn(
+      "requested_magic_layout_for_single_node " + sceneNodes[0].name
+    );
+    return await buildAppNodeWithAutoLayout(sceneNodes[0], overrideStyles);
   }
 
-  console.error(
-    "unsupported magic layout, returning rasterized node",
-    node.name
-  );
-  return await createRasterizedAppNode(node);
+  const { groupInfos, magicLayoutStyles, direction } = deductLayoutInformation({
+    children: sceneNodes,
+    container: phantomNodeInfo,
+  });
+  const containerBbox = expectBbox(sceneNodes);
+  const childrenPromises = groupInfos.map(async ({ nodes, styles }) => {
+    const result = await buildAppNodeWithMagicLayout({
+      sceneNodes: nodes,
+      phantomNodeInfo: getPhantomNodeInfo({ nodes, direction, containerBbox }),
+      overrideStyles: styles,
+    });
+    return result;
+  });
+  const children = await Promise.all(childrenPromises);
 
-  // TODO: implement horizontal layout
+  const appNode: AppNode = {
+    name: "templetto_magic_layout_container",
+    type: AppNodeType.RECTANGLE,
+    children: _.compact(children),
+    style: Object.assign(
+      {
+        width: direction === "x" ? "100%" : phantomNodeInfo.width + "px",
+        height: direction === "x" ? phantomNodeInfo.height + "px" : "100%",
+      },
+      magicLayoutStyles,
+      overrideStyles
+    ),
+    attributes: {
+      id: "templetto_phantom_" + Math.random().toString(36).substring(2, 15),
+      name: "templetto_phantom",
+    },
+  };
+
+  return appNode;
 }
 
 async function createRasterizedAppNode(sceneNode: SceneNode): Promise<AppNode> {
@@ -169,7 +275,7 @@ async function createRasterizedAppNode(sceneNode: SceneNode): Promise<AppNode> {
 
   const result: AppNode = {
     name: sceneNode.name,
-    type: sceneNode.type,
+    type: getAppNodeType(sceneNode),
     children: [],
     style: {
       "background-size": "cover",
@@ -179,6 +285,7 @@ async function createRasterizedAppNode(sceneNode: SceneNode): Promise<AppNode> {
       height: `${sceneNode.height}px`,
     },
     attributes: { "data-image-hash": image.hash, id: sceneNode.name },
+    innerText: "",
   };
 
   return result;
@@ -204,4 +311,68 @@ async function getAttributes(node: SceneNode): Promise<Record<string, string>> {
   sendToUiThread(MainThreadMsg.PostImageInfo, { hash: img.hash, bytes });
 
   return { "data-image-hash": img.hash, id: node.name };
+}
+
+function getPhantomNodeInfo({
+  nodes,
+  direction,
+  containerBbox,
+}: {
+  nodes: SceneNode[];
+  direction: LayoutDirection;
+  containerBbox: Bbox;
+}): PhantomNodeInfo {
+  const nodesBbox = getBboxShrinkedToHugContents({
+    bbox: containerBbox,
+    contents: nodes,
+    direction,
+  });
+
+  return Object.assign(getBboxDimensions(containerBbox), {
+    origin: getBboxOrigin(nodesBbox),
+  });
+}
+
+function makeAppNode({
+  sceneNode,
+  children,
+  style,
+  attributes,
+}: {
+  sceneNode: SceneNode;
+  children: AppNode[];
+  style: Record<string, unknown>;
+  attributes: Record<string, unknown>;
+}): AppNode {
+  const type = getAppNodeType(sceneNode);
+  const baseNode = {
+    name: sceneNode.name,
+    children,
+    style,
+    attributes,
+  } satisfies Partial<AppNode>;
+
+  if (type === AppNodeType.TEXT) {
+    return Object.assign(baseNode, {
+      type,
+      innerText: "characters" in sceneNode ? sceneNode.characters : "",
+    });
+  }
+
+  return Object.assign(baseNode, {
+    type, // without this lint fails to narrow app node type
+  });
+}
+
+function getAppNodeType(node: SceneNode): AppNodeType {
+  switch (node.type) {
+    case "TEXT":
+      return AppNodeType.TEXT;
+    case "FRAME":
+      return AppNodeType.FRAME;
+    case "RECTANGLE":
+      return AppNodeType.RECTANGLE;
+    default:
+      return AppNodeType.OTHER;
+  }
 }

@@ -2,6 +2,10 @@ export function hasLayoutMode(node: BaseNode) {
   return "layoutMode" in node;
 }
 
+export function hasAutoLayoutMode(node: BaseNode) {
+  return hasLayoutMode(node) && node.layoutMode !== "NONE";
+}
+
 export function isTopLevelNode(node: BaseNode) {
   return !node.parent || ["PAGE", "DOCUMENT"].includes(node.parent.type);
 }
@@ -10,7 +14,7 @@ export function hasChildren(node: SceneNode): boolean {
   return "children" in node && node.children.length > 0;
 }
 
-export function getImmediateChildren(node: SceneNode): readonly SceneNode[] {
+export function getDirectChildren(node: SceneNode): SceneNode[] {
   if (!("children" in node)) {
     return [];
   }
@@ -19,4 +23,11 @@ export function getImmediateChildren(node: SceneNode): readonly SceneNode[] {
   });
 
   return directChildren;
+}
+
+export function getAllChildren(node: SceneNode): SceneNode[] {
+  if (!("children" in node)) {
+    return [];
+  }
+  return node.children.flatMap((child) => child);
 }

@@ -1,9 +1,18 @@
 export type AppNode =
   | (AppNodeBase & {
-      type: string;
+      type: AppNodeType.FRAME;
     })
   | (AppNodeBase & {
-      type: "TEXT";
+      type: AppNodeType.IMAGE;
+    })
+  | (AppNodeBase & {
+      type: AppNodeType.OTHER;
+    })
+  | (AppNodeBase & {
+      type: AppNodeType.RECTANGLE;
+    })
+  | (AppNodeBase & {
+      type: AppNodeType.TEXT;
       innerText: string;
     });
 
@@ -13,3 +22,11 @@ type AppNodeBase = {
   attributes: Record<string, unknown>;
   children: AppNode[];
 };
+
+export enum AppNodeType {
+  FRAME = "FRAME",
+  IMAGE = "IMAGE",
+  OTHER = "OTHER",
+  RECTANGLE = "RECTANGLE",
+  TEXT = "TEXT",
+}
