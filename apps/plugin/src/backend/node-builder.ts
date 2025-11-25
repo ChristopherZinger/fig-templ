@@ -349,7 +349,10 @@ function makeAppNode({
     name: sceneNode.name,
     children,
     style,
-    attributes,
+    attributes: Object.assign(attributes, {
+      id: sceneNode.id,
+      "data-name": sceneNode.name.slice(0, 20),
+    }),
   } satisfies Partial<AppNode>;
 
   if (type === AppNodeType.TEXT) {
