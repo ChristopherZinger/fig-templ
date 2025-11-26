@@ -189,14 +189,11 @@ async function buildAppNodeWithMagicLayoutFromSceneNode(
     height: direction === "x" ? sceneNode.height + "px" : "100%",
   });
 
-  const appNode: AppNode = makeAppNode({
+  const appNode = makeAppNode({
     sceneNode,
     children: _.compact(children),
     style,
-    attributes: {
-      id: sceneNode.id,
-      name: sceneNode.name.slice(0, 20),
-    },
+    attributes: {},
   });
 
   return appNode;
@@ -233,9 +230,12 @@ export async function buildAppNodeWitMagicLayoutFromSceneNodeGrouop({
   });
   const children = await Promise.all(childrenPromises);
 
-  const appNode: AppNode = {
-    name: "templetto_magic_layout_container",
-    type: AppNodeType.RECTANGLE,
+  const appNode = makeAppNode({
+    sceneNode: {
+      id: "templetto_" + Math.random().toString(36).substring(2, 15),
+      name: "templetto",
+      type: "RECTANGLE",
+    },
     children: _.compact(children),
     style: Object.assign(
       {
@@ -245,11 +245,8 @@ export async function buildAppNodeWitMagicLayoutFromSceneNodeGrouop({
       magicLayoutStyles,
       overrideStyles
     ),
-    attributes: {
-      id: "templetto_phantom_" + Math.random().toString(36).substring(2, 15),
-      name: "templetto_phantom",
-    },
-  };
+    attributes: {},
+  });
 
   return appNode;
 }
@@ -273,9 +270,8 @@ async function createRasterizedAppNode(sceneNode: SceneNode): Promise<AppNode> {
 
   sendToUiThread(MainThreadMsg.PostImageInfo, { hash: image.hash, bytes });
 
-  const result: AppNode = {
-    name: sceneNode.name,
-    type: getAppNodeType(sceneNode),
+  const result = makeAppNode({
+    sceneNode: sceneNode,
     children: [],
     style: {
       "background-size": "cover",
@@ -285,8 +281,7 @@ async function createRasterizedAppNode(sceneNode: SceneNode): Promise<AppNode> {
       height: `${sceneNode.height}px`,
     },
     attributes: { "data-image-hash": image.hash, id: sceneNode.name },
-    innerText: "",
-  };
+  });
 
   return result;
 }
@@ -333,13 +328,18 @@ function getPhantomNodeInfo({
   });
 }
 
-function makeAppNode({
+function makeAppNode<Type extends SceneNode["type"]>({
   sceneNode,
   children,
   style,
   attributes,
 }: {
-  sceneNode: SceneNode;
+  sceneNode: {
+    name: string;
+    id: string;
+    type: Type;
+    characters?: Type extends "TEXT" | "TEXT_PATH" ? string : never;
+  };
   children: AppNode[];
   style: Record<string, unknown>;
   attributes: Record<string, unknown>;
@@ -358,7 +358,7 @@ function makeAppNode({
   if (type === AppNodeType.TEXT) {
     return Object.assign(baseNode, {
       type,
-      innerText: "characters" in sceneNode ? sceneNode.characters : "",
+      innerText: ("characters" in sceneNode ? sceneNode.characters : "") || "",
     });
   }
 
