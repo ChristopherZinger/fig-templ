@@ -344,7 +344,7 @@ function makeAppNode({
   style: Record<string, unknown>;
   attributes: Record<string, unknown>;
 }): AppNode {
-  const type = getAppNodeType(sceneNode);
+  const type = getAppNodeType(sceneNode.type);
   const baseNode = {
     name: sceneNode.name,
     children,
@@ -367,8 +367,8 @@ function makeAppNode({
   });
 }
 
-function getAppNodeType(node: SceneNode): AppNodeType {
-  switch (node.type) {
+function getAppNodeType(sceneNodeType: SceneNode["type"]): AppNodeType {
+  switch (sceneNodeType) {
     case "TEXT":
       return AppNodeType.TEXT;
     case "FRAME":
