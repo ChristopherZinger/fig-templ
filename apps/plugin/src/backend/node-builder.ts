@@ -160,43 +160,15 @@ async function buildAppNodeWithMagicLayoutFromSceneNode(
     return await buildAppNodeWithAutoLayout(sceneNode);
   }
 
-  const directSceneNodeChildren = getDirectChildren(sceneNode);
-  const containerBbox = expectBbox(directSceneNodeChildren);
-  const { groupInfos, magicLayoutStyles, direction } = deductLayoutInformation({
-    children: directSceneNodeChildren,
+  return await buildAppNodeWithFlexBox({
+    childrenSceneNodes: getDirectChildren(sceneNode),
     container: {
       width: sceneNode.width,
       height: sceneNode.height,
       origin: { x: 0, y: 0 },
     },
+    getBaseStyles: () => buildNodeStyle(sceneNode),
   });
-
-  const childrenPromises = groupInfos.map(async ({ nodes, styles }) => {
-    const result = await buildAppNodeWithMagicLayout({
-      sceneNodes: nodes,
-      phantomNodeInfo: getPhantomNodeInfo({ nodes, direction, containerBbox }),
-      overrideStyles: styles,
-    });
-    return result;
-  });
-  const [baseStyle, ...children] = await Promise.all([
-    buildNodeStyle(sceneNode),
-    ...childrenPromises,
-  ]);
-
-  const style = Object.assign(baseStyle, magicLayoutStyles, {
-    width: direction === "x" ? "100%" : sceneNode.width + "px",
-    height: direction === "x" ? sceneNode.height + "px" : "100%",
-  });
-
-  const appNode = makeAppNode({
-    sceneNode,
-    children: _.compact(children),
-    style,
-    attributes: {},
-  });
-
-  return appNode;
 }
 
 export async function buildAppNodeWitMagicLayoutFromSceneNodeGrouop({
@@ -215,11 +187,30 @@ export async function buildAppNodeWitMagicLayoutFromSceneNodeGrouop({
     return await buildAppNodeWithAutoLayout(sceneNodes[0], overrideStyles);
   }
 
-  const { groupInfos, magicLayoutStyles, direction } = deductLayoutInformation({
-    children: sceneNodes,
+  return await buildAppNodeWithFlexBox({
+    childrenSceneNodes: sceneNodes,
     container: phantomNodeInfo,
+    overrideStyles,
   });
-  const containerBbox = expectBbox(sceneNodes);
+}
+
+async function buildAppNodeWithFlexBox({
+  childrenSceneNodes,
+  container,
+  overrideStyles,
+  getBaseStyles,
+}: {
+  childrenSceneNodes: SceneNode[];
+  container: PhantomNodeInfo;
+  overrideStyles?: Record<string, unknown>;
+  getBaseStyles?: () => Promise<Record<string, unknown>>;
+}) {
+  const { groupInfos, direction, magicLayoutStyles } = deductLayoutInformation({
+    children: childrenSceneNodes,
+    container,
+  });
+
+  const containerBbox = expectBbox(childrenSceneNodes);
   const childrenPromises = groupInfos.map(async ({ nodes, styles }) => {
     const result = await buildAppNodeWithMagicLayout({
       sceneNodes: nodes,
@@ -228,7 +219,10 @@ export async function buildAppNodeWitMagicLayoutFromSceneNodeGrouop({
     });
     return result;
   });
-  const children = await Promise.all(childrenPromises);
+  const [baseStyles, ...children] = await Promise.all([
+    getBaseStyles ? getBaseStyles() : Promise.resolve({}),
+    ...childrenPromises,
+  ]);
 
   const appNode = makeAppNode({
     sceneNode: {
@@ -238,9 +232,10 @@ export async function buildAppNodeWitMagicLayoutFromSceneNodeGrouop({
     },
     children: _.compact(children),
     style: Object.assign(
+      baseStyles,
       {
-        width: direction === "x" ? "100%" : phantomNodeInfo.width + "px",
-        height: direction === "x" ? phantomNodeInfo.height + "px" : "100%",
+        width: direction === "x" ? "100%" : container.width + "px",
+        height: direction === "x" ? container.height + "px" : "100%",
       },
       magicLayoutStyles,
       overrideStyles
