@@ -8,6 +8,8 @@ import {
   getDirectChildren,
   hasAutoLayoutMode,
   hasChildren,
+  hasSingleChild,
+  isTopLevelNode,
 } from "./node-utils";
 import {
   deductLayoutInformation,
@@ -160,6 +162,26 @@ async function buildAppNodeWithMagicLayoutFromSceneNode(
     return await buildAppNodeWithAutoLayout(sceneNode);
   }
 
+  if (hasSingleChild(sceneNode)) {
+    const children = getDirectChildren(sceneNode);
+    if (children.length !== 1) {
+      console.error("unexpected_number_of_children " + children.length);
+    }
+    const isRoot = isTopLevelNode(sceneNode);
+    return await buildAppNodeWithFramedPictureLayout({
+      containerInfo: {
+        width: sceneNode.width,
+        height: sceneNode.height,
+        origin: isRoot ? { x: 0, y: 0 } : sceneNode,
+        type: sceneNode.type,
+        name: sceneNode.name,
+        id: sceneNode.id,
+      },
+      childSceneNode: children[0],
+      getBaseStyles: () => buildNodeStyle(sceneNode),
+    });
+  }
+
   return await buildAppNodeWithFlexBox({
     childrenSceneNodes: getDirectChildren(sceneNode),
     container: {
@@ -169,6 +191,59 @@ async function buildAppNodeWithMagicLayoutFromSceneNode(
     },
     getBaseStyles: () => buildNodeStyle(sceneNode),
   });
+}
+
+async function buildAppNodeWithFramedPictureLayout({
+  containerInfo: containerSceneNode,
+  childSceneNode,
+  getBaseStyles,
+  overrideStyles,
+}: {
+  containerInfo: PhantomNodeInfo & {
+    type: SceneNode["type"];
+    name: string;
+    id: string;
+  };
+  childSceneNode: SceneNode;
+  getBaseStyles: () => Promise<Record<string, unknown>>;
+  overrideStyles?: Record<string, unknown>;
+}) {
+  const [baseStyles, child] = await Promise.all([
+    getBaseStyles(),
+    buildAppNodeFromSceneNode(childSceneNode),
+  ]);
+
+  const top = childSceneNode.y - containerSceneNode.origin.y;
+  const bottom =
+    containerSceneNode.origin.y +
+    containerSceneNode.height -
+    (childSceneNode.y + childSceneNode.height);
+  const right =
+    containerSceneNode.origin.x +
+    containerSceneNode.width -
+    (childSceneNode.x + childSceneNode.width);
+  const left = childSceneNode.x - containerSceneNode.origin.x;
+
+  const paddingStyles = {
+    "padding-top": top + "px",
+    "padding-right": right + "px",
+    "padding-bottom": bottom + "px",
+    "padding-left": left + "px",
+  };
+
+  const appNode = makeAppNode({
+    sceneNode: containerSceneNode,
+    children: _.compact([child]),
+    style: Object.assign(
+      baseStyles,
+      overrideStyles,
+      { width: "auto", height: "auto" },
+      paddingStyles
+    ),
+    attributes: {},
+  });
+
+  return appNode;
 }
 
 export async function buildAppNodeWitMagicLayoutFromSceneNodeGrouop({
@@ -185,6 +260,19 @@ export async function buildAppNodeWitMagicLayoutFromSceneNodeGrouop({
       "requested_magic_layout_for_single_node " + sceneNodes[0].name
     );
     return await buildAppNodeWithAutoLayout(sceneNodes[0], overrideStyles);
+  }
+
+  if (sceneNodes.length === 1) {
+    return await buildAppNodeWithFramedPictureLayout({
+      containerInfo: Object.assign(phantomNodeInfo, {
+        type: "RECTANGLE" as const,
+        id: "templetto_" + Math.random().toString(36).substring(2, 15),
+        name: "templetto",
+      }),
+      childSceneNode: sceneNodes[0],
+      overrideStyles: overrideStyles,
+      getBaseStyles: () => Promise.resolve({}),
+    });
   }
 
   return await buildAppNodeWithFlexBox({

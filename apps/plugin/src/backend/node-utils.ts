@@ -14,6 +14,10 @@ export function hasChildren(node: SceneNode): boolean {
   return "children" in node && node.children.length > 0;
 }
 
+export function hasSingleChild(node: SceneNode): boolean {
+  return "children" in node && node.children.length === 1;
+}
+
 export function getDirectChildren(node: SceneNode): SceneNode[] {
   if (!("children" in node)) {
     return [];
