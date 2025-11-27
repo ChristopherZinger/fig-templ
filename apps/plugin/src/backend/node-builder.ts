@@ -11,12 +11,12 @@ import {
 } from "./node-utils";
 import {
   deductLayoutInformation,
-  LayoutDirection,
   PhantomNodeInfo,
 } from "./magic-layout-builder";
 import {
   Bbox,
   expectBbox,
+  LayoutDirection,
   getBboxDimensions,
   getBboxOrigin,
   getBboxShrinkedToHugContents,

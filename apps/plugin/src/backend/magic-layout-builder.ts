@@ -1,5 +1,10 @@
 import { PluginError } from "../lib/utils/PluginError";
-import { Bbox, expectBbox, getBboxSpacing } from "./utils/node-position";
+import {
+  Bbox,
+  expectBbox,
+  getBboxSpacing,
+  LayoutDirection,
+} from "./utils/node-position";
 import _ from "lodash";
 
 export type PhantomNodeInfo = {
@@ -10,11 +15,6 @@ export type PhantomNodeInfo = {
     y: number;
   };
 };
-
-export enum LayoutDirection {
-  x = "x",
-  y = "y",
-}
 
 export function deductLayoutInformation({
   container,

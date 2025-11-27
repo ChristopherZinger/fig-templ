@@ -1,5 +1,9 @@
 import { PluginError } from "../../lib/utils/PluginError";
-import { LayoutDirection } from "../magic-layout-builder";
+
+export enum LayoutDirection {
+  x = "x",
+  y = "y",
+}
 
 export type Bbox = {
   minX: number;
