@@ -11,13 +11,15 @@
   export let onSelectFrame: (frameId: string) => void;
   export let onClickOnSelectElement: () => void;
   export let onClickShowPreview: () => void;
+  export let isSelected: boolean = false;
+  export let isOpen: boolean;
 
   let isDownloading = false;
 </script>
 
-<SidebarItem isOpen={true} onClick={onSelectSection}>
+<SidebarItem {isOpen} onClick={onSelectSection}>
   <div slot="header" class="header">
-    <div>Preview</div>
+    <div class:selected={isSelected}>Preview</div>
   </div>
   <div slot="content" class="content">
     <FrameSelector
@@ -49,6 +51,10 @@
 </SidebarItem>
 
 <style>
+  .selected {
+    color: white;
+    text-decoration: underline;
+  }
   .header {
     display: flex;
     justify-content: space-between;

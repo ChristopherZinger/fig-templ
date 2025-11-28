@@ -154,6 +154,7 @@
   <div slot="sidebar" class="sidebar">
     <div class="panel">
       <PreviewOptions
+        isOpen={view === "preview"}
         onSelectSection={() => (view = "preview")}
         isDownloadEnabled={!!htmlString}
         onClickDownload={async () =>
@@ -175,10 +176,14 @@
           }
           sendToMainThread(UiMsg.ShowPreview, { frameId: selectedFrameId });
         }}
+        isSelected={view === "preview"}
       />
 
       {#if $sessionTokenStore}
-        <TemplateListItem onClick={() => (view = "templates")} />
+        <TemplateListItem
+          onClick={() => (view = "templates")}
+          isSelected={view === "templates"}
+        />
       {/if}
 
       {#if $sessionTokenStore && isTeamSelectorFetureEnabled}
