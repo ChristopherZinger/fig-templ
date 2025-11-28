@@ -28,6 +28,8 @@
   import { sessionTokenStore } from "../lib/stores/sessionTokenStore";
   import LoginButton from "./LoginButton.svelte";
 
+  const isTeamSelectorFetureEnabled = false;
+
   let organizations: { id: string; name: string }[] | null | undefined =
     undefined;
   let selectedOrgId: string | undefined | null = undefined;
@@ -174,7 +176,12 @@
           sendToMainThread(UiMsg.ShowPreview, { frameId: selectedFrameId });
         }}
       />
+
       {#if $sessionTokenStore}
+        <TemplateListItem onClick={() => (view = "templates")} />
+      {/if}
+
+      {#if $sessionTokenStore && isTeamSelectorFetureEnabled}
         <OrgSelectorItem
           orgInfos={organizations}
           {selectedOrgId}
@@ -182,7 +189,6 @@
             selectedOrgId = orgId;
           }}
         />
-        <TemplateListItem onClick={() => (view = "templates")} />
       {/if}
       <About />
     </div>

@@ -19,6 +19,4 @@
   });
 </script>
 
-<main>
-  <HomePage />
-</main>
+<HomePage />
