@@ -41,18 +41,14 @@
 - [Chris] Magic layout
   - [x] flex row and column
   - [] tiles (grid)
-  - [] unstructured groups
+  - [wip] unstructured groups
   - [] item containing itmes
 
 ## Webapp
 
-- create email collector form and hide unused pages for now.
-
-"table" with list of templates
 Show template thumbnail
 
 - Remove firebase deps, externalize them instead like server app, then use turbo prune in dockerfile
-  "Subscribe to our newsletter" CTA
   Email API provider (resend.com is in the starter kit)
 
 Later - Render templates with dummy data
