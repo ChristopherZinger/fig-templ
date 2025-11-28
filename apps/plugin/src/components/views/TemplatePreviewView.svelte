@@ -93,7 +93,7 @@
           onClick={() => {
             if (htmlString && orgId) {
               onClickSaveTemplate({
-                name: `${templateNameInput} .html`,
+                name: `${templateNameInput}`,
                 htmlString,
                 orgId,
               });
