@@ -19,6 +19,7 @@ import { expectPluginSessionUid } from "../utils/plugin-session-token";
 import { AppError } from "@templetto/app-error";
 import { PkceError } from "./pkce-errors";
 import { ensureUserAndOrgForAuthUser } from "@templetto/firebase/repositories/user";
+import slugify from "slugify";
 
 export async function getPkceKeysHandler(_: Request, res: Response) {
   // TODO check if request comes from templetto.com/plugin/login
@@ -341,7 +342,18 @@ export async function createTemplateHandler(req: Request, res: Response) {
         createdAt: new Date(),
       });
 
-      await getBucket().file(pathInStorage).save(templateHtml);
+      const fileName = slugify(name, {
+        lower: true,
+        strict: true, // strip special characters except replacement, defaults to `false`
+      });
+      await getBucket()
+        .file(pathInStorage)
+        .save(templateHtml, {
+          metadata: {
+            contentType: "text/html",
+            contentDisposition: `attachment; filename="${fileName}.html"`,
+          },
+        });
 
       return newTemplateDocRef.id;
     });
