@@ -71,7 +71,7 @@ function getPositionStyles() {
 
 function getAlignItemsStyle(node: BaseNode): { "align-items": string } | null {
   if (!hasLayoutMode(node)) {
-    console.warn("layout_align_not_supported", node);
+    // console.warn("layout_align_not_supported", node);
     return null;
   }
 

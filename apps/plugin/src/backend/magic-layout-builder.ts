@@ -51,6 +51,13 @@ export function deductLayoutInformation({
     direction,
   });
 
+  console.log({
+    children,
+    container,
+    marginsAlongDirection,
+    margins,
+  });
+
   const justifyContentStyle = getJustifyContentStyle({
     marginsInOrderPx: marginsAlongDirection,
     direction: direction,

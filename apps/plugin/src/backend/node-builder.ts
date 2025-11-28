@@ -24,7 +24,7 @@ import {
   getBboxShrinkedToHugContents,
 } from "./utils/node-position";
 
-const ENABLE_MAGIC_LAYOUT = false;
+const ENABLE_MAGIC_LAYOUT = true;
 
 export async function makeFrames(frameId: string | null) {
   if (!frameId) {
@@ -129,6 +129,8 @@ async function buildAppNodeWithAutoLayout(
     attributes,
   });
 
+  console.log(result, sceneNode);
+
   return result;
 }
 
@@ -187,9 +189,16 @@ async function buildAppNodeWithMagicLayoutFromSceneNode(
     container: {
       width: sceneNode.width,
       height: sceneNode.height,
-      origin: { x: 0, y: 0 },
+      origin: sceneNode.type === "GROUP" ? sceneNode : { x: 0, y: 0 }, // GROUP node children relate to group parent
     },
     getBaseStyles: () => buildNodeStyle(sceneNode),
+    overrideStyles:
+      sceneNode.type === "GROUP"
+        ? {
+            width: sceneNode.width + "px",
+            height: sceneNode.height + "px",
+          }
+        : {},
   });
 }
 
@@ -312,6 +321,12 @@ async function buildAppNodeWithFlexBox({
     ...childrenPromises,
   ]);
 
+  console.log({
+    magicLayoutStyles,
+    baseStyles,
+    children,
+  });
+
   const appNode = makeAppNode({
     sceneNode: {
       id: "templetto_" + Math.random().toString(36).substring(2, 15),
@@ -321,6 +336,7 @@ async function buildAppNodeWithFlexBox({
     children: _.compact(children),
     style: Object.assign(
       baseStyles,
+      // TODO: 100% only if parent is flex
       {
         width: direction === "x" ? "100%" : container.width + "px",
         height: direction === "x" ? container.height + "px" : "100%",
@@ -335,6 +351,12 @@ async function buildAppNodeWithFlexBox({
 }
 
 async function createRasterizedAppNode(sceneNode: SceneNode): Promise<AppNode> {
+  console.warn(
+    "creating rasterized app node for node: ",
+    sceneNode.name.slice(0, 20),
+    sceneNode.id
+  );
+
   const MAX_IMG_SIZE = 4096;
   const scaleX = Math.min(MAX_IMG_SIZE, sceneNode.width) / sceneNode.width;
   const scaleY = Math.min(MAX_IMG_SIZE, sceneNode.height) / sceneNode.height;
