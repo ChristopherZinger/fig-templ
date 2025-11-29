@@ -11,6 +11,7 @@
     onAuthStateChanged(auth, (user) => {
       if (user) {
         userStore.set(user)
+        goto("/account")
       } else {
         userStore.set(null)
       }
