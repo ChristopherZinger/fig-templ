@@ -1,8 +1,11 @@
 <script lang="ts">
-  import type { Template_FsDoc } from "@templetto/firebase"
-
   interface Props {
-    templates: Template_FsDoc[]
+    templates: {
+      id: string
+      name?: string
+      createdAt?: Date
+      downloadUrl: string
+    }[]
     limit?: number
     showViewAll?: boolean
   }
@@ -22,6 +25,15 @@
       hour: "2-digit",
       minute: "2-digit",
     }).format(date)
+  }
+
+  function onClickDownload(downloadUrl: string) {
+    const a = document.createElement("a")
+    a.setAttribute("href", downloadUrl)
+    a.setAttribute("download", "templetto.html")
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
   }
 </script>
 
@@ -62,12 +74,14 @@
             <td class="font-mono text-sm">{template.id}</td>
             <td>{template.name || "Unnamed Template"}</td>
             <td>{formatDate(template.createdAt)}</td>
-            <td
-              ><a
-                href="/account/api/templates/{template.orgId}/{template.id}/download"
-                class="btn btn-outline btn-sm">Download HTML</a
-              ></td
-            >
+            <td>
+              <button
+                onclick={() => onClickDownload(template.downloadUrl)}
+                class="btn btn-outline btn-sm"
+              >
+                Download HTML
+              </button>
+            </td>
           </tr>
         {/each}
       </tbody>

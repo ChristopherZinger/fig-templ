@@ -1,22 +1,10 @@
 import type { PageServerLoad } from "./$types"
-import { getUsersTemplate } from "$lib/server/firebase-queries"
 import { getUserOrgTemplateDocs } from "@templetto/firebase/repositories/user"
 import { error, redirect } from "@sveltejs/kit"
 import { log } from "@templetto/logging"
-import { getUsersCollectionRef } from "@templetto/firebase"
-
-export const actions = {
-  // signout: async ({ locals: { supabase, safeGetSession } }) => {
-  //   const { session } = await safeGetSession()
-  //   if (session) {
-  //     await supabase.auth.signOut()
-  //     redirect(303, "/")
-  //   }
-  // },
-}
+import { getBucket, getUsersCollectionRef } from "@templetto/firebase"
 
 export const load: PageServerLoad = async ({ locals: { firebaseUser } }) => {
-  // Session here is from authGuard hook
   if (!firebaseUser) {
     redirect(307, "/")
   }
@@ -29,20 +17,30 @@ export const load: PageServerLoad = async ({ locals: { firebaseUser } }) => {
     error(500, "Internal server error")
   }
 
-  const userTemplates = await getUsersTemplate(firebaseUser.uid)
-
-  const recentTemplates = await getUserOrgTemplateDocs({
+  const templates = await getUserOrgTemplateDocs({
     uid: firebaseUser.uid,
     orgId: userDoc.defaultOrgId,
     limit: 5,
     sortByCreatedAt: "desc",
   })
 
+  const templatesWithDownloadUrls = await Promise.all(
+    templates.map(async (template) => {
+      const [downloadUrl] = await getBucket()
+        .file(template.pathInStorage)
+        .getSignedUrl({
+          action: "read",
+          expires: Date.now() + 1000 * 60 * 30, // 30 minutes
+        })
+
+      return { ...template, downloadUrl }
+    }),
+  )
+
   return {
     currentOrg: userDoc.defaultOrgId,
     firebaseUser,
-    userTemplates,
-    recentTemplates,
+    templates: templatesWithDownloadUrls,
     session: null,
   }
 }

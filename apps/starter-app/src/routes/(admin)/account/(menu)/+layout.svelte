@@ -3,11 +3,17 @@
   import { setContext } from "svelte"
   import { WebsiteName } from "../../../../config"
   import type { Organization_FsDoc } from "@templetto/firebase"
+  import type { DecodedIdToken } from "firebase-admin/auth"
   interface Props {
     children?: import("svelte").Snippet
     data: {
       firebaseUser: DecodedIdToken
-      userTemplates: Template_FsDoc[]
+      templates: {
+        id: string
+        name?: string
+        createdAt?: Date
+        downloadUrl: string
+      }[]
       currentOrg: Organization_FsDoc
     }
   }
