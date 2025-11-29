@@ -1,7 +1,7 @@
 <script lang="ts">
   import { writable } from "svelte/store"
   import { setContext } from "svelte"
-  import { WebsiteName } from "../../../../config"
+  import { WebsiteName } from "../../../config"
   import type { Organization_FsDoc } from "@templetto/firebase"
   import type { DecodedIdToken } from "firebase-admin/auth"
   interface Props {
