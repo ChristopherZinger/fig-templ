@@ -1,8 +1,11 @@
 <script lang="ts">
-  import type { Template_FsDoc } from "@templetto/firebase"
-
   interface Props {
-    templates: Template_FsDoc[]
+    templates: {
+      id: string
+      name?: string
+      createdAt?: Date
+      downloadUrl: string
+    }[]
     limit?: number
     showViewAll?: boolean
   }
@@ -60,14 +63,25 @@
         {#each displayedTemplates as template}
           <tr>
             <td class="font-mono text-sm">{template.id}</td>
-            <td>{template.name || "Unnamed Template"}</td>
-            <td>{formatDate(template.createdAt)}</td>
-            <td
-              ><a
-                href="/account/api/templates/{template.orgId}/{template.id}/download"
-                class="btn btn-outline btn-sm">Download HTML</a
-              ></td
+            <td>{template.name || "Unnamed Template"} {template.downloadUrl}</td
             >
+            <td>{formatDate(template.createdAt)}</td>
+            <td>
+              <button
+                onclick={() => {
+                  console.error(template.downloadUrl)
+                  const a = document.createElement("a")
+                  a.setAttribute("href", template.downloadUrl)
+                  a.setAttribute("download", "templetto.html")
+                  document.body.appendChild(a)
+                  a.click()
+                  document.body.removeChild(a)
+                }}
+                class="btn btn-outline btn-sm"
+              >
+                Download HTML
+              </button>
+            </td>
           </tr>
         {/each}
       </tbody>

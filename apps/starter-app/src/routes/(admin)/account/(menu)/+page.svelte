@@ -6,7 +6,7 @@
   let adminSection: Writable<string> = getContext("adminSection")
   adminSection.set("home")
   let { data } = $props()
-  let { firebaseUser, userTemplates, recentTemplates } = data
+  let { templates } = data
   let showStats = false
 </script>
 
@@ -24,7 +24,7 @@
     >
       <div class="stat place-items-center">
         <div class="stat-title">Templates</div>
-        <div class="stat-value">{userTemplates.length}</div>
+        <div class="stat-value">{templates.length}</div>
         <div class="stat-desc">↗︎ 546 (2%)</div>
       </div>
 
@@ -61,5 +61,5 @@
 {/if}
 <div class="my-6">
   <h1 class="text-xl font-bold mb-3">Recent Templates</h1>
-  <TemplateList templates={recentTemplates} limit={20} showViewAll={true} />
+  <TemplateList {templates} limit={20} showViewAll={true} />
 </div>

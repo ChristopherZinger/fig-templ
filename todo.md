@@ -62,3 +62,10 @@ Later - Render templates with dummy data
 ## Server
 
 - [Chris] keep track of API Call usage (with potential to rate limit)
+
+## Tech debt
+
+- [] create package with urls
+- [] create package with static assets
+- [] fix how images are send over to templetto
+- [] storage rules
