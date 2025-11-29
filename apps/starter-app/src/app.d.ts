@@ -1,5 +1,3 @@
-import { Session, SupabaseClient, type AMREntry } from "@supabase/supabase-js"
-import { Database } from "./DatabaseDefinitions"
 import type { DecodedIdToken } from "firebase-admin/auth"
 
 // See https://kit.svelte.dev/docs/types#app
@@ -10,11 +8,7 @@ declare global {
       firebaseUser: DecodedIdToken | null
       currentOrg: Organization_FsDoc | null
     }
-    interface PageData {
-      session: Session | null
-    }
     // interface Error {}
-    // interface Platform {}
   }
 }
 

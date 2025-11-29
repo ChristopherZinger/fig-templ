@@ -1,5 +1,5 @@
 import { writable } from "svelte/store"
-import cookie from "cookie"
+import { serialize } from "cookie"
 import type { User } from "firebase/auth"
 import { browser } from "$app/environment"
 import { auth } from "../utils/firebase/init-firebase"
@@ -10,13 +10,13 @@ if (browser) {
   auth.onIdTokenChanged(async (newUser) => {
     const token = newUser ? await newUser?.getIdToken() : undefined
     if (token) {
-      document.cookie = cookie.serialize("token", token ?? "", {
+      document.cookie = serialize("token", token ?? "", {
         path: "/",
         maxAge: token ? undefined : 0,
       })
       userStore.set(newUser)
     } else {
-      document.cookie = cookie.serialize("token", "", {
+      document.cookie = serialize("token", "", {
         path: "/",
         maxAge: 0,
       })
