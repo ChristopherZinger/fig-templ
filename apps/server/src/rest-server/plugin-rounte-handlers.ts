@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import {
-  auth,
-  firestore,
+  getFirestore,
+  getAuth,
   getBucket,
   getOrgCollectionRef,
   getPkceKeysCollectionRef,
@@ -35,7 +35,7 @@ export async function getPkceKeysHandler(_: Request, res: Response) {
   const docRef = getPkceKeysCollectionRef().doc(pkceKey.writeKey);
 
   // TODO: create retry mechanism if read key already exists
-  await firestore.runTransaction(async (t) => {
+  await getFirestore().runTransaction(async (t) => {
     const pkceKeyDoc = await t.get(docRef);
     if (pkceKeyDoc.exists) {
       throw new AppError("read_key_already_exists", { docPath: docRef.path });
@@ -67,7 +67,7 @@ export async function readSessionTokenHandler(req: Request, res: Response) {
   const { writeKey } = parsedBody.data;
 
   try {
-    const sessionToken = await firestore.runTransaction(async (t) => {
+    const sessionToken = await getFirestore().runTransaction(async (t) => {
       const pkceDocRef = getPkceKeysCollectionRef().doc(writeKey);
       const pkceKeyDoc = (await t.get(pkceDocRef)).data();
       if (!pkceKeyDoc) {
@@ -127,6 +127,8 @@ export async function createSessionTokenHandler(req: Request, res: Response) {
   }
 
   const { writeKey, token } = parsedBody.data;
+  const auth = getAuth();
+  const firestore = getFirestore();
 
   let decodedToken: DecodedIdToken | undefined;
   try {
@@ -225,7 +227,7 @@ export async function logoutHandler(req: Request, res: Response) {
 
   const { sessionToken } = parsingResult.data;
 
-  await firestore.runTransaction(async (t) => {
+  await getFirestore().runTransaction(async (t) => {
     const userSessionCollectionRef = getPluginSessionTokensCollectionRef();
     const userSessionSnapshots = (
       await userSessionCollectionRef
@@ -278,7 +280,7 @@ export async function getTemplatesHandler(req: Request, res: Response) {
   const { orgId } = parseResult.data;
 
   try {
-    await firestore.runTransaction(async (t) => {
+    await getFirestore().runTransaction(async (t) => {
       const [userOrgJoinTableDoc, templatesDoc] = await Promise.all([
         t.get(getUserOrgJoinTableCollectionRef().doc(`${uid}:${orgId}`)),
         t.get(getTemplatesCollectionRef({ orgId })),
@@ -319,7 +321,7 @@ export async function createTemplateHandler(req: Request, res: Response) {
   const { templateHtml, orgId, name } = parsingResult.data;
 
   try {
-    const newTemplateId = await firestore.runTransaction(async (t) => {
+    const newTemplateId = await getFirestore().runTransaction(async (t) => {
       const userOrgJoinTableDoc = await t.get(
         getUserOrgJoinTableCollectionRef().doc(`${uid}:${orgId}`)
       );

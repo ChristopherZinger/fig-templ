@@ -4,7 +4,7 @@ import express, {
   type Request,
   type Response,
 } from "express";
-import { auth, getOrgApiTokensCollectionRef } from "@templetto/firebase";
+import { getAuth, getOrgApiTokensCollectionRef } from "@templetto/firebase";
 import { getTokenFromReqAuthHeader } from "../utils/plugin-session-token";
 import { isFirebaseAuthError } from "@templetto/firebase/errors";
 import { AppError } from "@templetto/app-error";
@@ -57,7 +57,7 @@ export const pluginAuthMiddleware: express.RequestHandler = async (
   }
 
   try {
-    const { uid } = await auth.verifySessionCookie(token);
+    const { uid } = await getAuth().verifySessionCookie(token);
     req.auth = { type: "plugin-session", uid };
   } catch (error) {
     log.error("failed_to_verify_session_cookie", { error });

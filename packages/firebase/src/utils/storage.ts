@@ -1,10 +1,9 @@
-import { storage } from "../admin-init";
+import { AppError } from "@templetto/app-error";
+import { getStorage } from "../admin-init";
 import path from "path";
 
-const DEFAULT_BUCKET_NAME = process.env.FIREBASE_STORAGE_BUCKET_NAME;
-
 export function getBucket() {
-  return storage.bucket(DEFAULT_BUCKET_NAME);
+  return getStorage().bucket();
 }
 
 export async function pushToStorage({

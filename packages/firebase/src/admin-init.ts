@@ -1,8 +1,16 @@
+import { AppError } from "@templetto/app-error";
 import admin from "firebase-admin";
+import z from "zod";
 
 let app: undefined | admin.app.App;
 
-const initFirebaseAdmin = (): {
+const initFirebaseAdmin = ({
+  bucketUri,
+  googleApplicationCredentials,
+}: {
+  bucketUri: string;
+  googleApplicationCredentials?: string;
+}): {
   firestore: admin.firestore.Firestore;
   auth: admin.auth.Auth;
   storage: admin.storage.Storage;
@@ -24,7 +32,28 @@ const initFirebaseAdmin = (): {
     };
   }
 
-  app = admin.initializeApp();
+  const parseResult = z
+    .object({
+      storageBucket: z.string().nonempty(),
+      credentialPath: z.string(),
+    })
+    .safeParse({
+      storageBucket: bucketUri,
+      credentialPath:
+        googleApplicationCredentials ||
+        process.env.GOOGLE_APPLICATION_CREDENTIALS,
+    });
+
+  if (!parseResult.success) {
+    throw new AppError("invalid_firebase_admin_config", {
+      error: parseResult.error,
+    });
+  }
+
+  app = admin.initializeApp({
+    storageBucket: parseResult.data.storageBucket,
+    credential: admin.credential.cert(parseResult.data.credentialPath),
+  });
   const firestore = admin.firestore(app);
   firestore.settings({ databaseId: "templetto-db" });
 
@@ -35,6 +64,23 @@ const initFirebaseAdmin = (): {
   };
 };
 
-const { storage, firestore, auth } = initFirebaseAdmin();
+function expectApp() {
+  if (!app) {
+    throw new AppError("Firebase admin not initialized");
+  }
+  return app;
+}
 
-export { storage, firestore, auth };
+function getStorage() {
+  return expectApp().storage();
+}
+
+function getFirestore() {
+  return expectApp().firestore();
+}
+
+function getAuth() {
+  return expectApp().auth();
+}
+
+export { getStorage, getFirestore, getAuth, initFirebaseAdmin };

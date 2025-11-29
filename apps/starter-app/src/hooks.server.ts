@@ -2,7 +2,13 @@
 import { type Handle } from "@sveltejs/kit"
 import { sequence } from "@sveltejs/kit/hooks"
 import { log } from "@templetto/logging"
-import { auth } from "@templetto/firebase"
+import { getAuth, initFirebaseAdmin } from "@templetto/firebase"
+import { env } from "$env/dynamic/private"
+
+initFirebaseAdmin({
+  bucketUri: env.PRIVATE_FIREBASE_STORAGE_BUCKET_NAME,
+  googleApplicationCredentials: env.GOOGLE_APPLICATION_CREDENTIALS,
+})
 
 // export const supabase: Handle = async ({ event, resolve }) => {
 // event.locals.supabase = createServerClient(
@@ -79,7 +85,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
   const jwtToken = event.cookies.get("token")
   if (jwtToken) {
     try {
-      const decodedToken = await auth.verifyIdToken(jwtToken)
+      const decodedToken = await getAuth().verifyIdToken(jwtToken)
       event.locals.firebaseUser = decodedToken
     } catch (error) {
       console.error("Error verifying Firebase ID token:", error)

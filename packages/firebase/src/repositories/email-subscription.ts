@@ -1,4 +1,4 @@
-import { firestore } from "../admin-init";
+import { getFirestore } from "../admin-init";
 import { getEmailSubscriptionsCollectionRef } from "../utils/collection-refs";
 import { AppError } from "@templetto/app-error";
 
@@ -7,7 +7,7 @@ export async function upsertEmailSubscription({
 }: {
   email: string;
 }): Promise<void> {
-  await firestore.runTransaction(async (t) => {
+  await getFirestore().runTransaction(async (t) => {
     const lowerCaseEmail = email.toLowerCase();
     const emailSubscriptionDocRef = getEmailSubscriptionsCollectionRef()
       .where("email", "==", lowerCaseEmail)

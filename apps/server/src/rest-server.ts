@@ -6,10 +6,16 @@ import { PORT } from "./utils/env";
 import { pluginAuthRouter, pluginRouter } from "./rest-server/plugin-router";
 import { logErrorsMiddleware, logMiddleware } from "./rest-server/middleware";
 import { AppError } from "@templetto/app-error";
+import { initFirebaseAdmin } from "@templetto/firebase";
 
 if (!PORT) {
   throw new AppError("missing_env_config PORT");
 }
+
+initFirebaseAdmin({
+  bucketUri: process.env.FIREBASE_STORAGE_BUCKET_NAME || "",
+  googleApplicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+});
 
 const app = express();
 app.use(express.json());

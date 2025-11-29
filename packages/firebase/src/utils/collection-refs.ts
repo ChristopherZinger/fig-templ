@@ -1,4 +1,4 @@
-import { firestore } from "../admin-init";
+import { getFirestore } from "../admin-init";
 import { CollectionName } from "./collections";
 import { getParsedConverter } from "./fs-converter-utils";
 import type {
@@ -40,7 +40,7 @@ function getCollectionRef<T extends Record<string, unknown>>({
   getBase: (() => DocumentReference) | null;
   parser: z.ZodSchema<T>;
 }): CollectionReference<T> {
-  return (getBase?.() ?? firestore)
+  return (getBase?.() ?? getFirestore())
     .collection(collectionName)
     .withConverter(getParsedConverter(parser));
 }
