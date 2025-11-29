@@ -70,7 +70,10 @@
             Is the plugin free to use?
           </div>
           <div class="collapse-content">
-            <p>The plugin is free to use, but you need to buy a plan to use the API.</p>
+            <p>
+              The plugin is free to use, but you need to buy a plan to use the
+              API.
+            </p>
           </div>
         </div>
       </div>

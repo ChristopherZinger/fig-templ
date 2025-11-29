@@ -8,14 +8,14 @@
   import { userStore } from "$lib/stores/userStore"
 
   onMount(() => {
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      userStore.set(user)
-    } else {
-      userStore.set(null);
-    }
-  });
-});
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userStore.set(user)
+      } else {
+        userStore.set(null)
+      }
+    })
+  })
   let hasPluginLoginFailed = false
   let isLoading = false
   async function login() {
@@ -25,7 +25,7 @@
       // TODO: set persistence to NONE
       // auth.setPersistence({ type: "NONE" })
       const result = await signInWithPopup(auth, provider)
-      goto('/account')
+      goto("/account")
     } catch (error) {
       console.error({ error })
       hasPluginLoginFailed = true

@@ -15,20 +15,17 @@
   </div>
   <div class="flex-none">
     <ul class="menu menu-horizontal px-1 hidden sm:flex font-bold text-lg">
-        <li><a href="/blog">Blog</a></li>
-        <li><a href="/docs">Docs</a></li>
-        <li><a href="/pricing">Pricing</a></li>
-        {#if data.isLoggedIn}
-          <li><a href="/account">Account</a></li>
-        {:else}
-          <li><a href="/login/sign_in">Log in</a></li>
-          <li class="md:mx-4">
-            <a
-              href="/login/sign_up"
-              class="border border-primary">Sign up</a
-            >
-          </li>
-        {/if}
+      <li><a href="/blog">Blog</a></li>
+      <li><a href="/docs">Docs</a></li>
+      <li><a href="/pricing">Pricing</a></li>
+      {#if data.isLoggedIn}
+        <li><a href="/account">Account</a></li>
+      {:else}
+        <li><a href="/login/sign_in">Log in</a></li>
+        <li class="md:mx-4">
+          <a href="/login/sign_up" class="border border-primary">Sign up</a>
+        </li>
+      {/if}
       <li class="md:mx-0">
         <a href="/search" aria-label="Search">
           <svg
@@ -106,8 +103,8 @@
         <div class="font-bold text-3xl mb-1">Templetto</div>
         <div class="font-medium mb-3">Build High Quality PDFs</div>
         <div class="font-light">
-          Use the tools designers love, collaborate with your team. Free plugin for
-          Figma.
+          Use the tools designers love, collaborate with your team. Free plugin
+          for Figma.
         </div>
       </a>
     </aside>

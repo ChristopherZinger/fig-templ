@@ -1,22 +1,22 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { WebsiteName } from "./../../../config";
+  import { onMount } from "svelte"
+  import { WebsiteName } from "./../../../config"
 
-  let activeSection = $state("overview");
-  let isSidebarOpen = $state(false);
+  let activeSection = $state("overview")
+  let isSidebarOpen = $state(false)
 
   function scrollToSection(id: string) {
-    activeSection = id;
-    isSidebarOpen = false;
-    const element = document.getElementById(id);
+    activeSection = id
+    isSidebarOpen = false
+    const element = document.getElementById(id)
     if (element) {
-      const offset = 80;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      const offset = 80
+      const elementPosition = element.getBoundingClientRect().top
+      const offsetPosition = elementPosition + window.pageYOffset - offset
       window.scrollTo({
         top: offsetPosition,
         behavior: "smooth",
-      });
+      })
     }
   }
 
@@ -34,23 +34,23 @@
         "plugin-setup",
         "plugin-workflow",
         "plugin-config",
-      ];
+      ]
 
       for (const section of sections) {
-        const element = document.getElementById(section);
+        const element = document.getElementById(section)
         if (element) {
-          const rect = element.getBoundingClientRect();
+          const rect = element.getBoundingClientRect()
           if (rect.top <= 100 && rect.bottom >= 100) {
-            activeSection = section;
-            break;
+            activeSection = section
+            break
           }
         }
       }
-    };
+    }
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  });
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  })
 </script>
 
 <svelte:head>
@@ -67,12 +67,7 @@
     onclick={() => (isSidebarOpen = !isSidebarOpen)}
     aria-label="Toggle menu"
   >
-    <svg
-      class="w-6 h-6"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -193,7 +188,9 @@
         <div class="feature-card">
           <div class="feature-icon">🎨</div>
           <h3>Design in Figma</h3>
-          <p>Create beautiful templates using the design tools you already know</p>
+          <p>
+            Create beautiful templates using the design tools you already know
+          </p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">⚡</div>
@@ -281,33 +278,39 @@
         </p>
 
         <div class="code-block">
-          <pre><code>{`{
+          <pre><code
+              >{`{
   "customerName": "John Doe",
   "invoiceNumber": "INV-001",
   "amount": "$1,234.56",
   "date": "2024-01-15"
-}`}</code></pre>
+}`}</code
+            ></pre>
         </div>
 
         <h4 class="param-title">Response</h4>
         <p>Returns a JSON object with a download URL for the generated PDF.</p>
 
         <div class="code-block">
-          <pre><code>{`{
+          <pre><code
+              >{`{
   "downloadUrl": "https://storage.googleapis.com/..."
-}`}</code></pre>
+}`}</code
+            ></pre>
         </div>
 
         <h4 class="param-title">Example Request</h4>
         <div class="code-block">
-          <pre><code>{`curl -X POST "https://api.templetto.com/api/create-pdf?template-id=abc123" \\
+          <pre><code
+              >{`curl -X POST "https://api.templetto.com/api/create-pdf?template-id=abc123" \\
   -H "Authorization: Bearer YOUR_API_TOKEN" \\
   -H "Content-Type: application/json" \\
   -d '{
     "customerName": "John Doe",
     "invoiceNumber": "INV-001",
     "amount": "$1,234.56"
-  }'`}</code></pre>
+  }'`}</code
+            ></pre>
         </div>
 
         <h4 class="param-title">Error Responses</h4>
@@ -333,7 +336,8 @@
             <tr>
               <td>404</td>
               <td>template_not_found</td>
-              <td>Template does not exist or doesn't belong to your organization</td
+              <td
+                >Template does not exist or doesn't belong to your organization</td
               >
             </tr>
             <tr>
@@ -372,12 +376,13 @@
       <h4 class="example-title">Design Approach</h4>
       <p>
         When designing your template in Figma, use placeholder text that clearly
-        indicates where dynamic data will be inserted. Common conventions include:
+        indicates where dynamic data will be inserted. Common conventions
+        include:
       </p>
 
       <ul class="doc-list">
         <li>
-          <code class="inline-code">{'{{variableName}}'}</code> - Double curly braces
+          <code class="inline-code">{"{{variableName}}"}</code> - Double curly braces
           style
         </li>
         <li>
@@ -413,31 +418,35 @@
 
       <p class="mt-4"><strong>API Request Data:</strong></p>
       <div class="code-block">
-        <pre><code>{`{
+        <pre><code
+            >{`{
   "INVOICE_NUMBER": "INV-2024-001",
   "CUSTOMER_NAME": "John Smith",
   "AMOUNT": "$1,500.00",
   "DATE": "January 15, 2024"
-}`}</code></pre>
+}`}</code
+          ></pre>
       </div>
 
       <h4 class="example-title mt-6">Example 2: Certificate Template</h4>
       <p><strong>Figma Text Layers:</strong></p>
       <ul class="doc-list">
-        <li>Recipient: "{'{{recipient_name}}'}"</li>
-        <li>Course: "{'{{course_title}}'}"</li>
-        <li>Date: "{'{{completion_date}}'}"</li>
-        <li>Instructor: "{'{{instructor_name}}'}"</li>
+        <li>Recipient: "{"{{recipient_name}}"}"</li>
+        <li>Course: "{"{{course_title}}"}"</li>
+        <li>Date: "{"{{completion_date}}"}"</li>
+        <li>Instructor: "{"{{instructor_name}}"}"</li>
       </ul>
 
       <p class="mt-4"><strong>API Request Data:</strong></p>
       <div class="code-block">
-        <pre><code>{`{
+        <pre><code
+            >{`{
   "recipient_name": "Jane Doe",
   "course_title": "Advanced Web Development",
   "completion_date": "December 2024",
   "instructor_name": "Dr. Smith"
-}`}</code></pre>
+}`}</code
+          ></pre>
       </div>
 
       <div class="tip-box mt-6">
@@ -489,9 +498,8 @@
         <div class="step-content">
           <h4>Sign In</h4>
           <p>
-            Launch the plugin from <strong
-              >Plugins → Templetto → Run</strong
-            >. Click the login button and authenticate with your Templetto account.
+            Launch the plugin from <strong>Plugins → Templetto → Run</strong>.
+            Click the login button and authenticate with your Templetto account.
           </p>
         </div>
       </div>
@@ -571,8 +579,8 @@
         <div class="step-content">
           <h4>Get Template ID</h4>
           <p>
-            Go to the <strong>"Templates"</strong> tab in the plugin to view all your
-            saved templates. Copy the template ID to use in your API requests.
+            Go to the <strong>"Templates"</strong> tab in the plugin to view all
+            your saved templates. Copy the template ID to use in your API requests.
           </p>
         </div>
       </div>
@@ -603,7 +611,9 @@
         sizes:
       </p>
       <ul class="doc-list">
-        <li><strong>US Letter:</strong> 816 × 1056 px (8.5" × 11" at 96 DPI)</li>
+        <li>
+          <strong>US Letter:</strong> 816 × 1056 px (8.5" × 11" at 96 DPI)
+        </li>
         <li><strong>A4:</strong> 794 × 1123 px (210mm × 297mm at 96 DPI)</li>
         <li>
           <strong>Custom:</strong> Set any dimensions based on your requirements
@@ -617,8 +627,8 @@
           plugin automatically includes font references in the generated HTML.
         </li>
         <li>
-          <strong>Text Styling:</strong> Font weight, color, size, and alignment are
-          preserved in the HTML output.
+          <strong>Text Styling:</strong> Font weight, color, size, and alignment
+          are preserved in the HTML output.
         </li>
         <li>
           <strong>Variables:</strong> Place variable placeholders directly in text
@@ -633,7 +643,8 @@
           exported as background images.
         </li>
         <li>
-          <strong>Optimization:</strong> Images are automatically optimized during export.
+          <strong>Optimization:</strong> Images are automatically optimized during
+          export.
         </li>
         <li>
           <strong>Format:</strong> Images are exported as PNG with transparency support.
@@ -652,7 +663,9 @@
         <strong>⚠️ Limitations:</strong>
         <ul class="doc-list mt-2">
           <li>Complex vector graphics may need to be rasterized</li>
-          <li>Some Figma effects (like blur) may not translate perfectly to HTML</li>
+          <li>
+            Some Figma effects (like blur) may not translate perfectly to HTML
+          </li>
           <li>Rotated elements have limited support</li>
           <li>Component instances are flattened during export</li>
         </ul>
@@ -661,43 +674,29 @@
       <div class="tip-box mt-6">
         <strong>💡 Pro Tips:</strong>
         <ul class="doc-list mt-2">
-          <li>
-            Test your templates with sample data before production use
-          </li>
-          <li>
-            Keep designs simple and structured for best HTML conversion
-          </li>
+          <li>Test your templates with sample data before production use</li>
+          <li>Keep designs simple and structured for best HTML conversion</li>
           <li>
             Use consistent spacing and padding with auto-layout for reliable
             results
           </li>
-          <li>
-            Create a template library in Figma for reusable components
-          </li>
+          <li>Create a template library in Figma for reusable components</li>
         </ul>
       </div>
     </section>
 
     <section class="doc-section">
       <h2 class="section-title">Need Help?</h2>
-      <p>
-        If you have questions or run into issues, we're here to help:
-      </p>
+      <p>If you have questions or run into issues, we're here to help:</p>
       <ul class="doc-list">
         <li>
-          <a href="/contact_us" class="doc-link"
-            >Contact our support team</a
-          >
+          <a href="/contact_us" class="doc-link">Contact our support team</a>
         </li>
         <li>
-          <a href="/account" class="doc-link"
-            >Visit your account dashboard</a
-          >
+          <a href="/account" class="doc-link">Visit your account dashboard</a>
         </li>
         <li>
-          <a href="/pricing" class="doc-link"
-            >View pricing and usage limits</a
-          >
+          <a href="/pricing" class="doc-link">View pricing and usage limits</a>
         </li>
       </ul>
     </section>
@@ -1119,4 +1118,3 @@
     margin-top: 0.5rem;
   }
 </style>
-

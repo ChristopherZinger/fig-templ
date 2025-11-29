@@ -85,11 +85,12 @@
       >
         Coming Soon
         {#if $userStore}
-          <span class="text-sm text-gray-500">Welcome, {$userStore.displayName}</span>
-        {:else  }
+          <span class="text-sm text-gray-500"
+            >Welcome, {$userStore.displayName}</span
+          >
+        {:else}
           <span class="text-sm text-gray-500">Sign in</span>
         {/if}
-
       </div>
 
       <div

@@ -9,26 +9,41 @@
 
   let { templates, limit, showViewAll = false }: Props = $props()
 
-  let displayedTemplates = $derived(limit ? templates.slice(0, limit) : templates)
+  let displayedTemplates = $derived(
+    limit ? templates.slice(0, limit) : templates,
+  )
 
   function formatDate(date: Date | undefined): string {
     if (!date) return "N/A"
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     }).format(date)
   }
 </script>
 
 {#if templates.length === 0}
   <div class="alert alert-info">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      class="stroke-current shrink-0 w-6 h-6"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      ></path>
     </svg>
-    <span>No templates found in your organization. Create one in the Figma plugin to get started.</span>
+    <span
+      >No templates found in your organization. Create one in the Figma plugin
+      to get started.</span
+    >
   </div>
 {:else}
   <div class="overflow-x-auto">
@@ -47,7 +62,12 @@
             <td class="font-mono text-sm">{template.id}</td>
             <td>{template.name || "Unnamed Template"}</td>
             <td>{formatDate(template.createdAt)}</td>
-            <td><a href="/account/api/templates/{template.orgId}/{template.id}/download" class="btn btn-outline btn-sm">Download HTML</a></td>
+            <td
+              ><a
+                href="/account/api/templates/{template.orgId}/{template.id}/download"
+                class="btn btn-outline btn-sm">Download HTML</a
+              ></td
+            >
           </tr>
         {/each}
       </tbody>
@@ -61,4 +81,3 @@
     </div>
   {/if}
 {/if}
-

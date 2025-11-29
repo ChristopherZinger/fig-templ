@@ -5,7 +5,11 @@
   import type { Organization_FsDoc } from "@templetto/firebase"
   interface Props {
     children?: import("svelte").Snippet
-    data: { firebaseUser: DecodedIdToken; userTemplates: Template_FsDoc[]; currentOrg: Organization_FsDoc }
+    data: {
+      firebaseUser: DecodedIdToken
+      userTemplates: Template_FsDoc[]
+      currentOrg: Organization_FsDoc
+    }
   }
 
   let { children, data }: Props = $props()
@@ -94,7 +98,7 @@
       </li>
 
       <li class="mt-auto">
-        {currentOrg?.name}<br/>
+        {currentOrg?.name}<br />
         {firebaseUser?.email}
         <a href="/account/sign_out" class="mt-auto text-base">Sign Out</a>
       </li>
