@@ -5,7 +5,7 @@ Critical todos for mvp 2
 ## Webapp
 
 - [] Check if docs are correct
-- [] Page "create token"
+- [wip] Page "create token"
 - [] Page "remove account"
 - [] Page "usage meter"
 - [] Template Detail Page
@@ -15,7 +15,7 @@ Critical todos for mvp 2
   - [] generated pdfs - list, remove, download
 - [] reset password
 - [] contact form
-- []
+- [] make landing page make sense - correct information
 
 ## Plugin
 
@@ -27,3 +27,4 @@ Critical todos for mvp 2
 ## Server
 
 - [] limit rate for all user actions and artifacts - pdfs, templates
+- [] hash the token
