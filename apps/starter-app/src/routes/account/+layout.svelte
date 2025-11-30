@@ -70,6 +70,9 @@
         <li>
           <a href="/account/api-tokens"><CopyIcon /> API Tokens</a>
         </li>
+        <li>
+          <a href="/account/profile">Profile</a>
+        </li>
       </ul>
 
       <ul class="mt-auto">
