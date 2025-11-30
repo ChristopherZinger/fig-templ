@@ -1,12 +1,12 @@
 <script lang="ts">
   import { WebsiteName } from "./../../config"
+  import { userStore } from "$lib/stores/userStore"
 
   interface Props {
     children?: import("svelte").Snippet
-    data: { isLoggedIn: boolean }
   }
 
-  let { children, data }: Props = $props()
+  let { children }: Props = $props()
 </script>
 
 <div class="navbar bg-base-100 container mx-auto">
@@ -16,7 +16,7 @@
   <div class="flex-none">
     <ul class="menu menu-horizontal px-1 hidden sm:flex font-bold text-lg">
       <li><a href="/docs">Docs</a></li>
-      {#if data.isLoggedIn}
+      {#if $userStore}
         <li><a href="/account">Account</a></li>
       {:else}
         <li><a href="/login/sign_in">Log in</a></li>
@@ -48,7 +48,7 @@
         tabindex="0"
         class="menu menu-lg dropdown-content mt-3 z-1 p-2 shadow-sm bg-base-100 rounded-box w-52 font-bold"
       >
-        {#if data.isLoggedIn}
+        {#if $userStore}
           <li><a href="/account">Account</a></li>
         {:else}
           <li><a href="/login/sign_in">Log in </a></li>

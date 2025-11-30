@@ -8,6 +8,7 @@ import {
   getFirestore,
 } from "@templetto/firebase"
 import { env } from "$env/dynamic/private"
+import { USER_ID_TOKEN_COOKIE_NAME } from "$lib/stores/userStore"
 
 initFirebaseAdmin({
   bucketUri: env.PRIVATE_FIREBASE_STORAGE_BUCKET_NAME,
@@ -16,7 +17,7 @@ initFirebaseAdmin({
 
 const authGuard: Handle = async ({ event, resolve }) => {
   event.locals.firebaseUser = null
-  const jwtToken = event.cookies.get("token")
+  const jwtToken = event.cookies.get(USER_ID_TOKEN_COOKIE_NAME)
   if (jwtToken) {
     try {
       const decodedToken = await getAuth().verifyIdToken(jwtToken)

@@ -3,6 +3,7 @@
   import { navigating } from "$app/stores"
   import { expoOut } from "svelte/easing"
   import { slide } from "svelte/transition"
+  import Authentication from "./Authentication.svelte"
   interface Props {
     children?: import("svelte").Snippet
   }
@@ -23,4 +24,7 @@
     in:slide={{ delay: 100, duration: 12000, axis: "x", easing: expoOut }}
   ></div>
 {/if}
-{@render children?.()}
+
+<Authentication>
+  {@render children?.()}
+</Authentication>

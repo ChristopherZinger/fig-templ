@@ -28,3 +28,12 @@ export async function fetchDeleteApiToken(tokenId: string): Promise<void> {
     body: JSON.stringify({ tokenId }),
   })
 }
+
+export async function fetchPostAuthCookie(token: string | null): Promise<void> {
+  await fetch("/api/set-auth-cookie", {
+    method: "POST",
+    headers: {
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  })
+}
