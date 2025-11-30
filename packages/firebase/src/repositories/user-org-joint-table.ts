@@ -1,4 +1,5 @@
 import { getUserOrgJoinTableCollectionRef } from "../utils/collection-refs";
+import type { UserOrgJoinTable_FsDoc } from "../utils/collections";
 
 export function getUserOrgJoinTableId({
   uid,
@@ -16,7 +17,7 @@ export function getUserOrgJoinTableDocRef({
 }: {
   uid: string;
   orgId: string;
-}) {
+}): FirebaseFirestore.DocumentReference<UserOrgJoinTable_FsDoc> {
   return getUserOrgJoinTableCollectionRef().doc(
     getUserOrgJoinTableId({ uid, orgId })
   );

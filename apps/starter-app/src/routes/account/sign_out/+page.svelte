@@ -3,9 +3,9 @@
   import { onMount } from "svelte"
   import { signOut } from "firebase/auth"
   import { auth } from "$lib/utils/firebase/init-firebase"
+
   let message = $state("Signing out....")
 
-  // on mount, sign out
   onMount(() => {
     signOut(auth).then(() => {
       goto("/")
