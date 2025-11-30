@@ -1,10 +1,6 @@
 <script lang="ts">
-  import { getContext } from "svelte"
-  import type { Writable } from "svelte/store"
   import TemplateList from "./TemplateList.svelte"
 
-  let adminSection: Writable<string> = getContext("adminSection")
-  adminSection.set("home")
   let { data } = $props()
   let { templates } = data
   let showStats = false
