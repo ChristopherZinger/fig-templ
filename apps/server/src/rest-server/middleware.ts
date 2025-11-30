@@ -8,6 +8,7 @@ import { getAuth, getOrgApiTokensCollectionRef } from "@templetto/firebase";
 import { getTokenFromReqAuthHeader } from "../utils/plugin-session-token";
 import { isFirebaseAuthError } from "@templetto/firebase/errors";
 import { AppError } from "@templetto/app-error";
+import { getHashedToken } from "@templetto/firebase/repositories/api-token";
 
 export const logMiddleware: express.RequestHandler = (
   req: Request,
@@ -88,9 +89,10 @@ export const apiAuthMiddleware: express.RequestHandler = async (
     return;
   }
 
+  const tokenHash = getHashedToken(authHeaderToken);
   try {
     const tokenDoc = (
-      await getOrgApiTokensCollectionRef().doc(authHeaderToken).get()
+      await getOrgApiTokensCollectionRef().doc(tokenHash).get()
     ).data();
     if (!tokenDoc) {
       res.status(401).json({ message: "unauthorized" });

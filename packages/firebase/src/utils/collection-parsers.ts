@@ -27,9 +27,11 @@ export const pluginSessionTokenParser = z.object({
   uid: z.string(),
 });
 
-// /api-tokens/{token}
+// /api-tokens/{tokenHash}
 export const apiTokenParser = z.object({
   token: z.string(),
+  tokenHash: z.string(),
+  userId: z.string(),
   createdAt: firestoreDateField,
   expiresAt: firestoreDateField,
   orgId: z.string(),
