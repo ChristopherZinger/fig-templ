@@ -5,8 +5,8 @@ Critical todos for mvp 2
 ## Webapp
 
 - [x] Page "create token"
-- [] Page "remove account"
-- [] Page "usage meter"
+- [x] Page "remove account"
+- [x] Page "usage meter"
 - [] Template Detail Page
   - [] code preview
   - [] html preview
@@ -24,6 +24,10 @@ Critical todos for mvp 2
 ## Server
 
 - [] limit rate for all user actions and artifacts - pdfs, templates
+
+## Bugs
+
+- [] when user is signed in in the app it interffers with plugin login flow
 
 ## Testing
 
