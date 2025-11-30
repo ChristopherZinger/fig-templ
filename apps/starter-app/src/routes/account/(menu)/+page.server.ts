@@ -2,7 +2,12 @@ import type { PageServerLoad } from "./$types"
 import { getUserOrgTemplateDocs } from "@templetto/firebase/repositories/user"
 import { error, redirect } from "@sveltejs/kit"
 import { log } from "@templetto/logging"
-import { getBucket, getUsersCollectionRef } from "@templetto/firebase"
+import {
+  getArtifactsCollectionRef,
+  getBucket,
+  getUsersCollectionRef,
+} from "@templetto/firebase"
+import { getBillableApiCallCountForMonth } from "@templetto/firebase/repositories/billable-api-call-logs"
 
 export const load: PageServerLoad = async ({ locals: { firebaseUser } }) => {
   if (!firebaseUser) {
@@ -17,12 +22,25 @@ export const load: PageServerLoad = async ({ locals: { firebaseUser } }) => {
     error(500, "Internal server error")
   }
 
-  const templates = await getUserOrgTemplateDocs({
-    uid: firebaseUser.uid,
-    orgId: userDoc.defaultOrgId,
-    limit: 5,
-    sortByCreatedAt: "desc",
-  })
+  const [billableApiCallCount, numPdfsGenerated, templates] = await Promise.all(
+    [
+      getBillableApiCallCountForMonth({
+        orgId: userDoc.defaultOrgId,
+        date: new Date(),
+      }),
+      (
+        await getArtifactsCollectionRef({ orgId: userDoc.defaultOrgId })
+          .count()
+          .get()
+      ).data().count,
+      getUserOrgTemplateDocs({
+        uid: firebaseUser.uid,
+        orgId: userDoc.defaultOrgId,
+        limit: 5,
+        sortByCreatedAt: "desc",
+      }),
+    ],
+  )
 
   const templatesWithDownloadUrls = await Promise.all(
     templates.map(async (template) => {
@@ -38,8 +56,8 @@ export const load: PageServerLoad = async ({ locals: { firebaseUser } }) => {
   )
 
   return {
-    currentOrg: userDoc.defaultOrgId,
-    firebaseUser,
     templates: templatesWithDownloadUrls,
+    billableApiCallCount,
+    numPdfsGenerated,
   }
 }
