@@ -9,6 +9,7 @@ import type { Organization_FsDoc, Template_FsDoc } from "../utils/collections";
 import { Transaction } from "firebase-admin/firestore";
 import { log } from "@templetto/logging";
 import { getUserOrgJoinTableDocRef } from "./user-org-joint-table";
+import { RestrictedAccessError } from "../utils/errors";
 
 export async function getUserOrgIds({
   uid,
@@ -22,18 +23,50 @@ export async function getUserOrgIds({
   return orgIds;
 }
 
-export async function userHasAccessToOrg({
-  uid,
-  orgId,
-}: {
+type HaveAccessToOrgParameters = {
   uid: string;
   orgId: string;
-}): Promise<boolean> {
-  const userOrgJoinTableDoc = await getUserOrgJoinTableDocRef({
-    uid,
-    orgId,
-  }).get();
+};
+
+async function haveAccessToOrg(
+  info: HaveAccessToOrgParameters
+): Promise<boolean>;
+async function haveAccessToOrg(
+  info: HaveAccessToOrgParameters,
+  t: Transaction
+): Promise<boolean>;
+async function haveAccessToOrg(
+  info: HaveAccessToOrgParameters,
+  t?: Transaction
+): Promise<boolean> {
+  if (t instanceof Transaction) {
+    const userOrgJoinTableDoc = await t.get(getUserOrgJoinTableDocRef(info));
+    return userOrgJoinTableDoc.exists;
+  }
+  const userOrgJoinTableDoc = await getUserOrgJoinTableDocRef(info).get();
   return userOrgJoinTableDoc.exists;
+}
+
+export async function assertAccessToOrg(
+  info: HaveAccessToOrgParameters
+): Promise<void>;
+export async function assertAccessToOrg(
+  info: HaveAccessToOrgParameters,
+  t: Transaction
+): Promise<void>;
+export async function assertAccessToOrg(
+  info: HaveAccessToOrgParameters,
+  t?: Transaction
+): Promise<void> {
+  const hasAccess = t
+    ? await haveAccessToOrg(info, t)
+    : await haveAccessToOrg(info);
+  if (!hasAccess) {
+    throw new RestrictedAccessError("user_does_not_have_access_to_org", {
+      orgId: info.orgId,
+      userId: info.uid,
+    });
+  }
 }
 
 export async function getUserOrgTemplateDocs({
@@ -47,7 +80,7 @@ export async function getUserOrgTemplateDocs({
   limit?: number;
   sortByCreatedAt?: "asc" | "desc";
 }): Promise<Template_FsDoc[]> {
-  const hasAccess = await userHasAccessToOrg({ uid, orgId });
+  const hasAccess = await haveAccessToOrg({ uid, orgId });
   if (!hasAccess) {
     return [];
   }

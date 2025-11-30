@@ -18,9 +18,12 @@ import type { DocumentReference, Transaction } from "firebase-admin/firestore";
 import { expectPluginSessionUid } from "../utils/plugin-session-token";
 import { AppError } from "@templetto/app-error";
 import { PkceError } from "./pkce-errors";
-import { ensureUserAndOrgForAuthUser } from "@templetto/firebase/repositories/user";
+import {
+  assertAccessToOrg,
+  ensureUserAndOrgForAuthUser,
+} from "@templetto/firebase/repositories/user";
 import slugify from "slugify";
-import { getUserOrgJoinTableDocRef } from "@templetto/firebase/repositories/user-org-joint-table";
+import { RestrictedAccessError } from "@templetto/firebase/errors";
 
 export async function getPkceKeysHandler(_: Request, res: Response) {
   // TODO check if request comes from templetto.com/plugin/login
@@ -282,21 +285,17 @@ export async function getTemplatesHandler(req: Request, res: Response) {
 
   try {
     await getFirestore().runTransaction(async (t) => {
-      const [userOrgJoinTableDoc, templatesDoc] = await Promise.all([
-        t.get(getUserOrgJoinTableDocRef({ uid, orgId })),
+      const [, templatesDoc] = await Promise.all([
+        assertAccessToOrg({ uid, orgId }, t),
         t.get(getTemplatesCollectionRef({ orgId })),
       ]);
-
-      if (!userOrgJoinTableDoc.exists) {
-        throw new AppError("unauthorized");
-      }
 
       res.status(200).json(templatesDoc.docs.map((doc) => doc.data()));
       return;
     });
   } catch (error) {
     log.error("failed_to_get_templates", { error });
-    if (error instanceof Error && error.message === "unauthorized") {
+    if (error instanceof RestrictedAccessError) {
       res.status(401).json({ error: "unauthorized" });
       return;
     }
@@ -323,13 +322,7 @@ export async function createTemplateHandler(req: Request, res: Response) {
 
   try {
     const newTemplateId = await getFirestore().runTransaction(async (t) => {
-      const userOrgJoinTableDoc = await t.get(
-        getUserOrgJoinTableDocRef({ uid, orgId })
-      );
-      if (!userOrgJoinTableDoc.exists) {
-        log.debug("missin_org_for_user");
-        throw new AppError("unauthorized");
-      }
+      await assertAccessToOrg({ uid, orgId }, t);
 
       const templatesCollectionRef = getTemplatesCollectionRef({ orgId });
       const newTemplateDocRef = templatesCollectionRef.doc();
@@ -366,7 +359,7 @@ export async function createTemplateHandler(req: Request, res: Response) {
       .json({ message: "template_created", id: newTemplateId, orgId });
   } catch (error) {
     log.error("failed_to_create_template", { error });
-    if (error instanceof Error && error.message === "unauthorized") {
+    if (error instanceof RestrictedAccessError) {
       log.debug("unauthorized");
       res.status(401).json({ error: "unauthorized" });
       return;
