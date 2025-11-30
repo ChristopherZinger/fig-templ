@@ -41,6 +41,5 @@ export const load: PageServerLoad = async ({ locals: { firebaseUser } }) => {
     currentOrg: userDoc.defaultOrgId,
     firebaseUser,
     templates: templatesWithDownloadUrls,
-    session: null,
   }
 }
