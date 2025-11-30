@@ -6,7 +6,8 @@
     ".": "./src/index.ts",
     "./errors": "./src/utils/errors.ts",
     "./repositories/user": "./src/repositories/user.ts",
-    "./repositories/email-subscription": "./src/repositories/email-subscription.ts"
+    "./repositories/email-subscription": "./src/repositories/email-subscription.ts",
+    "./repositories/user-org-joint-table": "./src/repositories/user-org-joint-table.ts"
   },
   "type": "module",
   "dependencies": {

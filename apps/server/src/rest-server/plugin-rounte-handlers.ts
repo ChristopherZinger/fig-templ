@@ -20,6 +20,7 @@ import { AppError } from "@templetto/app-error";
 import { PkceError } from "./pkce-errors";
 import { ensureUserAndOrgForAuthUser } from "@templetto/firebase/repositories/user";
 import slugify from "slugify";
+import { getUserOrgJoinTableDocRef } from "@templetto/firebase/repositories/user-org-joint-table";
 
 export async function getPkceKeysHandler(_: Request, res: Response) {
   // TODO check if request comes from templetto.com/plugin/login
@@ -282,7 +283,7 @@ export async function getTemplatesHandler(req: Request, res: Response) {
   try {
     await getFirestore().runTransaction(async (t) => {
       const [userOrgJoinTableDoc, templatesDoc] = await Promise.all([
-        t.get(getUserOrgJoinTableCollectionRef().doc(`${uid}:${orgId}`)),
+        t.get(getUserOrgJoinTableDocRef({ uid, orgId })),
         t.get(getTemplatesCollectionRef({ orgId })),
       ]);
 
@@ -323,7 +324,7 @@ export async function createTemplateHandler(req: Request, res: Response) {
   try {
     const newTemplateId = await getFirestore().runTransaction(async (t) => {
       const userOrgJoinTableDoc = await t.get(
-        getUserOrgJoinTableCollectionRef().doc(`${uid}:${orgId}`)
+        getUserOrgJoinTableDocRef({ uid, orgId })
       );
       if (!userOrgJoinTableDoc.exists) {
         log.debug("missin_org_for_user");

@@ -29,9 +29,10 @@ export async function userHasAccessToOrg({
   uid: string;
   orgId: string;
 }): Promise<boolean> {
-  const userOrgJoinTableDoc = await getUserOrgJoinTableCollectionRef()
-    .doc(`${uid}:${orgId}`)
-    .get();
+  const userOrgJoinTableDoc = await getUserOrgJoinTableDocRef({
+    uid,
+    orgId,
+  }).get();
   return userOrgJoinTableDoc.exists;
 }
 
