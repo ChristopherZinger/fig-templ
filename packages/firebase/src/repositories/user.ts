@@ -5,10 +5,24 @@ import {
   getOrgCollectionRef,
 } from "../utils/collection-refs";
 import { addUserToOrg, createOrgWithName } from "./organization";
-import type { Organization_FsDoc, Template_FsDoc } from "../utils/collections";
+import type {
+  Organization_FsDoc,
+  Template_FsDoc,
+  User_FsDoc,
+} from "../utils/collections";
 import { Transaction } from "firebase-admin/firestore";
 import { log } from "@templetto/logging";
 import { getUserOrgJoinTableDocRef } from "./user-org-joint-table";
+import { RestrictedAccessError } from "../utils/errors";
+import { AppError } from "@templetto/app-error";
+
+export async function expectUserById(uid: string): Promise<User_FsDoc> {
+  const userDoc = (await getUsersCollectionRef().doc(uid).get()).data();
+  if (!userDoc) {
+    throw new AppError("user_not_found", { uid });
+  }
+  return userDoc;
+}
 
 export async function getUserOrgIds({
   uid,
@@ -22,18 +36,38 @@ export async function getUserOrgIds({
   return orgIds;
 }
 
-export async function userHasAccessToOrg({
-  uid,
-  orgId,
-}: {
+type HaveAccessToOrgParameters = {
   uid: string;
   orgId: string;
-}): Promise<boolean> {
-  const userOrgJoinTableDoc = await getUserOrgJoinTableDocRef({
-    uid,
-    orgId,
-  }).get();
+};
+
+async function userHasAccessToOrg(
+  info: HaveAccessToOrgParameters
+): Promise<boolean>;
+async function userHasAccessToOrg(
+  info: HaveAccessToOrgParameters,
+  t: Transaction
+): Promise<boolean>;
+async function userHasAccessToOrg(
+  info: HaveAccessToOrgParameters,
+  t?: Transaction
+): Promise<boolean> {
+  if (t instanceof Transaction) {
+    const userOrgJoinTableDoc = await t.get(getUserOrgJoinTableDocRef(info));
+    return userOrgJoinTableDoc.exists;
+  }
+  const userOrgJoinTableDoc = await getUserOrgJoinTableDocRef(info).get();
   return userOrgJoinTableDoc.exists;
+}
+
+export async function assertAccessToOrg(info: HaveAccessToOrgParameters) {
+  const hasAccess = await userHasAccessToOrg(info);
+  if (!hasAccess) {
+    throw new RestrictedAccessError("user_does_not_have_access_to_org", {
+      orgId: info.orgId,
+      userId: info.uid,
+    });
+  }
 }
 
 export async function getUserOrgTemplateDocs({
