@@ -1,7 +1,12 @@
 import { type Handle } from "@sveltejs/kit"
 import { sequence } from "@sveltejs/kit/hooks"
 import { log } from "@templetto/logging"
-import { getAuth, initFirebaseAdmin } from "@templetto/firebase"
+import {
+  ensureUserAndOrgForAuthUser,
+  getAuth,
+  initFirebaseAdmin,
+  getFirestore,
+} from "@templetto/firebase"
 import { env } from "$env/dynamic/private"
 
 initFirebaseAdmin({
@@ -16,9 +21,15 @@ const authGuard: Handle = async ({ event, resolve }) => {
     try {
       const decodedToken = await getAuth().verifyIdToken(jwtToken)
       event.locals.firebaseUser = decodedToken
+
+      await getFirestore().runTransaction(async (t) => {
+        await ensureUserAndOrgForAuthUser(t, {
+          uid: decodedToken.uid,
+          userName: decodedToken.name || "New User",
+        })
+      })
     } catch (error) {
       console.error("Error verifying Firebase ID token:", error)
-      // Keep firebaseUser as null
     }
   }
   return resolve(event)
