@@ -9,6 +9,7 @@ import type {
   ApiToken_FsDoc,
   Artifact_FsDoc,
   BillableApiCallLog_FsDoc,
+  ContactUsMessage_FsDoc,
   EmailSubscription_FsDoc,
   Organization_FsDoc,
   PkceKey_FsDoc,
@@ -22,6 +23,7 @@ import {
   apiTokenParser,
   artifactParser,
   billableApiCallLogParser,
+  contactUsMessageParser,
   emailSubscriptionParser,
   organizationParser,
   pkceKeyParser,
@@ -134,5 +136,13 @@ export function getEmailSubscriptionsCollectionRef(): CollectionReference<EmailS
     collectionName: CollectionName.emailSubscriptions,
     getBase: null,
     parser: emailSubscriptionParser,
+  });
+}
+
+export function getContactUsMessagesCollectionRef(): CollectionReference<ContactUsMessage_FsDoc> {
+  return getCollectionRef({
+    collectionName: CollectionName.contactUsMessage,
+    getBase: null,
+    parser: contactUsMessageParser,
   });
 }

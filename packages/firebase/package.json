@@ -10,6 +10,7 @@
     "./repositories/user-org-joint-table": "./src/repositories/user-org-joint-table.ts",
     "./repositories/api-token": "./src/repositories/api-token.ts",
     "./repositories/billable-api-call-logs": "./src/repositories/billable-api-call-logs.ts",
+    "./repositories/contact-us-message": "./src/repositories/contact-us-message.ts",
     "./config": "./src/config/config.ts"
   },
   "type": "module",

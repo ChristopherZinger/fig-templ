@@ -93,3 +93,14 @@ export const emailSubscriptionParser = z.object({
   createdAt: firestoreDateField,
   updatedAt: firestoreDateField,
 });
+
+// contactUsMessages/{id}
+export const contactUsMessageParser = z.object({
+  id: z.string(),
+  email: z.string(),
+  phone: z.string().nullable(),
+  company: z.string().nullable(),
+  fullName: z.string(),
+  message: z.string(),
+  createdAt: firestoreDateField,
+});

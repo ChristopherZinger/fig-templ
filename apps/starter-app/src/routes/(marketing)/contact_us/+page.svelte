@@ -85,12 +85,10 @@
         <li class="">Discuss your specific needs</li>
         <li>Get a quote</li>
         <li>Answer any technical questions you have</li>
+        <li>Report any issues you've encountered</li>
+        <lit>Request new features</lit>
       </ul>
       <p>Once you complete the form, we'll reach out to you! *</p>
-      <p class="text-sm pt-8">
-        *Not really for this demo page, but you should say something like that
-        😉
-      </p>
     </div>
   </div>
 

@@ -3,6 +3,7 @@ import {
   apiTokenParser,
   artifactParser,
   billableApiCallLogParser,
+  contactUsMessageParser,
   emailSubscriptionParser,
   organizationParser,
   pkceKeyParser,
@@ -23,6 +24,7 @@ export enum CollectionName {
   artifacts = "artifacts",
   billableApiCallLogs = "billable-api-call-logs",
   emailSubscriptions = "email-subscriptions",
+  contactUsMessage = "contactUsMessage",
 }
 
 export type PkceKey_FsDoc = z.infer<typeof pkceKeyParser>;
@@ -35,3 +37,4 @@ export type ApiToken_FsDoc = z.infer<typeof apiTokenParser>;
 export type Artifact_FsDoc = z.infer<typeof artifactParser>;
 export type BillableApiCallLog_FsDoc = z.infer<typeof billableApiCallLogParser>;
 export type EmailSubscription_FsDoc = z.infer<typeof emailSubscriptionParser>;
+export type ContactUsMessage_FsDoc = z.infer<typeof contactUsMessageParser>;
