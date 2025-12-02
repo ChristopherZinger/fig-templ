@@ -81,19 +81,6 @@
   <div class="hero-content text-center py-12">
     <div class="max-w-2xl">
       <div
-        class="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-primary to-accent mb-3 md:mb-5 pb-1"
-      >
-        Coming Soon
-        {#if $userStore}
-          <span class="text-sm text-gray-500"
-            >Welcome, {$userStore.displayName}</span
-          >
-        {:else}
-          <span class="text-sm text-gray-500">Sign in</span>
-        {/if}
-      </div>
-
-      <div
         class="text-5xl md:text-7xl font-bold px-2"
         style="line-height: 1.2;"
       >
@@ -102,27 +89,22 @@
           class="underline decoration-secondary decoration-4 md:decoration-[6px]"
           >Figma designs</span
         >
-        into
+        into dynamic
         <span
           class="underline decoration-secondary decoration-4 md:decoration-[6px]"
           >PDF documents</span
         >
       </div>
       <div class="mt-8 md:mt-10 text-lg md:text-xl max-w-xl mx-auto">
-        Template your Figma files and generate professional PDFs with dynamic
-        data through our API. Perfect for invoices, reports, certificates, and
-        more.
+        Convert your Figma designs into HTML templates and generate professional
+        PDFs with dynamic data through our API. Perfect for invoices, reports,
+        certificates, and more.
       </div>
       <div
         class="mt-8 md:mt-6 flex flex-row flex-wrap gap-4 place-content-center"
       >
         <a href="/login/sign_up">
           <button class="btn btn-primary btn-lg px-8">Get Started</button>
-        </a>
-        <a href="/pricing">
-          <button class="btn btn-outline btn-primary btn-lg px-8"
-            >View Pricing</button
-          >
         </a>
       </div>
     </div>

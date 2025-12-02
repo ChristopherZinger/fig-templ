@@ -77,20 +77,18 @@
     <nav>
       <span class="footer-title opacity-80">Explore</span>
       <a class="link link-hover mb-1" href="/">Overview</a>
-      <a class="link link-hover my-1" href="/pricing">Pricing</a>
-      <a class="link link-hover my-1" href="/blog">Blog</a>
       <a class="link link-hover my-1" href="/docs">Docs</a>
       <a class="link link-hover my-1" href="/contact_us">Contact Us</a>
     </nav>
     <aside>
-      <a class="max-w-[260px]" href="https://getkiln.ai">
+      <div class="max-w-[260px]">
         <div class="font-bold text-3xl mb-1">Templetto</div>
         <div class="font-medium mb-3">Build High Quality PDFs</div>
         <div class="font-light">
           Use the tools designers love, collaborate with your team. Free plugin
           for Figma.
         </div>
-      </a>
+      </div>
     </aside>
   </footer>
 </div>
