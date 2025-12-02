@@ -7,25 +7,17 @@
   let loading = $state(false)
   let showSuccess = $state(false)
 
-  interface FormField {
+  const formFields: {
     id: string
     label: string
     inputType: string
     autocomplete: FullAutoFill
-  }
-
-  const formFields: FormField[] = [
+  }[] = [
     {
-      id: "first_name",
-      label: "First Name *",
+      id: "fullName",
+      label: "Full Name *",
       inputType: "text",
       autocomplete: "given-name",
-    },
-    {
-      id: "last_name",
-      label: "Last Name *",
-      inputType: "text",
-      autocomplete: "family-name",
     },
     {
       id: "email",
@@ -55,10 +47,8 @@
 
   const handleSubmit: SubmitFunction = () => {
     loading = true
-    errors = {}
     return async ({ update, result }) => {
-      await update({ reset: false })
-      await applyAction(result)
+      await update({ reset: true })
       loading = false
       if (result.type === "success") {
         showSuccess = true
