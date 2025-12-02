@@ -13,7 +13,7 @@ Critical todos for mvp 2
   - [] resoureces preview - images, font links (optional)
   - [] generated pdfs - list, remove, download
 - [] reset password
-- [] contact form
+- [x] contact form
 
 ## Plugin
 
@@ -28,6 +28,8 @@ Critical todos for mvp 2
 ## Bugs
 
 - [] when user is signed in in the app it interffers with plugin login flow
+- [] webapp: when logged in you can't go to public route by entering it in the browser, you will be redirected to /account
+- [] telemetry logging is broken in webapp
 
 ## Testing
 
