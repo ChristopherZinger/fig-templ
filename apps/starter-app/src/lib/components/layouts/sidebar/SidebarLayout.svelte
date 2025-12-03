@@ -26,7 +26,7 @@
         </div>
       </div>
     </div>
-    <div class="container px-6 lg:px-12 py-3 lg:py-6">
+    <div class="flex flex-col container px-6 lg:px-12 py-3 lg:py-6 min-h-full">
       {@render children?.()}
     </div>
   </div>

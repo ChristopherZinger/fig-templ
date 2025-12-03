@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { goto } from "$app/navigation"
+
   interface Props {
     templates: {
       id: string
@@ -70,7 +72,10 @@
       </thead>
       <tbody>
         {#each displayedTemplates as template}
-          <tr>
+          <tr
+            class="cursor-pointer"
+            onclick={() => goto(`/account/template/${template.id}`)}
+          >
             <td class="font-mono text-sm">{template.id}</td>
             <td>{template.name || "Unnamed Template"}</td>
             <td>{formatDate(template.createdAt)}</td>
