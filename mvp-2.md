@@ -7,19 +7,18 @@ Critical todos for mvp 2
 - [x] Page "create token"
 - [x] Page "remove account"
 - [x] Page "usage meter"
-- [] Template Detail Page
-  - [] code preview
+- [wip] Template Detail Page
+  - [wip] visual preview
   - [] html preview
   - [] resoureces preview - images, font links (optional)
   - [] generated pdfs - list, remove, download
-- [] reset password
 - [x] contact form
 
 ## Plugin
 
 - [] Create nice "Go back to plugin" page
-- [] Make sure image are included (base64) in templates when sending to the server. Atm it sends refernce to the Blob
-- [] Handle 'body too big'. Probably use streams when sending to the server
+- [wip] Make sure image are included (base64) in templates when sending to the server. Atm it sends refernce to the Blob
+- [wip] Handle 'body too big'. Probably use streams when sending to the server
 
 ## Server
 
