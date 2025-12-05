@@ -1,9 +1,20 @@
 <script lang="ts">
   import TemplateList from "./TemplateList.svelte"
   import ApiUsageStats from "./ApiUsageStats.svelte"
+  import {
+    fetchDeleteTemplate,
+    fetchGetTemplates,
+  } from "$lib/utils/account-api-calls"
 
   let { data } = $props()
-  let { templates, billableApiCallCount, numPdfsGenerated } = data
+  let { templates: _templates, billableApiCallCount, numPdfsGenerated } = data
+
+  let templates = $state(_templates)
+
+  async function onDelete(templateId: string) {
+    await fetchDeleteTemplate(templateId)
+    templates = await fetchGetTemplates()
+  }
 </script>
 
 <svelte:head>
@@ -20,5 +31,5 @@
 
 <div class="my-6">
   <h1 class="text-xl font-bold mb-3">Recent Templates</h1>
-  <TemplateList {templates} limit={20} showViewAll={true} />
+  <TemplateList {templates} onClickDelete={onDelete} />
 </div>

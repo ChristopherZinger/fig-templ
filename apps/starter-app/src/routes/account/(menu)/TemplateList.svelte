@@ -8,25 +8,22 @@
       createdAt?: Date
       downloadUrl: string
     }[]
-    limit?: number
-    showViewAll?: boolean
+    onClickDelete: (templateId: string) => Promise<void>
   }
 
-  let { templates, limit, showViewAll = false }: Props = $props()
-
-  let displayedTemplates = $derived(
-    limit ? templates.slice(0, limit) : templates,
-  )
+  let { templates, onClickDelete }: Props = $props()
 
   function formatDate(date: Date | undefined): string {
-    if (!date) return "N/A"
+    if (!date) {
+      return "N/A"
+    }
     return new Intl.DateTimeFormat("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    }).format(date)
+    }).format(new Date(date))
   }
 
   function onClickDownload(downloadUrl: string) {
@@ -71,12 +68,13 @@
         </tr>
       </thead>
       <tbody>
-        {#each displayedTemplates as template}
-          <tr
-            class="cursor-pointer"
-            onclick={() => goto(`/account/template/${template.id}`)}
-          >
-            <td class="font-mono text-sm">{template.id}</td>
+        {#each templates as template}
+          <tr class="cursor-pointer">
+            <td
+              class="font-mono text-sm"
+              onclick={() => goto(`/account/template/${template.id}`)}
+              >{template.id}</td
+            >
             <td>{template.name || "Unnamed Template"}</td>
             <td>{formatDate(template.createdAt)}</td>
             <td>
@@ -87,16 +85,17 @@
                 Download HTML
               </button>
             </td>
+            <td>
+              <button
+                onclick={() => onClickDelete(template.id)}
+                class="btn btn-outline btn-sm text-error"
+              >
+                Delete
+              </button>
+            </td>
           </tr>
         {/each}
       </tbody>
     </table>
   </div>
-  {#if showViewAll && templates.length > (limit || 0)}
-    <div class="mt-4">
-      <a href="/account/templates" class="btn btn-outline btn-sm">
-        View All {templates.length} Templates
-      </a>
-    </div>
-  {/if}
 {/if}
