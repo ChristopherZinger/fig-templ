@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation"
+  import TemplateListItem from "./TemplateListItem.svelte"
 
   interface Props {
     templates: {
@@ -12,19 +13,6 @@
   }
 
   let { templates, onClickDelete }: Props = $props()
-
-  function formatDate(date: Date | undefined): string {
-    if (!date) {
-      return "N/A"
-    }
-    return new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(new Date(date))
-  }
 
   function onClickDownload(downloadUrl: string) {
     const a = document.createElement("a")
@@ -69,31 +57,7 @@
       </thead>
       <tbody>
         {#each templates as template}
-          <tr class="cursor-pointer">
-            <td
-              class="font-mono text-sm"
-              onclick={() => goto(`/account/template/${template.id}`)}
-              >{template.id}</td
-            >
-            <td>{template.name || "Unnamed Template"}</td>
-            <td>{formatDate(template.createdAt)}</td>
-            <td>
-              <button
-                onclick={() => onClickDownload(template.downloadUrl)}
-                class="btn btn-outline btn-sm"
-              >
-                Download HTML
-              </button>
-            </td>
-            <td>
-              <button
-                onclick={() => onClickDelete(template.id)}
-                class="btn btn-outline btn-sm text-error"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
+          <TemplateListItem {template} {onClickDelete} {onClickDownload} />
         {/each}
       </tbody>
     </table>
