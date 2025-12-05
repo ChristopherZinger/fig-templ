@@ -18,7 +18,7 @@ initFirebaseAdmin({
 });
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
 app.use(logMiddleware);
 
 // important! order of mounting routes matters!

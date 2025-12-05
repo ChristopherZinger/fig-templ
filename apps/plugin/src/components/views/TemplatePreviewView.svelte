@@ -40,14 +40,42 @@
     orgId: string;
   }) {
     isSavingTemplate = true;
+
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+    const contentDoc = iframe.contentDocument;
+    if (!contentDoc) {
+      console.error("expected_contentDocument");
+      document.body.removeChild(iframe);
+      return;
+    }
+    contentDoc.body.innerHTML = htmlString;
+    for (const [hash, blob] of Object.entries(imgHashToBlob)) {
+      const elements = contentDoc.querySelectorAll(
+        `[data-image-hash="${hash}"]`
+      );
+      const base64Url = await blobToBase64(blob);
+      elements.forEach((element) => {
+        if ("style" in element) {
+          (element as unknown as HTMLElement).style.setProperty(
+            "background-image",
+            `url('${base64Url}')`
+          );
+        }
+      });
+    }
+    htmlStringOut = contentDoc.body.innerHTML;
+    document.body.removeChild(iframe);
+
     try {
       const response = await callTemplettoApi({
         action: TemplettoApiActions.CreateTemplate,
-        body: { templateHtml: htmlString, orgId, name },
+        body: { templateHtml: htmlStringOut, orgId, name },
       });
 
       if (!response.ok) {
-        console.error("failed_to_save_template", response);
+        console.error("save_template_bad_response", response);
         return;
       }
     } catch (error) {
@@ -57,9 +85,26 @@
     }
   }
 
+  function blobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          resolve(reader.result);
+        } else {
+          reject(new Error("failed_to_read_blob_as_base64"));
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
   $: if (htmlBuildLogs.length > 0 && htmlString === null) {
     selectedViewMode = SelectedViewMode.warnings;
   }
+
+  let htmlStringOut: string | undefined | null = undefined;
 </script>
 
 <main>
