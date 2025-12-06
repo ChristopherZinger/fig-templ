@@ -8,7 +8,7 @@
     fetchDeleteApiToken,
     fetchGetApiTokens,
     fetchPutApiToken,
-  } from "../../api/api-calls"
+  } from "$lib/utils/account-api-calls"
 
   let { data } = $props()
 

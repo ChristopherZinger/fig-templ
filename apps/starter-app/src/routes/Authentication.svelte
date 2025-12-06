@@ -3,7 +3,7 @@
   import { onIdTokenChanged, type Unsubscribe, type User } from "firebase/auth"
   import { auth } from "$lib/utils/firebase/init-firebase"
   import { onDestroy, onMount } from "svelte"
-  import { fetchPostAuthCookie } from "./api/api-calls"
+  import { fetchPostAuthCookie } from "$lib/utils/account-api-calls"
   import { goto } from "$app/navigation"
 
   interface Props {
