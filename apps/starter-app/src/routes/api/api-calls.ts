@@ -9,8 +9,13 @@ const apiTokenParser = z.object({
 })
 type ApiToken = z.infer<typeof apiTokenParser>
 export async function fetchGetApiTokens(): Promise<ApiToken[] | null> {
-  const response = await fetch("/api/api-token")
-  const result = z.array(apiTokenParser).safeParse(await response.json())
+  const response = await fetch("/account/api/api-token")
+  if (!response.ok) {
+    return null
+  }
+
+  const data = await response.json()
+  const result = z.array(apiTokenParser).safeParse(data)
   if (!result.success) {
     console.error("failed_to_parse_api_token", { error: result.error })
     return null
@@ -19,18 +24,18 @@ export async function fetchGetApiTokens(): Promise<ApiToken[] | null> {
 }
 
 export async function fetchPutApiToken(): Promise<void> {
-  await fetch("/api/api-token", { method: "PUT" })
+  await fetch("/account/api/api-token", { method: "PUT" })
 }
 
 export async function fetchDeleteApiToken(tokenId: string): Promise<void> {
-  await fetch("/api/api-token", {
+  await fetch("/account/api/api-token", {
     method: "DELETE",
     body: JSON.stringify({ tokenId }),
   })
 }
 
 export async function fetchPostAuthCookie(token: string | null): Promise<void> {
-  await fetch("/api/set-auth-cookie", {
+  await fetch("/account/api/set-auth-cookie", {
     method: "POST",
     headers: {
       Authorization: token ? `Bearer ${token}` : "",
