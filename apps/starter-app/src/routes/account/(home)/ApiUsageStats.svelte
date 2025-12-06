@@ -9,7 +9,6 @@
 </script>
 
 <div class="my-6">
-  <h1 class="text-xl font-bold mb-1">Stats</h1>
   <div class="stats shadow-sm stats-vertical sm:stats-horizontal w-full">
     <div class="stat place-items-center">
       <div class="stat-title">Templates</div>
