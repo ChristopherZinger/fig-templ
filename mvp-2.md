@@ -8,8 +8,8 @@ Critical todos for mvp 2
 - [x] Page "remove account"
 - [x] Page "usage meter"
 - [wip] Template Detail Page
-  - [wip] visual preview
-  - [] html preview
+  - [x] visual preview
+  - [x] html preview
   - [] resoureces preview - images, font links (optional)
   - [] generated pdfs - list, remove, download
 - [x] contact form
@@ -17,8 +17,8 @@ Critical todos for mvp 2
 ## Plugin
 
 - [] Create nice "Go back to plugin" page
-- [wip] Make sure image are included (base64) in templates when sending to the server. Atm it sends refernce to the Blob
-- [wip] Handle 'body too big'. Probably use streams when sending to the server
+- [x] Make sure image are included (base64) in templates when sending to the server. Atm it sends refernce to the Blob
+- [x] Handle 'body too big'. Probably use streams when sending to the server
 
 ## Server
 
@@ -26,9 +26,15 @@ Critical todos for mvp 2
 
 ## Bugs
 
+- [] plugin/webapp auth collide with each other
 - [] when user is signed in in the app it interffers with plugin login flow
 - [] webapp: when logged in you can't go to public route by entering it in the browser, you will be redirected to /account
 - [] telemetry logging is broken in webapp
+
+## Feature Creap
+
+- [] create default template for user to test ready after account creation
+- [] allow user creating pdfs from the frontend by manipulating json
 
 ## Testing
 
