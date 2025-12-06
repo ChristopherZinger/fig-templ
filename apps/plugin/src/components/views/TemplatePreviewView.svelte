@@ -65,7 +65,8 @@
         }
       });
     }
-    htmlStringOut = contentDoc.body.innerHTML;
+    htmlStringOut = contentDoc.documentElement.outerHTML;
+
     document.body.removeChild(iframe);
 
     try {
