@@ -35,19 +35,32 @@
       isDeleting = false
     }
   }
+
+  let downloadButton: HTMLElement | undefined = $state(undefined)
+  let deleteButton: HTMLElement | undefined = $state(undefined)
+  let confirmDeleteButton: HTMLElement | undefined = $state(undefined)
+  function onClickOnItem(ev: MouseEvent) {
+    const noClickNodes = [downloadButton, deleteButton, confirmDeleteButton]
+
+    console.log("[", ev.composedPath(), noClickNodes)
+
+    if (ev.composedPath().some((node) => noClickNodes.includes(node))) {
+      return
+    }
+    goto(`/account/template/${template.id}`)
+  }
 </script>
 
-<tr class="cursor-pointer">
-  <td
-    class="font-mono text-sm"
-    onclick={() => goto(`/account/template/${template.id}`)}>{template.id}</td
+<tr class="cursor-pointer" onclick={onClickOnItem}>
+  <td class="font-mono text-sm"> </td><td
+    >{template.name || "Unnamed Template"}</td
   >
-  <td>{template.name || "Unnamed Template"}</td>
-  <td>{getHumanFriendlyDate(template.createdAt)}</td>
+  <td>{getHumanFriendlyDate(template.createdAt || "")}</td>
   <td>
     <button
       onclick={() => onClickDownload(template.downloadUrl)}
       class="btn btn-outline btn-sm"
+      bind:this={downloadButton}
     >
       Download HTML
     </button>
@@ -59,6 +72,7 @@
           isConfirmingDelete = true
         }}
         class="btn btn-outline btn-sm text-error"
+        bind:this={deleteButton}
       >
         Delete
       </button>
@@ -67,6 +81,7 @@
         onclick={() => onClickConfirmDelete(template.id)}
         class="btn btn-error btn-sm"
         disabled={isDeleting}
+        bind:this={confirmDeleteButton}
       >
         Confirm
       </button>
