@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation"
+  import { getHumanFriendlyDate } from "$lib/utils/date"
 
   interface Props {
     template: {
@@ -17,21 +18,6 @@
     onClickDelete: _onClickDelete,
     onClickDownload,
   }: Props = $props()
-
-  function formatDate(date: Date | undefined): string {
-    const d = date && new Date(date)
-    if (!d || isNaN(d.getTime())) {
-      return "N/A"
-    }
-
-    return new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(d)
-  }
 
   let isConfirmingDelete = $state(false)
   let isDeleting = $state(false)
@@ -57,7 +43,7 @@
     onclick={() => goto(`/account/template/${template.id}`)}>{template.id}</td
   >
   <td>{template.name || "Unnamed Template"}</td>
-  <td>{formatDate(template.createdAt)}</td>
+  <td>{getHumanFriendlyDate(template.createdAt)}</td>
   <td>
     <button
       onclick={() => onClickDownload(template.downloadUrl)}
