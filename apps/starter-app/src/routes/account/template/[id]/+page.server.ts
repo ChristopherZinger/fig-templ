@@ -1,5 +1,10 @@
-import { error, json } from "@sveltejs/kit"
-import { getTemplateContents, getUsersCollectionRef } from "@templetto/firebase"
+import { error } from "@sveltejs/kit"
+import {
+  getFirestore,
+  getTemplateContents,
+  getUsersCollectionRef,
+  getUserTemplateDoc,
+} from "@templetto/firebase"
 import { log } from "@templetto/logging"
 
 export async function load({
@@ -18,15 +23,37 @@ export async function load({
     error(500, "Internal server error")
   }
 
-  const htmlString = await getTemplateContents({
-    orgId: userDoc.defaultOrgId,
-    userId: userDoc.uid,
-    templateId,
-  })
+  const { templateDoc, htmlString } = await getFirestore().runTransaction(
+    async (t) => {
+      const [templateDoc, htmlString] = await Promise.all([
+        getUserTemplateDoc(
+          {
+            orgId: userDoc.defaultOrgId,
+            userId: userDoc.uid,
+            templateId,
+          },
+          t,
+        ),
+        getTemplateContents(
+          {
+            orgId: userDoc.defaultOrgId,
+            userId: userDoc.uid,
+            templateId,
+          },
+          t,
+        ),
+      ])
+
+      return {
+        templateDoc,
+        htmlString,
+      }
+    },
+  )
 
   if (!htmlString) {
     error(404, "Template not found")
   }
 
-  return { htmlString }
+  return { htmlString, templateDoc }
 }

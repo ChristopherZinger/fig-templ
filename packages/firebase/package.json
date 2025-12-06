@@ -15,8 +15,8 @@
   },
   "type": "module",
   "dependencies": {
+    "@templetto/logging": "*",
     "firebase-admin": "^13.5.0",
-    "zod": "^4.1.12",
-    "@templetto/logging": "*"
+    "zod": "^4.1.12"
   }
 }

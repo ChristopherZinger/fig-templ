@@ -5,6 +5,28 @@ import { assertAccessToOrg } from "./user";
 import { pipeline } from "stream/promises";
 import fs from "fs";
 import path from "path";
+import type { Transaction } from "firebase-admin/firestore";
+import type { Template_FsDoc } from "../utils/collections";
+
+export async function getUserTemplateDoc(
+  {
+    orgId,
+    userId,
+    templateId,
+  }: {
+    orgId: string;
+    userId: string;
+    templateId: string;
+  },
+  t: Transaction
+): Promise<Template_FsDoc | null> {
+  await assertAccessToOrg({ orgId, uid: userId }, t);
+
+  const templateRef = getTemplatesCollectionRef({ orgId }).doc(templateId);
+  const templateDoc = (await t.get(templateRef)).data();
+
+  return templateDoc || null;
+}
 
 function getTmpFolder() {
   const TEMPL_DIR = path.join("/tmp", "templetto");
@@ -20,23 +42,24 @@ function getTmpFolder() {
   };
 }
 
-export async function getTemplateContents({
-  orgId,
-  userId,
-  templateId,
-}: {
-  orgId: string;
-  userId: string;
-  templateId: string;
-}): Promise<string | null> {
-  const pathInStorage = await getFirestore().runTransaction(async (t) => {
-    await assertAccessToOrg({ orgId, uid: userId }, t);
+export async function getTemplateContents(
+  {
+    orgId,
+    userId,
+    templateId,
+  }: {
+    orgId: string;
+    userId: string;
+    templateId: string;
+  },
+  t: Transaction
+): Promise<string | null> {
+  await assertAccessToOrg({ orgId, uid: userId }, t);
 
-    const templateRef = getTemplatesCollectionRef({ orgId }).doc(templateId);
-    const templateDoc = (await t.get(templateRef)).data();
+  const templateRef = getTemplatesCollectionRef({ orgId }).doc(templateId);
+  const templateDoc = (await t.get(templateRef)).data();
 
-    return templateDoc?.pathInStorage || null;
-  });
+  const pathInStorage = templateDoc?.pathInStorage || null;
   if (!pathInStorage) {
     return null;
   }
