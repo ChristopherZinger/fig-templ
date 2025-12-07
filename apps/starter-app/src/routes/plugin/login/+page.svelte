@@ -1,14 +1,18 @@
 <script lang="ts">
   import { page } from "$app/state"
   import { SERVER_URL } from "$lib/backend-for-plugin/url"
-  import { auth } from "$lib/utils/firebase/init-firebase"
-  import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
+  import {
+    GoogleAuthProvider,
+    setPersistence,
+    signInWithPopup,
+    inMemoryPersistence,
+  } from "firebase/auth"
+  import { pluginAuth } from "$lib/utils/firebase/init-plugin-firebase"
 
   const writeKey = page.url.searchParams.get("writeKey")
 
   /**
-   * THIS PAGE OPENS IN THE BROWSER
-   * - TODO: should this be under other sub-path then /plugin since it opens in the browser?
+   * PLUGIN AUTH FLOW - PAGE OPENS IN THE BROWSER
    */
 
   let isPluginLoginComplete = false
@@ -17,10 +21,10 @@
   async function login() {
     isLoading = true
     try {
+      setPersistence(pluginAuth, inMemoryPersistence)
+
       const provider = new GoogleAuthProvider()
-      // TODO: set persistence to NONE
-      // auth.setPersistence({ type: "NONE" })
-      const result = await signInWithPopup(auth, provider)
+      const result = await signInWithPopup(pluginAuth, provider)
       const idToken = await result.user.getIdToken()
 
       const response = await fetch(`${SERVER_URL}/plugin/save-token`, {
@@ -36,7 +40,6 @@
         const error = await response.json()
         throw new Error("failed_to_save_token" + error)
       }
-      await auth.signOut()
       isPluginLoginComplete = true
     } catch (error) {
       console.error({ error })

@@ -4,7 +4,7 @@
   import z from "zod"
 
   /**
-   * THIS PAGE OPENS IN THE PLUGIN
+   * PLUGIN AUTH FLOW - PAGE OPENS IN THE FIGMA IFRAME
    */
 
   let writeKey: string | null = null
