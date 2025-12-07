@@ -26,9 +26,8 @@ Critical todos for mvp 2
 
 ## Bugs
 
-- [] plugin/webapp auth collide with each other
-- [] when user is signed in in the app it interffers with plugin login flow
-- [] webapp: when logged in you can't go to public route by entering it in the browser, you will be redirected to /account
+- [x] when user is signed in in the app it interffers with plugin login flow
+- [x] webapp: when logged in you can't go to public route by entering it in the browser, you will be redirected to /account
 - [] telemetry logging is broken in webapp
 
 ## Feature Creap
