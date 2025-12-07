@@ -3,11 +3,10 @@
   import { navigating } from "$app/stores"
   import { expoOut } from "svelte/easing"
   import { slide } from "svelte/transition"
-  import Authentication from "./Authentication.svelte"
+
   interface Props {
     children?: import("svelte").Snippet
   }
-
   let { children }: Props = $props()
 </script>
 
@@ -25,6 +24,4 @@
   ></div>
 {/if}
 
-<Authentication>
-  {@render children?.()}
-</Authentication>
+{@render children?.()}

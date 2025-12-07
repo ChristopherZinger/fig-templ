@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { goto } from "$app/navigation"
   import TemplateListItem from "./TemplateListItem.svelte"
 
   interface Props {

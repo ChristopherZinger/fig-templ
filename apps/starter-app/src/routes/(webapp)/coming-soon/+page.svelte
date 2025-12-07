@@ -3,7 +3,7 @@
     WebsiteName,
     WebsiteBaseUrl,
     WebsiteDescription,
-  } from "./../../config"
+  } from "../../../config"
   import type { ActionData } from "./$types"
 
   export let form: ActionData

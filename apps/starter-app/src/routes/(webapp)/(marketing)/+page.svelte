@@ -3,8 +3,7 @@
     WebsiteName,
     WebsiteBaseUrl,
     WebsiteDescription,
-  } from "./../../config"
-  import { userStore } from "$lib/stores/userStore"
+  } from "../../../config"
 
   const ldJson = {
     "@context": "https://schema.org",

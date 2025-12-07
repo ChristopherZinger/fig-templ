@@ -1,7 +1,7 @@
 <script lang="ts">
   import { redirect } from "@sveltejs/kit"
   import { onMount } from "svelte"
-  import { WebsiteName } from "../../config"
+  import { WebsiteName } from "../../../config"
   import type { DecodedIdToken } from "firebase-admin/auth"
   import HomeIcon from "$lib/icons/HomeIcon.svelte"
   import CopyIcon from "$lib/icons/CopyIcon.svelte"

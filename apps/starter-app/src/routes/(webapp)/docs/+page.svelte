@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { WebsiteName } from "./../../config"
+  import { WebsiteName } from "../../../config"
 </script>
 
 <svelte:head>
@@ -15,8 +15,8 @@
     <h1 class="doc-title">Documentation</h1>
     <p class="doc-intro">
       Welcome to the {WebsiteName} documentation. This guide will help you get started
-      with creating PDF templates from Figma designs and generating PDFs through
-      our REST API.
+      with creating PDF templates from Figma designs and generating PDFs through our
+      REST API.
     </p>
 
     <div class="feature-grid">
@@ -457,16 +457,16 @@
     <h4 class="example-title mt-6">Text & Typography</h4>
     <ul class="doc-list">
       <li>
-        <strong>Web Fonts:</strong> Use Google Fonts for best compatibility. The
-        plugin automatically includes font references in the generated HTML.
+        <strong>Web Fonts:</strong> Use Google Fonts for best compatibility. The plugin
+        automatically includes font references in the generated HTML.
       </li>
       <li>
         <strong>Text Styling:</strong> Font weight, color, size, and alignment are
         preserved in the HTML output.
       </li>
       <li>
-        <strong>Variables:</strong> Place variable placeholders directly in text
-        layers using your preferred syntax convention.
+        <strong>Variables:</strong> Place variable placeholders directly in text layers
+        using your preferred syntax convention.
       </li>
     </ul>
 
@@ -477,8 +477,7 @@
         as background images.
       </li>
       <li>
-        <strong>Optimization:</strong> Images are automatically optimized during
-        export.
+        <strong>Optimization:</strong> Images are automatically optimized during export.
       </li>
       <li>
         <strong>Format:</strong> Images are exported as PNG with transparency support.

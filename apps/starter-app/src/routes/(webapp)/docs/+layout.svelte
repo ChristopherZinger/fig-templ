@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { WebsiteName } from "../../config"
+  import { WebsiteName } from "../../../config"
   import SidebarLayout from "$lib/components/layouts/sidebar/SidebarLayout.svelte"
   import type { Snippet } from "svelte"
 

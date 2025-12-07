@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { enhance, applyAction } from "$app/forms"
+  import { enhance } from "$app/forms"
   import type { SubmitFunction } from "@sveltejs/kit"
   import type { FullAutoFill } from "svelte/elements"
 
