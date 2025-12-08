@@ -86,12 +86,6 @@
     }
 
     authState = "success"
-    saveSessionKeyInLocalStorage(sessionKey)
-  }
-
-  function saveSessionKeyInLocalStorage(sessionKey: string) {
-    // TODO: implement
-    // - send message to main thread
   }
 
   onMount(() => {
