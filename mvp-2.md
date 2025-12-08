@@ -16,13 +16,14 @@ Critical todos for mvp 2
 
 ## Plugin
 
-- [] Create nice "Go back to plugin" page
+- [x] Create nice "Go back to plugin" page
 - [x] Make sure image are included (base64) in templates when sending to the server. Atm it sends refernce to the Blob
 - [x] Handle 'body too big'. Probably use streams when sending to the server
 
 ## Server
 
-- [] limit rate for all user actions and artifacts - pdfs, templates
+- [x] limit rate for all user actions and artifacts - pdfs, templates
+- [] fix pdf size - it should be saved in a tempalte information
 
 ## Bugs
 
@@ -39,3 +40,4 @@ Critical todos for mvp 2
 
 - [] Check if docs are correct
 - [] test auth flow in app and browser. Fix frequent logout if it turns out to be a real bug
+- [] review all TODO comments
