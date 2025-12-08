@@ -16,7 +16,7 @@ import { log } from "@templetto/logging";
 import type { DecodedIdToken } from "firebase-admin/auth";
 import type { DocumentReference, Transaction } from "firebase-admin/firestore";
 import { expectPluginSessionUid } from "../utils/plugin-session-token";
-import { AppError } from "@templetto/app-error";
+import { AppError, RateLimitError } from "@templetto/app-error";
 import { PkceError } from "./pkce-errors";
 import {
   assertAccessToOrg,
@@ -24,6 +24,7 @@ import {
 } from "@templetto/firebase/repositories/user";
 import slugify from "slugify";
 import { RestrictedAccessError } from "@templetto/firebase/errors";
+import { RATE_LIMIT_SETTINGS } from "@templetto/settings";
 
 export async function getPkceKeysHandler(_: Request, res: Response) {
   // TODO check if request comes from templetto.com/plugin/login
@@ -327,6 +328,14 @@ export async function createTemplateHandler(req: Request, res: Response) {
       const templatesCollectionRef = getTemplatesCollectionRef({ orgId });
       const newTemplateDocRef = templatesCollectionRef.doc();
 
+      const countQuery = templatesCollectionRef.count();
+      const count = (await t.get(countQuery)).data().count;
+      if (count >= RATE_LIMIT_SETTINGS.numTemplatesPerOrg) {
+        throw new RateLimitError("num_templates_per_org_reached", "templates", {
+          orgId,
+        });
+      }
+
       const pathInStorage = `organizations/${orgId}/templates/${newTemplateDocRef.id}.html`;
 
       t.set(newTemplateDocRef, {
@@ -359,6 +368,15 @@ export async function createTemplateHandler(req: Request, res: Response) {
       .json({ message: "template_created", id: newTemplateId, orgId });
   } catch (error) {
     log.error("failed_to_create_template", { error });
+
+    if (error instanceof RateLimitError) {
+      log.debug("rate_limit_reached", { error });
+      res
+        .status(429)
+        .json({ error: "rate_limit_reached", resource: error.info.resource });
+      return;
+    }
+
     if (error instanceof RestrictedAccessError) {
       log.debug("unauthorized");
       res.status(401).json({ error: "unauthorized" });

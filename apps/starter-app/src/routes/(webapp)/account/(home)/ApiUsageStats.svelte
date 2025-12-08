@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { RATE_LIMIT_SETTINGS } from "@templetto/settings"
+
   interface Props {
     numApiCalls: number
     numTemplates: number
@@ -13,19 +15,21 @@
     <div class="stat place-items-center">
       <div class="stat-title">Templates</div>
       <div class="stat-value">{numTemplates}</div>
-      <div class="stat-desc">Max: 100</div>
+      <div class="stat-desc">Max: {RATE_LIMIT_SETTINGS.numTemplatesPerOrg}</div>
     </div>
 
     <div class="stat place-items-center">
       <div class="stat-title">Num PDFs stored</div>
       <div class="stat-value">{numPdfsGenerated}</div>
-      <div class="stat-desc">Max: 1000</div>
+      <div class="stat-desc">Max: {RATE_LIMIT_SETTINGS.numArtifactsPerOrg}</div>
     </div>
 
     <div class="stat place-items-center">
       <div class="stat-title">API Calls This Month</div>
       <div class="stat-value">{numApiCalls}</div>
-      <div class="stat-desc">Max: 100</div>
+      <div class="stat-desc">
+        Max: {RATE_LIMIT_SETTINGS.numApiCallsPerMonthPerOrg}
+      </div>
     </div>
   </div>
 </div>

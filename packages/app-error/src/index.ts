@@ -6,3 +6,13 @@ export class AppError extends Error {
     this.info = info;
   }
 }
+
+export class RateLimitError extends AppError {
+  constructor(
+    message: string,
+    resource: string,
+    info: Record<string, unknown>
+  ) {
+    super("rate_limit_error", { message, resource, ...info });
+  }
+}

@@ -1,6 +1,5 @@
 import { getTemplatesCollectionRef } from "../utils/collection-refs";
 import { getBucket } from "../utils/storage";
-import { getFirestore } from "../admin-init";
 import { assertAccessToOrg } from "./user";
 import { pipeline } from "stream/promises";
 import fs from "fs";

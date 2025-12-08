@@ -55,6 +55,7 @@
     "@templetto/app-error": "*",
     "@templetto/firebase": "*",
     "@templetto/logging": "*",
+    "@templetto/settings": "*",
     "cookie": "^1.1.1",
     "firebase": "^12.4.0",
     "firebase-admin": "^13.5.0",
