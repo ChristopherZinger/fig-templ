@@ -4,6 +4,11 @@ import { callPuppeteerWorker } from "../utils/puppeteer-worker-utils";
 import z from "zod";
 import { expectApiTokenOrgId } from "../utils/plugin-session-token";
 import { getTemplatesCollectionRef } from "@templetto/firebase";
+import {
+  createArtifact,
+  hasReachedArtifactsRateLimit,
+} from "@templetto/firebase/repositories/artifact";
+import { RateLimitError } from "@templetto/app-error";
 
 const createPdfRequestParamsSchema = z
   .object({
@@ -30,6 +35,15 @@ export async function createPdfHandler(req: Request, res: Response) {
   }
   const { templateId } = parsingResult.data;
 
+  const hasReachedRateLimit = await hasReachedArtifactsRateLimit({
+    orgId: apiTokenOrgId,
+  });
+  if (hasReachedRateLimit) {
+    log.debug("rate_limit_reached", { orgId: apiTokenOrgId });
+    res.status(429).json({ error: "rate_limit_reached" });
+    return;
+  }
+
   const templateDoc = await getTemplatesCollectionRef({ orgId: apiTokenOrgId })
     .doc(templateId)
     .get();
@@ -47,8 +61,28 @@ export async function createPdfHandler(req: Request, res: Response) {
   });
 
   const {
-    data: { downloadUrl },
-  } = z.object({ data: z.object({ downloadUrl: z.string() }) }).parse(response);
+    data: { downloadUrl, pathInStorage },
+  } = z
+    .object({
+      data: z.object({ downloadUrl: z.string(), pathInStorage: z.string() }),
+    })
+    .parse(response);
+
+  try {
+    await createArtifact({
+      orgId: apiTokenOrgId,
+      apiTokenHash: "", // TODO
+      templateId,
+      filePathInStorage: pathInStorage,
+      downloadUrl,
+    });
+  } catch (error) {
+    if (error instanceof RateLimitError) {
+      log.debug("rate_limit_reached", { error });
+      res.status(429).json({ error: "rate_limit_reached" });
+      return;
+    }
+  }
 
   log.debug("puppeteer_worker_response", { downloadUrl });
 

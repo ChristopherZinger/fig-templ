@@ -6,7 +6,6 @@ import {
   pushToStorage,
   getTemplatesCollectionRef,
   expectDocInCollection,
-  getArtifactsCollectionRef,
   StorageDirectory,
 } from "@templetto/firebase";
 import { withBrowserPage } from "./utils/puppeteer";
@@ -80,7 +79,6 @@ export async function main(req: Request, res: Response) {
     return;
   }
 
-  const artifactDocRef = getArtifactsCollectionRef({ orgId }).doc();
   const artifactPathInStorage = `${StorageDirectory.organizations}/${orgId}/${StorageDirectory.artifacts}/${artifactDocRef.id}.pdf`;
 
   log.debug("saving_pdf_to_storage", { artifactPathInStorage });
@@ -97,16 +95,8 @@ export async function main(req: Request, res: Response) {
   });
 
   log.debug("saving_pdf_to_firestore", { artifactPathInStorage });
-  await artifactDocRef.set({
-    id: artifactDocRef.id,
-    orgId,
-    templateId,
-    filePathInStorage: artifactPathInStorage,
-    downloadUrl,
-    createdAt: new Date(),
-  });
 
-  res.status(200).json({ downloadUrl });
+  res.status(200).json({ downloadUrl, pathInStorage: artifactPathInStorage });
 
   log.info("puppeteer_worker_response", {
     httpRequest: {
