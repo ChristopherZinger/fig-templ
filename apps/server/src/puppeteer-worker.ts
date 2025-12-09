@@ -96,14 +96,14 @@ export async function main(req: Request, res: Response) {
     destinationInStorage: artifactPathInStorage,
   });
 
-  log.debug("get_signed_url", { artifactPathInStorage });
+  log.debug("get_signed_url");
   const [downloadUrl] = await bucket.file(artifactPathInStorage).getSignedUrl({
     action: "read",
     expires: Date.now() + 1000 * 60 * 60 * 24 * 365,
     responseDisposition: `attachment; filename="result.pdf"`,
   });
 
-  log.debug("saving_pdf_to_firestore", { artifactPathInStorage });
+  log.debug("saved_pdf_to_firestore", { artifactPathInStorage });
 
   res.status(200).json({ downloadUrl, pathInStorage: artifactPathInStorage });
 
