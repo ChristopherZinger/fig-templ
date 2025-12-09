@@ -28,7 +28,7 @@ export async function createArtifact({
       });
     }
 
-    await artifactDocRef.set({
+    t.set(artifactDocRef, {
       id: artifactDocRef.id,
       orgId,
       templateId,
