@@ -54,24 +54,15 @@ export async function createPdfHandler(req: Request, res: Response) {
   }
 
   log.info("fetching_from_puppeteer_worker");
-  const response = await callPuppeteerWorker({
+  const { downloadUrl, pathInStorage } = await callPuppeteerWorker({
     templateId,
     orgId: apiTokenOrgId,
     jsonData: req.body,
   });
 
-  const {
-    data: { downloadUrl, pathInStorage },
-  } = z
-    .object({
-      data: z.object({ downloadUrl: z.string(), pathInStorage: z.string() }),
-    })
-    .parse(response);
-
   try {
     await createArtifact({
       orgId: apiTokenOrgId,
-      apiTokenHash: "", // TODO
       templateId,
       filePathInStorage: pathInStorage,
       downloadUrl,

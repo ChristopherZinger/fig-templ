@@ -8,7 +8,6 @@ import { getAuth, getOrgApiTokensCollectionRef } from "@templetto/firebase";
 import { getTokenFromReqAuthHeader } from "../utils/plugin-session-token";
 import { isFirebaseAuthError } from "@templetto/firebase/errors";
 import { AppError } from "@templetto/app-error";
-import { getHashedToken } from "@templetto/firebase/repositories/api-token";
 
 export const logMiddleware: express.RequestHandler = (
   req: Request,

@@ -16,7 +16,7 @@ export type PuppeteerWorkerRequest = z.infer<
 
 export async function callPuppeteerWorker(
   requestParams: PuppeteerWorkerRequest
-): Promise<Response> {
+): Promise<{ downloadUrl: string; pathInStorage: string }> {
   if (!PUPPETEER_WORKER_URL) {
     throw new AppError("missing_env_config PUPPETEER_WORKER_URL");
   }
@@ -28,5 +28,22 @@ export async function callPuppeteerWorker(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(requestParams),
   });
-  return response;
+
+  if (!response.ok) {
+    const responseInfo = {
+      status: response.status,
+      statusText: response.statusText,
+    };
+    log.error("puppeteer_worker_error", { responseInfo });
+    throw new AppError(`puppeteer_worker_error`, responseInfo);
+  }
+
+  const jsonResponse = await response.json();
+  log.debug("received_response_from_puppeteer_worker", { jsonResponse });
+
+  const { downloadUrl, pathInStorage } = z
+    .object({ downloadUrl: z.string(), pathInStorage: z.string() })
+    .parse(response);
+
+  return { downloadUrl, pathInStorage };
 }
