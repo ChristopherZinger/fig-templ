@@ -7,11 +7,18 @@ import {
   getTemplatesCollectionRef,
   expectDocInCollection,
   StorageDirectory,
+  initFirebaseAdmin,
 } from "@templetto/firebase";
 import { withBrowserPage } from "./utils/puppeteer";
 import { log } from "./utils/logging";
 import { puppeteerWorkerRequestSchema } from "./utils/puppeteer-worker-utils";
 import Handlebars from "handlebars";
+import { v4 as uuid } from "uuid";
+
+initFirebaseAdmin({
+  bucketUri: process.env.FIREBASE_STORAGE_BUCKET_NAME || "",
+  googleApplicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+});
 
 export async function main(req: Request, res: Response) {
   log.info("got_request_from_rest_server");
