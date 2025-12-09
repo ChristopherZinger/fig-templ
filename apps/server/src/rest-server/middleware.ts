@@ -85,20 +85,23 @@ export const apiAuthMiddleware: express.RequestHandler = async (
 ) => {
   const authHeaderToken = getTokenFromReqAuthHeader(req);
   if (!authHeaderToken) {
+    log.debug("missing_token_in_headers");
     res.status(401).json({ message: "unauthorized" });
     return;
   }
 
-  const tokenHash = getHashedToken(authHeaderToken);
+  const tokenHash = authHeaderToken;
   try {
     const tokenDoc = (
       await getOrgApiTokensCollectionRef().doc(tokenHash).get()
     ).data();
     if (!tokenDoc) {
+      log.debug("token_doc_not_found");
       res.status(401).json({ message: "unauthorized" });
       return;
     }
-    if (tokenDoc.expiresAt >= new Date()) {
+    if (tokenDoc.expiresAt < new Date()) {
+      log.debug("token_expired", { expiresAt: tokenDoc.expiresAt });
       res.status(401).json({ message: "token_expired" });
       return;
     }
