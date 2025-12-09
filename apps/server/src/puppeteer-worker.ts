@@ -64,7 +64,9 @@ export async function main(req: Request, res: Response) {
 
   const htmlToRender = Handlebars.compile(templateHtml)(jsonData);
 
-  log.debug("create_template_with_puppeteer", { templateHtml });
+  log.debug("create_template_with_puppeteer", {
+    templateHtmlSize: templateHtml.length,
+  });
   const pdfLocalFilePath =
     process.env.NODE_ENV === "production"
       ? (`/tmp/${Date.now()}/out.pdf` as const)
@@ -86,7 +88,7 @@ export async function main(req: Request, res: Response) {
     return;
   }
 
-  const artifactPathInStorage = `${StorageDirectory.organizations}/${orgId}/${StorageDirectory.artifacts}/${artifactDocRef.id}.pdf`;
+  const artifactPathInStorage = `${StorageDirectory.organizations}/${orgId}/${StorageDirectory.artifacts}/tId-${templateId}/${uuid()}.pdf`;
 
   log.debug("saving_pdf_to_storage", { artifactPathInStorage });
   await pushToStorage({
