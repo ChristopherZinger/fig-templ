@@ -39,11 +39,11 @@ export async function callPuppeteerWorker(
   }
 
   const jsonResponse = await response.json();
-  log.debug("received_response_from_puppeteer_worker", { jsonResponse });
+  log.debug("received_response_from_puppeteer_worker", jsonResponse);
 
   const { downloadUrl, pathInStorage } = z
     .object({ downloadUrl: z.string(), pathInStorage: z.string() })
-    .parse(response);
+    .parse(jsonResponse);
 
   return { downloadUrl, pathInStorage };
 }
