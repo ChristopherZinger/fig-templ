@@ -8,15 +8,16 @@ if (ENV !== "production") {
 const PUPPETEER_EXECUTABLE_PATH = process.env.PUPPETEER_EXECUTABLE_PATH;
 
 export async function withBrowserPage(
+  dimensions: { widthPx: number; heightPx: number },
   fn: (browser: Page) => Promise<void>
 ): Promise<void> {
   const viewport = {
     deviceScaleFactor: 1,
     hasTouch: false,
-    height: 1080,
-    isLandscape: true,
+    height: dimensions.heightPx,
+    width: dimensions.widthPx,
+    isLandscape: false,
     isMobile: false,
-    width: 1920,
   };
 
   const browser = await puppeteer.launch({

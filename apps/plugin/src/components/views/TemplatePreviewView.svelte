@@ -72,7 +72,15 @@
     try {
       const response = await callTemplettoApi({
         action: TemplettoApiActions.CreateTemplate,
-        body: { templateHtml: htmlStringOut, orgId, name },
+        body: {
+          templateHtml: htmlStringOut,
+          orgId,
+          name,
+          dimensions: {
+            widthPx: previewInfo?.width,
+            heightPx: previewInfo?.height,
+          },
+        },
       });
 
       if (!response.ok) {

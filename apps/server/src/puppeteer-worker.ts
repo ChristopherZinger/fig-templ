@@ -37,7 +37,7 @@ export async function main(req: Request, res: Response) {
 
   const { templateId, orgId, jsonData } = reqParsingResult.data;
   const templateDocRef = getTemplatesCollectionRef({ orgId }).doc(templateId);
-  const { pathInStorage: templatePathInStorage } =
+  const { pathInStorage: templatePathInStorage, dimensions } =
     await expectDocInCollection(templateDocRef);
 
   const bucket = getBucket();
@@ -74,7 +74,7 @@ export async function main(req: Request, res: Response) {
   fs.mkdirSync(path.dirname(pdfLocalFilePath), { recursive: true });
 
   try {
-    await withBrowserPage(async (page) => {
+    await withBrowserPage(dimensions, async (page) => {
       await page.setContent(htmlToRender, {
         waitUntil: "networkidle0",
         timeout: 30000,

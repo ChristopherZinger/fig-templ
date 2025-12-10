@@ -59,6 +59,10 @@ export const templateParser = z.object({
   downloadUrl: z.string().nullable(),
   name: z.string().optional(),
   createdAt: firestoreDateField.optional(),
+  dimensions: z.object({
+    widthPx: z.number(),
+    heightPx: z.number(),
+  }),
 });
 
 // /user-organization-join-table/getUserOrgJoinTableId({ uid, orgId })

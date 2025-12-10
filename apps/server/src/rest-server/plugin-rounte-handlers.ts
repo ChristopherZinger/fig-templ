@@ -2,13 +2,13 @@ import type { Request, Response } from "express";
 import {
   getFirestore,
   getAuth,
-  getBucket,
   getOrgCollectionRef,
   getPkceKeysCollectionRef,
   getPluginSessionTokensCollectionRef,
   getTemplatesCollectionRef,
   getUserOrgJoinTableCollectionRef,
   PkceKey_FsDoc,
+  createTemplate,
 } from "@templetto/firebase";
 import { v4 as uuidv4 } from "uuid";
 import z from "zod";
@@ -22,9 +22,7 @@ import {
   assertAccessToOrg,
   ensureUserAndOrgForAuthUser,
 } from "@templetto/firebase/repositories/user";
-import slugify from "slugify";
 import { RestrictedAccessError } from "@templetto/firebase/errors";
-import { RATE_LIMIT_SETTINGS } from "@templetto/settings";
 
 export async function getPkceKeysHandler(_: Request, res: Response) {
   // TODO check if request comes from templetto.com/plugin/login
@@ -314,13 +312,17 @@ export async function createTemplateHandler(req: Request, res: Response) {
       templateHtml: z.string(),
       orgId: z.string(),
       name: z.string(),
+      dimensions: z.object({
+        widthPx: z.number(),
+        heightPx: z.number(),
+      }),
     })
     .safeParse(req.body);
   if (!parsingResult.success) {
     res.status(400).json({ error: "invalid_request" });
     return;
   }
-  const { templateHtml, orgId, name } = parsingResult.data;
+  const { templateHtml, orgId, name, dimensions } = parsingResult.data;
 
   try {
     const newTemplateId = await createTemplate({
