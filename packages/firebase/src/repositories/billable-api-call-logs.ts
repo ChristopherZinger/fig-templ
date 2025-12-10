@@ -1,3 +1,4 @@
+import { RATE_LIMIT_SETTINGS } from "@templetto/settings";
 import { BillableApiCallLog } from "../utils/collection-parsers";
 import { getBillableApiCallLogsCollectionRef } from "../utils/collection-refs";
 
@@ -36,4 +37,16 @@ export async function recordBillableApiCall({
     type: BillableApiCallLog.createPdf,
     createdAt: new Date(),
   });
+}
+
+export async function hasReachedMonthlyApiCallRateLimit({
+  orgId,
+}: {
+  orgId: string;
+}): Promise<boolean> {
+  const count = await getBillableApiCallCountForMonth({
+    orgId,
+    date: new Date(),
+  });
+  return count >= RATE_LIMIT_SETTINGS.numPdfsGeneratedPerMonthPerOrg;
 }

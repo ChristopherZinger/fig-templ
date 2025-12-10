@@ -5,9 +5,13 @@ import express, {
   type Response,
 } from "express";
 import { getAuth, getOrgApiTokensCollectionRef } from "@templetto/firebase";
-import { getTokenFromReqAuthHeader } from "../utils/plugin-session-token";
+import {
+  expectApiTokenOrgId,
+  getTokenFromReqAuthHeader,
+} from "../utils/plugin-session-token";
 import { isFirebaseAuthError } from "@templetto/firebase/errors";
 import { AppError } from "@templetto/app-error";
+import { hasReachedMonthlyApiCallRateLimit } from "@templetto/firebase/repositories/billable-api-call-logs";
 
 export const logMiddleware: express.RequestHandler = (
   req: Request,
@@ -111,5 +115,18 @@ export const apiAuthMiddleware: express.RequestHandler = async (
     return;
   }
 
+  next();
+};
+
+export const monthlyApiCallRateLimitMiddleware: express.RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const apiTokenOrgId = expectApiTokenOrgId(req);
+  if (await hasReachedMonthlyApiCallRateLimit({ orgId: apiTokenOrgId })) {
+    res.status(429).json({ error: "monthly_api_call_rate_limit_exceeded" });
+    return;
+  }
   next();
 };
