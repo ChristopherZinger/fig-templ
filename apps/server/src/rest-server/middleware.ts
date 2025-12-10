@@ -41,7 +41,7 @@ export function logErrorsMiddleware(
     info.errorName = error.name;
     info.errorCause = error.cause;
   }
-  log.error("failed_to_handle_request", message, info, error);
+  log.error("failed_to_handle_request", { message, info, error });
   next(error);
 }
 

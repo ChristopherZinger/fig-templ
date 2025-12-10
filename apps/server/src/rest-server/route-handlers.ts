@@ -68,19 +68,22 @@ export async function createPdfHandler(req: Request, res: Response) {
       downloadUrl,
     });
   } catch (error) {
+    log.error("failed_to_create_artifact", { error });
     if (error instanceof RateLimitError) {
       log.debug("rate_limit_reached", { error });
       res.status(429).json({ error: "rate_limit_reached" });
       return;
     }
+    throw error;
   }
 
-  log.debug("puppeteer_worker_response", { downloadUrl });
+  log.debug("created_artifact", {
+    pathInStorage,
+    templateId,
+    orgId: apiTokenOrgId,
+  });
 
   res.status(200).json({ downloadUrl });
-  log.info("rest_server_response", {
-    httpRequest: getRequestLogInfo(req, res),
-  });
 }
 
 function getRequestLogInfo(req: Request, res: Response) {

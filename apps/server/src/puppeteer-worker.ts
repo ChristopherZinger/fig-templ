@@ -106,12 +106,4 @@ export async function main(req: Request, res: Response) {
   log.debug("saved_pdf_to_firestore", { artifactPathInStorage });
 
   res.status(200).json({ downloadUrl, pathInStorage: artifactPathInStorage });
-
-  log.info("puppeteer_worker_response", {
-    httpRequest: {
-      status: res.statusCode,
-      requestUrl: req.url,
-      requestMethod: req.method,
-    },
-  });
 }
