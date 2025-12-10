@@ -80,7 +80,13 @@ export async function main(req: Request, res: Response) {
         timeout: 30000,
       });
 
-      await page.pdf({ path: pdfLocalFilePath });
+      await page.pdf({
+        path: pdfLocalFilePath,
+        width: `${dimensions.widthPx}px`,
+        height: `${dimensions.heightPx}px`,
+        printBackground: true,
+        preferCSSPageSize: false,
+      });
     });
   } catch (error) {
     log.error("failed_to_create_template_with_puppeteer", { error });
