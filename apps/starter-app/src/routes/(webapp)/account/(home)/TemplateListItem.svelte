@@ -38,11 +38,15 @@
 
   let downloadButton: HTMLElement | undefined = $state(undefined)
   let deleteButton: HTMLElement | undefined = $state(undefined)
+  let idText: HTMLElement | undefined = $state(undefined)
   let confirmDeleteButton: HTMLElement | undefined = $state(undefined)
   function onClickOnItem(ev: MouseEvent) {
-    const noClickNodes = [downloadButton, deleteButton, confirmDeleteButton]
-
-    console.log("[", ev.composedPath(), noClickNodes)
+    const noClickNodes = [
+      downloadButton,
+      deleteButton,
+      confirmDeleteButton,
+      idText,
+    ]
 
     if (ev.composedPath().some((node) => noClickNodes.includes(node))) {
       return
@@ -52,9 +56,8 @@
 </script>
 
 <tr class="cursor-pointer" onclick={onClickOnItem}>
-  <td class="font-mono text-sm"> </td><td
-    >{template.name || "Unnamed Template"}</td
-  >
+  <td bind:this={idText} class="font-mono text-sm">{template.id}</td>
+  <td>{template.name || "Unnamed Template"}</td>
   <td>{getHumanFriendlyDate(template.createdAt || "")}</td>
   <td>
     <button
