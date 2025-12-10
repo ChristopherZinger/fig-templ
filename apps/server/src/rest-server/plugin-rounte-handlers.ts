@@ -323,47 +323,13 @@ export async function createTemplateHandler(req: Request, res: Response) {
   const { templateHtml, orgId, name } = parsingResult.data;
 
   try {
-    const newTemplateId = await getFirestore().runTransaction(async (t) => {
-      await assertAccessToOrg({ uid, orgId }, t);
-
-      const templatesCollectionRef = getTemplatesCollectionRef({ orgId });
-      const newTemplateDocRef = templatesCollectionRef.doc();
-
-      const countQuery = templatesCollectionRef.count();
-      const count = (await t.get(countQuery)).data().count;
-      if (count >= RATE_LIMIT_SETTINGS.numTemplatesPerOrg) {
-        throw new RateLimitError("num_templates_per_org_reached", "templates", {
-          orgId,
-        });
-      }
-
-      const pathInStorage = `organizations/${orgId}/templates/${newTemplateDocRef.id}.html`;
-
-      t.set(newTemplateDocRef, {
-        id: newTemplateDocRef.id,
-        orgId,
-        pathInStorage,
-        downloadUrl: null,
-        name: name || "Untitled",
-        createdAt: new Date(),
-      });
-
-      const fileName = slugify(name, {
-        lower: true,
-        strict: true, // strip special characters except replacement, defaults to `false`
-      });
-      await getBucket()
-        .file(pathInStorage)
-        .save(templateHtml, {
-          metadata: {
-            contentType: "text/html",
-            contentDisposition: `attachment; filename="${fileName}.html"`,
-          },
-        });
-
-      return newTemplateDocRef.id;
+    const newTemplateId = await createTemplate({
+      orgId,
+      uid,
+      templateHtml,
+      name,
+      dimensions,
     });
-
     res
       .status(201)
       .json({ message: "template_created", id: newTemplateId, orgId });
