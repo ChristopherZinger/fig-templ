@@ -42,6 +42,7 @@ export const userParser = z.object({
   uid: z.string(),
   name: z.string(),
   defaultOrgId: z.string(),
+  email: z.string(),
 });
 
 // /organizations/{id}

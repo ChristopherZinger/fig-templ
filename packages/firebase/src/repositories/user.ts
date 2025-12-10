@@ -134,7 +134,7 @@ export async function updateUserDefaultOrg({
 
 export async function ensureUserAndOrgForAuthUser(
   t: Transaction,
-  { uid, userName }: { uid: string; userName: string }
+  { uid, userName, email }: { uid: string; userName: string; email: string }
 ): Promise<void> {
   const userDocRef = getUsersCollectionRef().doc(uid);
   const userDoc = (await t.get(userDocRef)).data();
@@ -146,7 +146,12 @@ export async function ensureUserAndOrgForAuthUser(
       orgId: orgDocRef.id,
     });
 
-    t.set(userDocRef, { uid, name: userName, defaultOrgId: orgDocRef.id });
+    t.set(userDocRef, {
+      uid,
+      name: userName,
+      defaultOrgId: orgDocRef.id,
+      email,
+    });
     t.set(orgDocRef, { id: orgDocRef.id, name: "Personal Workspace" });
     t.set(userOrgJoinTableDocRef, { uid, orgId: orgDocRef.id });
     return;

@@ -187,6 +187,7 @@ export async function createSessionTokenHandler(req: Request, res: Response) {
     await ensureUserAndOrgForAuthUser(t, {
       uid: decodedToken.uid,
       userName: decodedToken.name || "New User",
+      email: decodedToken.email || "",
     });
   });
 

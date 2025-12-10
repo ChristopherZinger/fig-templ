@@ -27,6 +27,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
         await ensureUserAndOrgForAuthUser(t, {
           uid: decodedToken.uid,
           userName: decodedToken.name || "New User",
+          email: decodedToken.email || "",
         })
       })
     } catch (error) {
