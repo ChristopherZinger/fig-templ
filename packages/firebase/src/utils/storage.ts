@@ -1,4 +1,3 @@
-import { AppError } from "@templetto/app-error";
 import { getStorage } from "../admin-init";
 import path from "path";
 

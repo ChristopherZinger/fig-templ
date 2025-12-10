@@ -14,6 +14,7 @@ import { log } from "./utils/logging";
 import { puppeteerWorkerRequestSchema } from "./utils/puppeteer-worker-utils";
 import Handlebars from "handlebars";
 import { v4 as uuid } from "uuid";
+import { recordBillableApiCall } from "@templetto/firebase/repositories/billable-api-call-logs";
 
 initFirebaseAdmin({
   bucketUri: process.env.FIREBASE_STORAGE_BUCKET_NAME || "",
@@ -109,6 +110,7 @@ export async function main(req: Request, res: Response) {
     responseDisposition: `attachment; filename="result.pdf"`,
   });
 
+  await recordBillableApiCall({ orgId });
   log.debug("saved_pdf_to_firestore", { artifactPathInStorage });
 
   res.status(200).json({ downloadUrl, pathInStorage: artifactPathInStorage });

@@ -1,3 +1,4 @@
+import { BillableApiCallLog } from "../utils/collection-parsers";
 import { getBillableApiCallLogsCollectionRef } from "../utils/collection-refs";
 
 export async function getBillableApiCallCountForMonth({
@@ -19,4 +20,20 @@ export async function getBillableApiCallCountForMonth({
     .get();
 
   return snapshot.data().count;
+}
+
+export async function recordBillableApiCall({
+  orgId,
+}: {
+  orgId: string;
+}): Promise<void> {
+  const billableApiCallLogDocRef = getBillableApiCallLogsCollectionRef({
+    orgId,
+  }).doc();
+  await billableApiCallLogDocRef.set({
+    id: billableApiCallLogDocRef.id,
+    orgId,
+    type: BillableApiCallLog.createPdf,
+    createdAt: new Date(),
+  });
 }

@@ -28,7 +28,7 @@
       <div class="stat-title">API Calls This Month</div>
       <div class="stat-value">{numApiCalls}</div>
       <div class="stat-desc">
-        Max: {RATE_LIMIT_SETTINGS.numApiCallsPerMonthPerOrg}
+        Max: {RATE_LIMIT_SETTINGS.numPdfsGeneratedPerMonthPerOrg}
       </div>
     </div>
   </div>
