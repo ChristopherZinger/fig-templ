@@ -23,13 +23,15 @@ Critical todos for mvp 2
 ## Server
 
 - [x] limit rate for all user actions and artifacts - pdfs, templates
-- [] fix pdf size - it should be saved in a tempalte information
+- [x] fix pdf size - it should be saved in a tempalte information
 
 ## Bugs
 
 - [x] when user is signed in in the app it interffers with plugin login flow
 - [x] webapp: when logged in you can't go to public route by entering it in the browser, you will be redirected to /account
 - [] telemetry logging is broken in webapp
+- [x] missing template id on template list page
+- [x] missing max api calls number on webapge template list
 
 ## Feature Creap
 
