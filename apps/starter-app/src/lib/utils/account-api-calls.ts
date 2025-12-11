@@ -1,4 +1,4 @@
-import type { Template_FsDoc } from "@templetto/firebase"
+import type { Artifact_FsDoc, Template_FsDoc } from "@templetto/firebase"
 import z from "zod"
 
 export async function fetchDeleteTemplate(
@@ -57,4 +57,24 @@ export async function fetchPostAuthCookie(token: string | null): Promise<void> {
       Authorization: token ? `Bearer ${token}` : "",
     },
   })
+}
+
+export async function fetchGetArtifactsByTemplateId(
+  templateId: string,
+): Promise<Artifact_FsDoc[] | null> {
+  const response = await fetch(`/account/api/artifact?templateId=${templateId}`)
+  if (!response.ok) {
+    return null
+  }
+  const data = await response.json()
+  return data.artifacts
+}
+
+export async function fetchDeleteArtifact(artifactId: string): Promise<void> {
+  const response = await fetch(`/account/api/artifact/${artifactId}`, {
+    method: "DELETE",
+  })
+  if (!response.ok) {
+    throw new Error("Failed to delete artifact")
+  }
 }

@@ -5,6 +5,7 @@ import {
   getUsersCollectionRef,
   getUserTemplateDoc,
 } from "@templetto/firebase"
+import { getArtifactsByTemplateId } from "@templetto/firebase/repositories/artifact"
 import { log } from "@templetto/logging"
 
 export async function load({
@@ -23,37 +24,26 @@ export async function load({
     error(500, "Internal server error")
   }
 
-  const { templateDoc, htmlString } = await getFirestore().runTransaction(
-    async (t) => {
-      const [templateDoc, htmlString] = await Promise.all([
-        getUserTemplateDoc(
-          {
-            orgId: userDoc.defaultOrgId,
-            userId: userDoc.uid,
-            templateId,
-          },
-          t,
-        ),
-        getTemplateContents(
-          {
-            orgId: userDoc.defaultOrgId,
-            userId: userDoc.uid,
-            templateId,
-          },
-          t,
-        ),
+  const { defaultOrgId: orgId, uid: userId } = userDoc
+
+  const { templateDoc, htmlString, artifacts } =
+    await getFirestore().runTransaction(async (t) => {
+      const [templateDoc, htmlString, artifacts] = await Promise.all([
+        getUserTemplateDoc({ orgId, userId, templateId }, t),
+        getTemplateContents({ orgId, userId, templateId }, t),
+        getArtifactsByTemplateId({ orgId, templateId, userId }, t),
       ])
 
       return {
         templateDoc,
         htmlString,
+        artifacts,
       }
-    },
-  )
+    })
 
   if (!htmlString) {
     error(404, "Template not found")
   }
 
-  return { htmlString, templateDoc }
+  return { htmlString, templateDoc, artifacts }
 }

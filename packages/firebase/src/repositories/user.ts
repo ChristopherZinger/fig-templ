@@ -15,15 +15,30 @@ import { log } from "@templetto/logging";
 import { getUserOrgJoinTableDocRef } from "./user-org-joint-table";
 import { RestrictedAccessError } from "../utils/errors";
 import { AppError } from "@templetto/app-error";
+import { getFirestore } from "../admin-init";
 
-export async function expectUserById(uid: string): Promise<User_FsDoc> {
-  const userDoc = (await getUsersCollectionRef().doc(uid).get()).data();
+export async function expectUserById(
+  uid: string,
+  t?: Transaction
+): Promise<User_FsDoc> {
+  if (!t) {
+    return await getFirestore().runTransaction(async (t) => {
+      return expectUserByIdTransaction(uid, t);
+    });
+  }
+  return expectUserByIdTransaction(uid, t);
+}
+
+async function expectUserByIdTransaction(
+  uid: string,
+  t: Transaction
+): Promise<User_FsDoc> {
+  const userDoc = (await t.get(getUsersCollectionRef().doc(uid))).data();
   if (!userDoc) {
-    throw new AppError("user_not_found", { uid });
+    throw new AppError("user_doc_not_found", { uid });
   }
   return userDoc;
 }
-
 export async function getUserOrgIds({
   uid,
 }: {

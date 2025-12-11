@@ -1,10 +1,16 @@
 <script lang="ts">
   import { page } from "$app/state"
+  import {
+    fetchDeleteArtifact,
+    fetchGetArtifactsByTemplateId,
+  } from "$lib/utils/account-api-calls"
   import { getHumanFriendlyDate } from "$lib/utils/date.js"
   import CodePreview from "./CodePreview.svelte"
 
   let { data } = $props()
-  let { htmlString, templateDoc } = data
+  let { htmlString, templateDoc, artifacts } = data
+
+  let _artifacts = $state(artifacts)
 
   let id = page.params.id
   let iframeRef = $state<HTMLIFrameElement | undefined>()
@@ -17,6 +23,12 @@
     }
     iframeRef.contentDocument.body.innerHTML = htmlString
   })
+  async function onClickDeleteArtifact(artifactId: string) {
+    await fetchDeleteArtifact(artifactId)
+    if (id) {
+      _artifacts = (await fetchGetArtifactsByTemplateId(id)) || []
+    }
+  }
 </script>
 
 <svelte:head>
@@ -89,9 +101,41 @@
     {:else if activeTab === "code"}
       <CodePreview {htmlString} />
     {:else if activeTab === "artifacts"}
-      <div class="flex flex-1 items-center justify-center">
-        <p class="text-gray-500">Artifacts content will be displayed here</p>
-      </div>
+      {#if artifacts.length < 1}
+        <div class="flex flex-1 items-center justify-center">
+          <p class="text-gray-500">No artifacts found</p>
+        </div>
+      {:else}
+        <ul class="space-y-3">
+          {#each _artifacts as artifact}
+            <li
+              class="flex justify-between items-center p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div class="flex items-end gap-1">
+                <span class="text-gray-500">Created at:</span>
+                <span class="font-medium">
+                  {getHumanFriendlyDate(artifact.createdAt || "")}
+                </span>
+              </div>
+              <div class="flex gap-2">
+                <a
+                  href={artifact.downloadUrl}
+                  target="_blank"
+                  class="btn btn-sm btn-primary"
+                >
+                  Download
+                </a>
+                <button
+                  class="btn btn-sm btn-error"
+                  onclick={() => onClickDeleteArtifact(artifact.id)}
+                >
+                  Delete
+                </button>
+              </div>
+            </li>
+          {/each}
+        </ul>
+      {/if}
     {/if}
   </div>
 </div>
