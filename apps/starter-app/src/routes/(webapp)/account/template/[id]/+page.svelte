@@ -7,9 +7,9 @@
   let { htmlString, templateDoc } = data
 
   let id = page.params.id
-  let iframeRef: HTMLIFrameElement | undefined
+  let iframeRef = $state<HTMLIFrameElement | undefined>()
 
-  let showCode = $state(false)
+  let activeTab = $state<"preview" | "code" | "artifacts">("preview")
 
   $effect(() => {
     if (!iframeRef || !iframeRef.contentDocument) {
@@ -54,19 +54,44 @@
     </div>
   {/if}
 
-  <div class="flex justify-between">
+  <div role="tablist" class="tabs tabs-bordered">
     <button
-      class="btn btn-outline self-end"
-      onclick={() => (showCode = !showCode)}
+      role="tab"
+      class="tab"
+      class:tab-active={activeTab === "preview"}
+      onclick={() => (activeTab = "preview")}
     >
-      {showCode ? "Show Preview" : "Show Code"}
+      Template Preview
+    </button>
+    <button
+      role="tab"
+      class="tab"
+      class:tab-active={activeTab === "code"}
+      onclick={() => (activeTab = "code")}
+    >
+      HTML Code
+    </button>
+    <button
+      role="tab"
+      class="tab"
+      class:tab-active={activeTab === "artifacts"}
+      onclick={() => (activeTab = "artifacts")}
+    >
+      Artifacts
     </button>
   </div>
 
-  {#if showCode}
-    <CodePreview {htmlString} />
-  {/if}
-  <div class:hidden={showCode} class="flex flex-1">
-    <iframe bind:this={iframeRef} title="iframe" class="flex-1"></iframe>
+  <div class="flex flex-1 flex-col gap-4">
+    {#if activeTab === "preview"}
+      <div class="flex flex-1">
+        <iframe bind:this={iframeRef} title="iframe" class="flex-1"></iframe>
+      </div>
+    {:else if activeTab === "code"}
+      <CodePreview {htmlString} />
+    {:else if activeTab === "artifacts"}
+      <div class="flex flex-1 items-center justify-center">
+        <p class="text-gray-500">Artifacts content will be displayed here</p>
+      </div>
+    {/if}
   </div>
 </div>
