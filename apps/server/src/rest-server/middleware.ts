@@ -12,6 +12,7 @@ import {
 import { isFirebaseAuthError } from "@templetto/firebase/errors";
 import { AppError } from "@templetto/app-error";
 import { hasReachedMonthlyApiCallRateLimit } from "@templetto/firebase/repositories/billable-api-call-logs";
+import { getHashedToken } from "@templetto/firebase/repositories/api-token";
 
 export const logMiddleware: express.RequestHandler = (
   req: Request,
@@ -93,7 +94,7 @@ export const apiAuthMiddleware: express.RequestHandler = async (
     return;
   }
 
-  const tokenHash = authHeaderToken;
+  const tokenHash = getHashedToken(authHeaderToken);
   try {
     const tokenDoc = (
       await getOrgApiTokensCollectionRef().doc(tokenHash).get()
