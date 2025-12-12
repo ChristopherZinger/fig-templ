@@ -68,11 +68,8 @@ export async function main(req: Request, res: Response) {
   log.debug("create_template_with_puppeteer", {
     templateHtmlSize: templateHtml.length,
   });
-  const pdfLocalFilePath =
-    process.env.NODE_ENV === "production"
-      ? (`/tmp/${Date.now()}/out.pdf` as const)
-      : (`./${Date.now()}/out.pdf` as const);
-  fs.mkdirSync(path.dirname(pdfLocalFilePath), { recursive: true });
+  const { dirPath, cleanup } = createTmpDir();
+  const pdfLocalFilePath = path.join(dirPath, "out.pdf");
 
   try {
     await withBrowserPage(dimensions, async (page) => {
@@ -102,11 +99,12 @@ export async function main(req: Request, res: Response) {
     localFilePath: pdfLocalFilePath,
     destinationInStorage: artifactPathInStorage,
   });
+  cleanup();
 
   log.debug("get_signed_url");
   const [downloadUrl] = await bucket.file(artifactPathInStorage).getSignedUrl({
     action: "read",
-    expires: Date.now() + 1000 * 60 * 60 * 24 * 365,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 365, // 1 year
     responseDisposition: `attachment; filename="result.pdf"`,
   });
 
@@ -114,4 +112,21 @@ export async function main(req: Request, res: Response) {
   log.debug("saved_pdf_to_firestore", { artifactPathInStorage });
 
   res.status(200).json({ downloadUrl, pathInStorage: artifactPathInStorage });
+}
+
+function createTmpDir(): {
+  dirPath: string;
+  cleanup: () => void;
+} {
+  const tmpDir =
+    process.env.NODE_ENV === "production"
+      ? `/tmp/${Date.now()}`
+      : `./${Date.now()}`;
+
+  fs.mkdirSync(tmpDir, { recursive: true });
+
+  return {
+    dirPath: tmpDir,
+    cleanup: () => fs.rmSync(tmpDir, { recursive: true }),
+  };
 }
