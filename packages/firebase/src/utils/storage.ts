@@ -20,7 +20,7 @@ export async function pushToStorage({
 
   const bucket = getBucket();
 
-  bucket.upload(localFilePath, {
+  await bucket.upload(localFilePath, {
     destination: destinationInStorage,
     contentType: "application/pdf",
     metadata: {
