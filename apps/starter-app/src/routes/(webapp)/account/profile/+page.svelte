@@ -1,12 +1,12 @@
 <script lang="ts">
-  // Implementation will come later
-
   let ConfirmationModal: HTMLDialogElement | undefined
   let inputValue = ""
   function onShowConfirmationModal() {
     ConfirmationModal?.showModal()
   }
-  function onConfirmDeleteAccount() {}
+  function onClickCancel() {
+    ConfirmationModal?.close()
+  }
 </script>
 
 <svelte:head>
@@ -94,8 +94,13 @@
 
     <div class="modal-action">
       <form method="POST" class="flex gap-2">
-        <button class="btn">Cancel</button>
-        <button class="btn btn-error" disabled={inputValue !== "DELETE"}>
+        <button type="button" class="btn" onclick={onClickCancel}>Cancel</button
+        >
+        <button
+          type="submit"
+          class="btn btn-error"
+          disabled={inputValue !== "DELETE"}
+        >
           Confirm Deletion
         </button>
       </form>
