@@ -8,7 +8,7 @@ import { getFirestore, type Transaction } from "firebase-admin/firestore";
 import type { Template_FsDoc } from "../utils/collections";
 import { RATE_LIMIT_SETTINGS } from "@templetto/settings";
 import { RateLimitError } from "@templetto/app-error";
-import slugify from "slugify"; // TODO: install it here
+import slugify from "slugify";
 
 export async function getUserTemplateDoc(
   {

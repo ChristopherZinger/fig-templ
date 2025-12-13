@@ -4,12 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npm run dev:rest-server && npm run dev:puppeteer-worker",
+    "dev": "npm run build && (npm run dev:rest-server & npm run start:locally:puppeteer-worker & wait)",
     "build": "rm -rf dist && rollup -c",
     "build:watch": "rollup -c --watch",
     "start:rest-server": "node dist/rest-server.js",
     "start:locally:rest-server": "node --env-file=.env dist/rest-server.js",
     "start:puppeteer-worker": "functions-framework --target=main --source=dist/puppeteer-worker.js --port=3000",
+    "start:locally:puppeteer-worker": "functions-framework --target=main --source=dist/puppeteer-worker.js --port=3001",
     "dev:rest-server": "npx tsx --watch --env-file=.env src/rest-server.ts"
   },
   "devDependencies": {
