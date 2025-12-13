@@ -19,9 +19,8 @@
       {#if $userStore}
         <li><a href="/account">Account</a></li>
       {:else}
-        <li><a href="/login/sign_in">Log in</a></li>
         <li class="md:mx-4">
-          <a href="/login/sign_up" class="border border-primary">Sign up</a>
+          <a href="/login/sign_in" class="border border-primary">Sign in</a>
         </li>
       {/if}
     </ul>
@@ -51,13 +50,10 @@
         {#if $userStore}
           <li><a href="/account">Account</a></li>
         {:else}
-          <li><a href="/login/sign_in">Log in </a></li>
-          <li><a href="/login/sign_up">Sign up</a></li>
+          <li><a href="/login/sign_in">Sign in</a></li>
         {/if}
         <li><a href="/blog">Blog</a></li>
         <li><a href="/docs">Docs</a></li>
-        <li><a href="/pricing">Pricing</a></li>
-        <li><a href="/search">Search</a></li>
       </ul>
     </div>
   </div>
