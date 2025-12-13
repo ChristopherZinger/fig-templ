@@ -1,6 +1,7 @@
 import { fail } from "@sveltejs/kit"
 import z from "zod"
 import { createContactUsMessage } from "@templetto/firebase/repositories/contact-us-message"
+import { log } from "@templetto/logging"
 
 export const actions = {
   submitContactUs: async ({ request }) => {
@@ -43,7 +44,7 @@ export const actions = {
 
       return { success: true }
     } catch (error) {
-      console.error(error)
+      log.error("error_creating_contact_us_message", error)
       return fail(500, { error: "An unexpected error occurred" })
     }
   },

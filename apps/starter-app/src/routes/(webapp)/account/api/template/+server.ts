@@ -8,7 +8,6 @@ import {
 } from "@templetto/firebase"
 
 export async function GET({ locals }) {
-  console.log(locals)
   const { firebaseUser } = locals
   if (!firebaseUser) {
     error(401, "Unauthorized, missing firebase user")

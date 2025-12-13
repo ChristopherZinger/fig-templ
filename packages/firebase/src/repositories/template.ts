@@ -38,7 +38,6 @@ function getTmpFolder() {
   return {
     tmpPath,
     cleanup: () => {
-      console.log("cleaning up", tmpPath);
       fs.rmSync(tmpPath, { recursive: true });
     },
   };

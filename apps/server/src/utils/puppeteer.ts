@@ -1,5 +1,6 @@
 import puppeteer, { Page } from "puppeteer-core";
 import { config } from "dotenv";
+import { log } from "@templetto/logging";
 
 const ENV = process.env.NODE_ENV;
 if (ENV !== "production") {
@@ -36,16 +37,16 @@ export async function withBrowserPage(
   try {
     await fn(page);
   } catch (error) {
-    console.error("failed_to_execute_function_with_browser", error);
+    log.error("failed_to_execute_function_with_browser", error);
     throw error;
   } finally {
     try {
-      console.log("closing_browser");
+      log.debug("closing_browser");
       await page.close();
       await context.close();
       await browser.close();
     } catch (closeError) {
-      console.error("error_closing_browser", closeError);
+      log.error("error_closing_browser", closeError);
     }
   }
 }
