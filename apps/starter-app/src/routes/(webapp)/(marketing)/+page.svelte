@@ -81,7 +81,9 @@
       />
 
       <a href={PLUGIN_DOWNLOAD_URL} target="_blank">
-        <button class="btn btn-primary btn-lg px-8">Download Plugin</button>
+        <button class="btn btn-primary btn-lg px-8"
+          >Download Figma Plugin</button
+        >
       </a>
     </div>
   </div>

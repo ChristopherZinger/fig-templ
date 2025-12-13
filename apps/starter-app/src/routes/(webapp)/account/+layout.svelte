@@ -1,7 +1,7 @@
 <script lang="ts">
   import { redirect } from "@sveltejs/kit"
   import { onMount } from "svelte"
-  import { WebsiteName } from "../../../config"
+  import { PLUGIN_DOWNLOAD_URL, WebsiteName } from "../../../config"
   import type { DecodedIdToken } from "firebase-admin/auth"
   import HomeIcon from "$lib/icons/HomeIcon.svelte"
   import CopyIcon from "$lib/icons/CopyIcon.svelte"
@@ -51,7 +51,7 @@
       </li>
     </ul>
 
-    <ul class="mt-auto">
+    <ul class="mt-auto mb-8">
       <li class="py-1.5 px-4">
         {data.firebaseUser?.email}
       </li>
@@ -59,6 +59,10 @@
         <a href="/account/sign_out" class="mt-auto text-base">Sign Out</a>
       </li>
     </ul>
+
+    <a href={PLUGIN_DOWNLOAD_URL} target="_blank">
+      <button class="btn btn-primary w-full">Downloa Figma Plugin</button>
+    </a>
   {/snippet}
 
   {@render children?.()}
