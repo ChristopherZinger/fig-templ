@@ -2,18 +2,25 @@ FROM --platform=linux/amd64 node:22-slim AS pruner
 WORKDIR /app
 
 RUN npm install -g turbo
+
 COPY . .
+
 RUN turbo prune templetto-starter-app --docker
 
 FROM --platform=linux/amd64 node:22-slim AS runner
 WORKDIR /app
+
 COPY --from=pruner /app/out/json/ .
-RUN npm install
+
+RUN npm ci 
 
 COPY --from=pruner /app/out/full/ .
 
-WORKDIR /app/apps/starter-app
-RUN NODE_ENV=production npm run build
+COPY service-account-key.json /app/service-account-key.json
 
-EXPOSE 3000
-CMD ["node", "build"]
+# sveltekit needs vars during build time.
+COPY env-prod/.env /app/apps/starter-app/.env
+
+RUN NODE_ENV=production npx turbo run build 
+
+CMD ['npm', 'run', 'serve']

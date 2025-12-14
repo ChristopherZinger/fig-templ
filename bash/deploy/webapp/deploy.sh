@@ -2,26 +2,16 @@
 
 set -eoux pipefail
 
+BUILD_ENV_FILE="$(dirname "$0")/build-combined.env"
+echo -e "# local build.env" > "$BUILD_ENV_FILE"
+cat "$(dirname "$0")/build.env" >> "$BUILD_ENV_FILE"
+echo -e "\n\n# shared build.env" >> "$BUILD_ENV_FILE"
+cat "$(dirname "$0")/../build.env" >> "$BUILD_ENV_FILE"
+source "$BUILD_ENV_FILE"
+
 export NODE_ENV=production
-source "$(dirname "$0")/build.env"
 
-pushd ../..
-
-# Build the Docker image
-echo "Building Docker image $IMAGE_NAME:$TAG..."
-docker build --platform linux/amd64 -f apps/starter-app/Dockerfile -t $IMAGE_NAME:$TAG .
-
-# Tag the image for Google Artifact Registry
-echo "Tagging image..."
-docker tag $IMAGE_NAME:$TAG $IMAGE_URL
-
-# Push the image to Google Artifact Registry
-echo "Pushing image to Artifact Registry..."
-docker push $IMAGE_URL
-
-# Deploy to Cloud Run
-popd;
-echo "Deploying to Cloud Run..."
+echo "Deploying webapp to Cloud Run..."
 gcloud run deploy $SERVICE \
     --image $IMAGE_URL \
     --allow-unauthenticated \

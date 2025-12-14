@@ -11,8 +11,8 @@ import { env } from "$env/dynamic/private"
 import { USER_ID_TOKEN_COOKIE_NAME } from "$lib/stores/userStore"
 
 initFirebaseAdmin({
-  bucketUri: env.PRIVATE_FIREBASE_STORAGE_BUCKET_NAME,
-  googleApplicationCredentials: env.GOOGLE_APPLICATION_CREDENTIALS,
+  bucketUri: env.FIREBASE_STORAGE_BUCKET_NAME || "",
+  googleApplicationCredentials: env.GOOGLE_APPLICATION_CREDENTIALS || "",
 })
 
 const authGuard: Handle = async ({ event, resolve }) => {

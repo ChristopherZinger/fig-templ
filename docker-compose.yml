@@ -30,7 +30,7 @@ services:
   webapp:
     build:
       context: .
-      dockerfile: apps/starter-app/Dockerfile
+      dockerfile: Dockerfile.webapp
     image: webapp:latest
     container_name: webapp
     platform: linux/amd64
