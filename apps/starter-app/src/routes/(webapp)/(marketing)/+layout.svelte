@@ -52,7 +52,6 @@
         {:else}
           <li><a href="/login/sign_in">Sign in</a></li>
         {/if}
-        <li><a href="/blog">Blog</a></li>
         <li><a href="/docs">Docs</a></li>
       </ul>
     </div>

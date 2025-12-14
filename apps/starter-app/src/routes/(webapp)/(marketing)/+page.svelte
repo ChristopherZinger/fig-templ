@@ -102,7 +102,7 @@
         designs. No credit card required for the free trial.
       </div>
       <div class="mt-8">
-        <a href="/login/sign_up">
+        <a href="/login/sign_in">
           <button class="btn btn-primary btn-lg btn-wide">
             Create Free Account
           </button>
