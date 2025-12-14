@@ -109,3 +109,8 @@ export const contactUsMessageParser = z.object({
   message: z.string(),
   createdAt: firestoreDateField,
 });
+
+export const backendConfigFlagParser = z.object({
+  name: z.string(),
+  value: z.boolean(),
+});

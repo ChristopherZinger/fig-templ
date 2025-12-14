@@ -8,6 +8,7 @@ import type {
 import type {
   ApiToken_FsDoc,
   Artifact_FsDoc,
+  BackendConfigFlag_FsDoc,
   BillableApiCallLog_FsDoc,
   ContactUsMessage_FsDoc,
   EmailSubscription_FsDoc,
@@ -22,6 +23,7 @@ import z from "zod";
 import {
   apiTokenParser,
   artifactParser,
+  backendConfigFlagParser,
   billableApiCallLogParser,
   contactUsMessageParser,
   emailSubscriptionParser,
@@ -144,5 +146,13 @@ export function getContactUsMessagesCollectionRef(): CollectionReference<Contact
     collectionName: CollectionName.contactUsMessage,
     getBase: null,
     parser: contactUsMessageParser,
+  });
+}
+
+export function getBackendConfigFlagsCollectionRef(): CollectionReference<BackendConfigFlag_FsDoc> {
+  return getCollectionRef({
+    collectionName: CollectionName.backendConfigFlags,
+    getBase: null,
+    parser: backendConfigFlagParser,
   });
 }

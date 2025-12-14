@@ -12,6 +12,7 @@
     "./repositories/billable-api-call-logs": "./src/repositories/billable-api-call-logs.ts",
     "./repositories/contact-us-message": "./src/repositories/contact-us-message.ts",
     "./repositories/artifact": "./src/repositories/artifact.ts",
+    "./repositories/backend-config-flags": "./src/repositories/backend-config-flags.ts",
     "./config": "./src/config/config.ts"
   },
   "type": "module",

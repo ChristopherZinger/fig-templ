@@ -11,6 +11,7 @@ import {
   templateParser,
   userOrgJoinTableParser,
   userParser,
+  backendConfigFlagParser,
 } from "./collection-parsers";
 
 export enum CollectionName {
@@ -25,6 +26,7 @@ export enum CollectionName {
   billableApiCallLogs = "billable-api-call-logs",
   emailSubscriptions = "email-subscriptions",
   contactUsMessage = "contactUsMessage",
+  backendConfigFlags = "backend-config-flags",
 }
 
 export type PkceKey_FsDoc = z.infer<typeof pkceKeyParser>;
@@ -38,3 +40,4 @@ export type Artifact_FsDoc = z.infer<typeof artifactParser>;
 export type BillableApiCallLog_FsDoc = z.infer<typeof billableApiCallLogParser>;
 export type EmailSubscription_FsDoc = z.infer<typeof emailSubscriptionParser>;
 export type ContactUsMessage_FsDoc = z.infer<typeof contactUsMessageParser>;
+export type BackendConfigFlag_FsDoc = z.infer<typeof backendConfigFlagParser>;
