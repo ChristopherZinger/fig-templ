@@ -11,6 +11,9 @@ source "$BUILD_ENV_FILE"
 
 export NODE_ENV=production
 
+docker tag $IMAGE_NAME:$TAG $IMAGE_URL
+docker push $IMAGE_URL
+
 echo "Deploying webapp to Cloud Run..."
 gcloud run deploy $SERVICE \
     --image $IMAGE_URL \
