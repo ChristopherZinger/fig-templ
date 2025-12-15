@@ -60,7 +60,7 @@
 
         <div class="stat place-items-center">
           <div class="stat-title">Artifacts Number</div>
-          <div class="stat-value text-sm">dummy_100</div>
+          <div class="stat-value text-sm">{_artifacts.length}</div>
         </div>
       </div>
     </div>
