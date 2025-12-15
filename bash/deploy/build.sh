@@ -3,4 +3,4 @@
 set -e
 
 echo "Building docker images"
-docker compose build;
+docker compose build --no-cache;
