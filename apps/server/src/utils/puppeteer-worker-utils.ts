@@ -29,24 +29,30 @@ export async function callPuppeteerWorker(
     body: JSON.stringify(requestParams),
   });
 
-  const responseText = await response.text();
-
   if (!response.ok) {
     const responseInfo = {
       status: response.status,
       statusText: response.statusText,
-      body: responseText,
     };
     log.error("puppeteer_worker_error", { responseInfo });
     throw new AppError(`puppeteer_worker_error`, responseInfo);
   }
 
-  const jsonResponse = JSON.parse(responseText);
-  log.debug("received_response_from_puppeteer_worker", jsonResponse);
+  try {
+    const jsonResponse =
+      process.env.NODE_ENV === "production"
+        ? await (response as unknown as { data: unknown }).data
+        : JSON.parse(await response.json());
 
-  const { downloadUrl, pathInStorage } = z
-    .object({ downloadUrl: z.string(), pathInStorage: z.string() })
-    .parse(jsonResponse);
+    const { downloadUrl, pathInStorage } = z
+      .object({ downloadUrl: z.string(), pathInStorage: z.string() })
+      .parse(jsonResponse);
 
-  return { downloadUrl, pathInStorage };
+    return { downloadUrl, pathInStorage };
+  } catch (error) {
+    log.error("failed_to_parse_response_from_puppeteer_worker", { error });
+    throw new AppError("failed_to_parse_response_from_puppeteer_worker", {
+      message: String(error),
+    });
+  }
 }
