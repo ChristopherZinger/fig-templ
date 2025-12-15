@@ -29,16 +29,19 @@ export async function callPuppeteerWorker(
     body: JSON.stringify(requestParams),
   });
 
+  const responseText = await response.text();
+
   if (!response.ok) {
     const responseInfo = {
       status: response.status,
       statusText: response.statusText,
+      body: responseText,
     };
     log.error("puppeteer_worker_error", { responseInfo });
     throw new AppError(`puppeteer_worker_error`, responseInfo);
   }
 
-  const jsonResponse = await response.json();
+  const jsonResponse = JSON.parse(responseText);
   log.debug("received_response_from_puppeteer_worker", jsonResponse);
 
   const { downloadUrl, pathInStorage } = z
