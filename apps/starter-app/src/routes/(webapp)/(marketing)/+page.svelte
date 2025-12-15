@@ -1,16 +1,16 @@
 <script lang="ts">
   import {
-    WebsiteName,
-    WebsiteBaseUrl,
-    WebsiteDescription,
+    APP_NAME,
+    WEBAPP_URL,
+    APP_DESCRIPTION,
     PLUGIN_DOWNLOAD_URL,
   } from "../../../config"
 
   const ldJson = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: WebsiteName,
-    url: WebsiteBaseUrl,
+    name: APP_NAME,
+    url: WEBAPP_URL,
   }
   const jsonldScript = `<script type="application/ld+json">${
     JSON.stringify(ldJson) + "<"
@@ -18,8 +18,8 @@
 </script>
 
 <svelte:head>
-  <title>{WebsiteName}</title>
-  <meta name="description" content={WebsiteDescription} />
+  <title>{APP_NAME}</title>
+  <meta name="description" content={APP_DESCRIPTION} />
   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
   {@html jsonldScript}
 </svelte:head>

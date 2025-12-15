@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { WebsiteName } from "../../../config"
+  import { APP_NAME } from "../../../config"
 </script>
 
 <svelte:head>
-  <title>Documentation - {WebsiteName}</title>
+  <title>Documentation - {APP_NAME}</title>
   <meta
     name="description"
     content="Complete documentation for Templetto API, templating language, and Figma plugin"
@@ -14,7 +14,7 @@
   <section id="overview" class="doc-section">
     <h1 class="doc-title">Documentation</h1>
     <p class="doc-intro">
-      Welcome to the {WebsiteName} documentation. This guide will help you get started
+      Welcome to the {APP_NAME} documentation. This guide will help you get started
       with creating PDF templates from Figma designs and generating PDFs through our
       REST API.
     </p>

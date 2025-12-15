@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from "$app/state"
-  import { SERVER_URL } from "$lib/backend-for-plugin/url"
+  import { API_URL } from "../../../config"
   import {
     GoogleAuthProvider,
     setPersistence,
@@ -13,6 +13,7 @@
   import XinCircleIcon from "./XinCircleIcon.svelte"
   import GoogleIcon from "./GoogleIcon.svelte"
   import KeyIcon from "./KeyIcon.svelte"
+  import { AppError } from "@templetto/app-error"
 
   const writeKey = page.url.searchParams.get("writeKey")
 
@@ -32,7 +33,7 @@
       const result = await signInWithPopup(pluginAuth, provider)
       const idToken = await result.user.getIdToken()
 
-      const response = await fetch(`${SERVER_URL}/plugin/save-token`, {
+      const response = await fetch(`${API_URL}/plugin/save-token`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -43,7 +44,7 @@
       if (!response.ok) {
         console.error("failed_to_save_token", response)
         const error = await response.json()
-        throw new Error("failed_to_save_token" + error)
+        throw new AppError("failed_to_save_token", { message: error.message })
       }
       isPluginLoginComplete = true
     } catch (error) {

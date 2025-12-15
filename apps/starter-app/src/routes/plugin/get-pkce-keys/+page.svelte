@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { SERVER_URL, WEBAPP_URL } from "$lib/backend-for-plugin/url"
   import { onDestroy, onMount } from "svelte"
   import z from "zod"
   import BrowserIcon from "./BrowserIcon.svelte"
   import CheckIcon from "./CheckIcon.svelte"
   import XIcon from "./XIcon.svelte"
+  import { API_URL, WEBAPP_URL } from "../../../config"
 
   /**
    * PLUGIN AUTH FLOW - PAGE OPENS IN THE FIGMA IFRAME
@@ -20,7 +20,7 @@
   async function getPkceKeys() {
     try {
       console.log("getting_pkce_keys")
-      const response = await fetch(`${SERVER_URL}/plugin/get-pkce-keys`, {
+      const response = await fetch(`${API_URL}/plugin/get-pkce-keys`, {
         method: "GET",
       })
       const resp = await response.json()
@@ -48,7 +48,7 @@
     console.log("pulling_session_token")
     let sessionKey: string | null = null
     try {
-      const response = await fetch(`${SERVER_URL}/plugin/read-session-token`, {
+      const response = await fetch(`${API_URL}/plugin/read-session-token`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ readKey, writeKey }),

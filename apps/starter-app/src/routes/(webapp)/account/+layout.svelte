@@ -1,7 +1,7 @@
 <script lang="ts">
   import { redirect } from "@sveltejs/kit"
   import { onMount } from "svelte"
-  import { PLUGIN_DOWNLOAD_URL, WebsiteName } from "../../../config"
+  import { PLUGIN_DOWNLOAD_URL, APP_NAME } from "../../../config"
   import type { DecodedIdToken } from "firebase-admin/auth"
   import HomeIcon from "$lib/icons/HomeIcon.svelte"
   import CopyIcon from "$lib/icons/CopyIcon.svelte"
@@ -36,7 +36,7 @@
         <div
           class="normal-case menu-title text-xl font-bold text-primary flex flex-row"
         >
-          <a href="/" class="grow">{WebsiteName}</a>
+          <a href="/" class="grow">{APP_NAME}</a>
           <label for="admin-drawer" class="lg:hidden ml-3"> &#x2715; </label>
         </div>
       </li>
