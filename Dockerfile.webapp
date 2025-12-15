@@ -23,4 +23,4 @@ COPY env-prod/.env /app/apps/starter-app/.env
 
 RUN NODE_ENV=production npx turbo run build 
 
-CMD ['npm', 'run', 'serve']
+CMD ["npm", "run", "serve", "-w", "templetto-starter-app"]
