@@ -42,7 +42,7 @@ export async function callPuppeteerWorker(
     const jsonResponse =
       process.env.NODE_ENV === "production"
         ? await (response as unknown as { data: unknown }).data
-        : JSON.parse(await response.json());
+        : await response.json();
 
     const { downloadUrl, pathInStorage } = z
       .object({ downloadUrl: z.string(), pathInStorage: z.string() })
