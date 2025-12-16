@@ -358,7 +358,7 @@ export async function createTemplateHandler(req: Request, res: Response) {
 
 export async function getPluginInfoHandler(_: Request, res: Response) {
   res.status(200).json({
-    version: "0.0.0",
+    version: "1.0.1",
     webappUrl: "https://templetto.com",
   });
 }
