@@ -23,6 +23,7 @@ import {
   getBboxOrigin,
   getBboxShrinkedToHugContents,
 } from "./utils/node-position";
+import slugify from "slugify";
 
 const ENABLE_MAGIC_LAYOUT = false;
 
@@ -434,7 +435,11 @@ function makeAppNode<Type extends SceneNode["type"]>({
     style,
     attributes: Object.assign(attributes, {
       id: sceneNode.id,
-      "data-name": sceneNode.name.slice(0, 20),
+      "data-name": slugify(sceneNode.name.slice(0, 20), {
+        lower: false,
+        replacement: " ",
+        strict: true,
+      }),
     }),
   } satisfies Partial<AppNode>;
 
