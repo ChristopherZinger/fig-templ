@@ -66,7 +66,7 @@ export async function main(req: Request, res: Response) {
   const htmlToRender = Handlebars.compile(templateHtml)(jsonData);
 
   log.debug("create_template_with_puppeteer", {
-    templateHtmlSize: templateHtml.length,
+    templateHtmlSizeMB: (templateHtml.length / (1024 * 1024)).toFixed(2),
   });
   const { dirPath, cleanup } = createTmpDir();
   const pdfLocalFilePath = path.join(dirPath, "out.pdf");
@@ -74,9 +74,36 @@ export async function main(req: Request, res: Response) {
   try {
     await withBrowserPage(dimensions, async (page) => {
       await page.setContent(htmlToRender, {
-        waitUntil: "networkidle0",
-        timeout: 30000,
+        waitUntil: "load",
+        timeout: 60000,
       });
+
+      await Promise.all([
+        page.evaluate(() => {
+          return new Promise<void>((resolve) => {
+            if (document.readyState === "complete") {
+              resolve();
+            } else {
+              window.addEventListener("load", () => {
+                log.warn("waiting_for_images_to_complete");
+                resolve();
+              });
+            }
+          });
+        }),
+        page
+          .waitForFunction(
+            () => {
+              const images = Array.from(document.images);
+              log.warn("waiting_for_images_to_complete");
+              return images.every((img) => img.complete);
+            },
+            { timeout: 10000 }
+          )
+          .catch(() => {
+            log.warn("timeout_waiting_for_images_to_complete");
+          }),
+      ]);
 
       await page.pdf({
         path: pdfLocalFilePath,
