@@ -67,7 +67,7 @@
 
     <p class="mt-4">
       You can generate API tokens from your
-      <a href="/account/billing" class="doc-link">account dashboard</a>.
+      <a href="/account/api-tokens" class="doc-link">account dashboard</a>.
     </p>
 
     <div class="warning-box">
@@ -83,7 +83,7 @@
     <div class="endpoint-card">
       <div class="endpoint-header">
         <span class="http-method">POST</span>
-        <code class="endpoint-path">/api/create-pdf</code>
+        <code class="endpoint-path">/create-pdf</code>
       </div>
 
       <h4 class="param-title">Query Parameters</h4>
@@ -137,7 +137,7 @@
       <h4 class="param-title">Example Request</h4>
       <div class="code-block">
         <pre><code
-            >{`curl -X POST "https://api.templetto.com/api/create-pdf?template-id=abc123" \\
+            >{`curl -X POST "https://api.templetto.com/create-pdf?template-id=abc123" \\
   -H "Authorization: Bearer YOUR_API_TOKEN" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -171,9 +171,7 @@
           <tr>
             <td>404</td>
             <td>template_not_found</td>
-            <td
-              >Template does not exist or doesn't belong to your organization</td
-            >
+            <td> Template does not exist. </td>
           </tr>
           <tr>
             <td>500</td>
@@ -211,7 +209,7 @@
     <h4 class="example-title">Design Approach</h4>
     <p>
       When designing your template in Figma, use placeholder text that clearly
-      indicates where dynamic data will be inserted. Common conventions include:
+      indicates where dynamic data will be inserted.
     </p>
 
     <ul class="doc-list">
@@ -219,75 +217,7 @@
         <code class="inline-code">{"{{variableName}}"}</code> - Double curly braces
         style
       </li>
-      <li>
-        <code class="inline-code">[variableName]</code> - Square brackets style
-      </li>
-      <li>
-        <code class="inline-code">$variableName</code> - Dollar sign prefix
-      </li>
-      <li>
-        <code class="inline-code">VARIABLE_NAME</code> - All caps placeholder
-      </li>
     </ul>
-
-    <div class="info-box mt-4">
-      <strong>Note:</strong> The templating system exports your Figma design as HTML
-      with all styling preserved. You'll need to implement your own variable replacement
-      logic when processing the template HTML on the server side.
-    </div>
-  </section>
-
-  <section id="templating-examples" class="doc-section">
-    <h3 class="subsection-title">Template Examples</h3>
-
-    <h4 class="example-title">Example 1: Invoice Template</h4>
-    <p><strong>Figma Text Layers:</strong></p>
-    <ul class="doc-list">
-      <li>Company name: "Acme Corporation"</li>
-      <li>Invoice number: "[INVOICE_NUMBER]"</li>
-      <li>Customer: "[CUSTOMER_NAME]"</li>
-      <li>Amount: "[AMOUNT]"</li>
-      <li>Date: "[DATE]"</li>
-    </ul>
-
-    <p class="mt-4"><strong>API Request Data:</strong></p>
-    <div class="code-block">
-      <pre><code
-          >{`{
-  "INVOICE_NUMBER": "INV-2024-001",
-  "CUSTOMER_NAME": "John Smith",
-  "AMOUNT": "$1,500.00",
-  "DATE": "January 15, 2024"
-}`}</code
-        ></pre>
-    </div>
-
-    <h4 class="example-title mt-6">Example 2: Certificate Template</h4>
-    <p><strong>Figma Text Layers:</strong></p>
-    <ul class="doc-list">
-      <li>Recipient: "{"{{recipient_name}}"}"</li>
-      <li>Course: "{"{{course_title}}"}"</li>
-      <li>Date: "{"{{completion_date}}"}"</li>
-      <li>Instructor: "{"{{instructor_name}}"}"</li>
-    </ul>
-
-    <p class="mt-4"><strong>API Request Data:</strong></p>
-    <div class="code-block">
-      <pre><code
-          >{`{
-  "recipient_name": "Jane Doe",
-  "course_title": "Advanced Web Development",
-  "completion_date": "December 2024",
-  "instructor_name": "Dr. Smith"
-}`}</code
-        ></pre>
-    </div>
-
-    <div class="tip-box mt-6">
-      <strong>💡 Best Practice:</strong> Use consistent naming conventions across
-      all your templates. This makes it easier to integrate with your systems and
-      reduces errors.
-    </div>
   </section>
 
   <section id="plugin" class="doc-section">
@@ -334,18 +264,6 @@
         <p>
           Launch the plugin from <strong>Plugins → Templetto → Run</strong>.
           Click the login button and authenticate with your Templetto account.
-        </p>
-      </div>
-    </div>
-
-    <div class="step-card">
-      <div class="step-number">3</div>
-      <div class="step-content">
-        <h4>Select Organization</h4>
-        <p>
-          Choose the organization where you want to save your templates. If
-          you're on a personal account, your default organization will be
-          selected automatically.
         </p>
       </div>
     </div>
@@ -527,9 +445,6 @@
       </li>
       <li>
         <a href="/account" class="doc-link">Visit your account dashboard</a>
-      </li>
-      <li>
-        <a href="/pricing" class="doc-link">View pricing and usage limits</a>
       </li>
     </ul>
   </section>
