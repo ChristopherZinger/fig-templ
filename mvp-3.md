@@ -1,10 +1,9 @@
 # MVP 3
 
-Ideas for MVP 3
-
-## general
+## Tech Debt
 
 - [] decouple static resourece from html (img, fonts, etc)
+  - [] show resurece separately in the dashboard
 - [] add blog articles
 
 ## Webapp
@@ -12,6 +11,8 @@ Ideas for MVP 3
 - [] edit template code
 - [] derive json from template
 - [] allow multiple pages per template
+- [] create default template for user to test ready after account creation
+- [] allow user creating pdfs from the frontend by manipulating json
 
 ## Plugin
 
@@ -21,3 +22,12 @@ Ideas for MVP 3
   - [] image
 
 ## Server
+
+## Bugs
+
+- [] telemetry logging is broken in webapp
+- [] artifacts of removed templates should be visible somewhere.
+
+## Testing
+
+- [] Check if docs are correct

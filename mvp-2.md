@@ -27,18 +27,10 @@
 
 - [x] when user is signed in in the app it interffers with plugin login flow
 - [x] webapp: when logged in you can't go to public route by entering it in the browser, you will be redirected to /account
-- [] telemetry logging is broken in webapp
 - [x] missing template id on template list page
 - [x] missing max api calls number on webapge template list
-- [] artifacts of removed templates should be visible somewhere.
-
-## Feature Creap
-
-- [] create default template for user to test ready after account creation
-- [] allow user creating pdfs from the frontend by manipulating json
 
 ## Testing
 
-- [] Check if docs are correct
 - [x] test auth flow in app and browser. Fix frequent logout if it turns out to be a real bug
 - [x] review all TODO comments
