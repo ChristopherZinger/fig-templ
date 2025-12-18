@@ -1,6 +1,4 @@
-# MVP 2
-
-Critical todos for mvp 2
+# MVP 2 - SCOPE
 
 ## Webapp
 
@@ -11,7 +9,7 @@ Critical todos for mvp 2
   - [x] visual preview
   - [x] html preview
   - [] resoureces preview - images, font links (optional)
-  - [] generated pdfs - list, remove, download
+  - [x] generated pdfs - list, remove, download
 - [x] contact form
 
 ## Plugin
@@ -32,6 +30,7 @@ Critical todos for mvp 2
 - [] telemetry logging is broken in webapp
 - [x] missing template id on template list page
 - [x] missing max api calls number on webapge template list
+- [] artifacts of removed templates should be visible somewhere.
 
 ## Feature Creap
 
@@ -41,5 +40,5 @@ Critical todos for mvp 2
 ## Testing
 
 - [] Check if docs are correct
-- [] test auth flow in app and browser. Fix frequent logout if it turns out to be a real bug
-- [] review all TODO comments
+- [x] test auth flow in app and browser. Fix frequent logout if it turns out to be a real bug
+- [x] review all TODO comments
