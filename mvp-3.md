@@ -19,7 +19,7 @@
 - [] magic layout
 - [] special templating elemtns:
   - [] loop
-  - [] image
+  - [wip] image
 
 ## Server
 
