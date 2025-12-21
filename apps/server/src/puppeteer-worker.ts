@@ -67,8 +67,9 @@ export async function main(req: Request, res: Response) {
   const $ = cheerio.load(rawTemplate);
   $("div[data-image-src-name]").each((_, element) => {
     const imgSrcName = $(element).attr("data-image-src-name");
-    $(element).attr("src", `{{ ${imgSrcName} }}`);
     element.tagName = "img";
+    $(element).attr("src", `{{ ${imgSrcName} }}`);
+    $(element).css("object-fit", "cover");
     $(element).removeAttr("data-image-src-name");
   });
   const templateHtml = $.html();
