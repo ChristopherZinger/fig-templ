@@ -24,6 +24,7 @@ import {
   getBboxShrinkedToHugContents,
 } from "./utils/node-position";
 import slugify from "slugify";
+import { DYNAMIC_IMG_INSTANCE_NAME } from "./custom-components";
 
 const ENABLE_MAGIC_LAYOUT = false;
 
@@ -78,6 +79,13 @@ async function buildAppNodeFromSceneNode(
 
   if (!hasChildren(sceneNode) || hasAutoLayoutMode(sceneNode)) {
     return await buildAppNodeWithAutoLayout(sceneNode);
+  }
+
+  if (sceneNode.type === "INSTANCE") {
+    const mainComponent = await sceneNode.getMainComponentAsync();
+    if (mainComponent && mainComponent.name === DYNAMIC_IMG_INSTANCE_NAME) {
+      return await buildAppNodeWithDynamicImg(sceneNode);
+    }
   }
 
   if (!ENABLE_MAGIC_LAYOUT) {
@@ -333,6 +341,31 @@ async function buildAppNodeWithFlexBox({
   });
 
   return appNode;
+}
+
+async function buildAppNodeWithDynamicImg(
+  sceneNode: SceneNode
+): Promise<AppNode> {
+  const [baseStyles, children] = await Promise.all([
+    buildNodeStyle(sceneNode),
+    await Promise.all(
+      getAllChildren(sceneNode).map(async (childNode) => {
+        return await buildAppNodeFromSceneNode(childNode);
+      })
+    ),
+  ]);
+  return makeAppNode({
+    sceneNode,
+    children: _.compact(children),
+    style: baseStyles,
+    attributes: {
+      "data-image-src-name": slugify(sceneNode.name, {
+        replacement: "_",
+        lower: true,
+        strict: true,
+      }),
+    },
+  });
 }
 
 async function createRasterizedAppNode(sceneNode: SceneNode): Promise<AppNode> {

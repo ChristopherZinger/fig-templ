@@ -1,4 +1,5 @@
 import { MainThreadMsg, UiMsg } from "../lib/utils/shared/messages";
+import { makeDynamicImgNode } from "./custom-components";
 import { sendToUiThread } from "./message-utils";
 import { makeFrames } from "./node-builder";
 import { PLUGIN_WINDOW_OPTIONS } from "./utils/plugin-window";
@@ -26,6 +27,10 @@ export function setMessageRouter(figma: PluginAPI) {
       case UiMsg.RequestSelectableFrames:
         const frames = getSelectableFrames();
         sendToUiThread(MainThreadMsg.PostFrameInfosForSelector, { frames });
+        break;
+      case UiMsg.CreateComponent:
+        console.log("createComponent");
+        await makeDynamicImgNode();
         break;
       default:
         console.log("got_unknown_message_in_main_thread", msg);

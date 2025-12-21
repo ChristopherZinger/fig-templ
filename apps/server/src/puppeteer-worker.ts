@@ -15,6 +15,7 @@ import { puppeteerWorkerRequestSchema } from "./utils/puppeteer-worker-utils";
 import Handlebars from "handlebars";
 import { v4 as uuid } from "uuid";
 import { recordBillableApiCall } from "@templetto/firebase/repositories/billable-api-call-logs";
+import * as cheerio from "cheerio";
 
 initFirebaseAdmin({
   bucketUri: process.env.FIREBASE_STORAGE_BUCKET_NAME || "",
@@ -53,15 +54,24 @@ export async function main(req: Request, res: Response) {
     return;
   }
 
-  let templateHtml: string;
+  let rawTemplate: string;
   try {
     const [buffer] = await templateRef.download();
-    templateHtml = buffer.toString("utf-8");
+    rawTemplate = buffer.toString("utf-8");
   } catch (error) {
     log.error("failed_to_download_template", { error });
     res.status(500).json({ error: "internal_server_error" });
     return;
   }
+
+  const $ = cheerio.load(rawTemplate);
+  $("div[data-image-src-name]").each((_, element) => {
+    const imgSrcName = $(element).attr("data-image-src-name");
+    $(element).attr("src", `{{ ${imgSrcName} }}`);
+    element.tagName = "img";
+    $(element).removeAttr("data-image-src-name");
+  });
+  const templateHtml = $.html();
 
   const htmlToRender = Handlebars.compile(templateHtml)(jsonData);
 
