@@ -5,7 +5,6 @@ export enum UiMsg {
   ShowPreview = "show_preview",
   Logout = "logout",
   RequestSelectableFrames = "request_selectable_frames",
-  CreateComponent = "create_component",
 }
 
 export enum MainThreadMsg {
@@ -44,8 +43,7 @@ export type MsgPayload =
   | MsgPayloadBase<UiMsg.ShowPreview, { frameId: string }>
   | MsgPayloadBase<UiMsg.RequestSessionCookie, null>
   | MsgPayloadBase<UiMsg.Logout, null>
-  | MsgPayloadBase<MainThreadMsg.FailedToMakeFrames, { message: string }>
-  | MsgPayloadBase<UiMsg.CreateComponent, null>;
+  | MsgPayloadBase<MainThreadMsg.FailedToMakeFrames, { message: string }>;
 
 export type MsgPayloadBase<
   T extends MainThreadMsg | UiMsg,

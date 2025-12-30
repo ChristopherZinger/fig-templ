@@ -1,6 +1,10 @@
 export const DYNAMIC_IMG_INSTANCE_NAME = "templetto_dynamic_image";
 
-export async function makeDynamicImgNode() {
+export async function makeDynamicImgNode({
+  position,
+}: {
+  position: { x: number; y: number };
+}) {
   let component = figma.currentPage.findOne((node) => {
     return node.type === "COMPONENT" && node.name === DYNAMIC_IMG_INSTANCE_NAME;
   }) as ComponentNode | undefined;
@@ -11,8 +15,8 @@ export async function makeDynamicImgNode() {
 
   const img = component.createInstance();
   // TODO: check if it collides with other stuff
-  img.x = 110;
-  img.y = 0;
+  img.x = position.x;
+  img.y = position.y;
   img.name = "img_" + Math.random().toString(36).substring(2, 5);
 
   figma.currentPage.appendChild(img);

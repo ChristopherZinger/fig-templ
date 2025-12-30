@@ -27,7 +27,7 @@
   import About from "./sidebar/About.svelte";
   import { sessionTokenStore } from "../lib/stores/sessionTokenStore";
   import LoginButton from "./LoginButton.svelte";
-  import Button from "./Button.svelte";
+  import CustomComponentsSection from "./sidebar/CustomComponentsSection.svelte";
 
   const isTeamSelectorFetureEnabled = false;
 
@@ -197,18 +197,7 @@
         />
       {/if}
 
-      <SidebarItem isOpen={true}>
-        <svelte:fragment slot="header">
-          <div>Image</div>
-        </svelte:fragment>
-        <div slot="content">
-          <Button
-            onClick={() => {
-              sendToMainThread(UiMsg.CreateComponent, null);
-            }}>Create Component</Button
-          >
-        </div>
-      </SidebarItem>
+      <CustomComponentsSection />
       <About />
     </div>
 

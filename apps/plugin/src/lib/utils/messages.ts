@@ -9,6 +9,23 @@ export function sendToMainThread<T extends UiMsg>(
   parent.postMessage({ pluginMessage: { type: msg, data: payload } }, "*");
 }
 
+export function sendDropEventToMainThread(
+  e: DragEvent,
+  componentType: "dynamic-image"
+) {
+  window.parent.postMessage(
+    {
+      pluginDrop: {
+        clientX: e.clientX,
+        clientY: e.clientY,
+        items: [{ type: "image/svg+xml", data: e.target.innerHTML }],
+        dropMetadata: { type: componentType },
+      },
+    },
+    "*"
+  );
+}
+
 export function handleSessionTokenMessages(event: AppMessageEvent) {
   const { type, data } = event.data.pluginMessage;
   switch (type) {
