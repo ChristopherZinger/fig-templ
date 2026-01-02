@@ -13,6 +13,11 @@ export function sendDropEventToMainThread(
   e: DragEvent,
   componentType: "dynamic-image"
 ) {
+  if (!e.target || !("innerHTML" in e.target)) {
+    console.error("no_target_in_drag_event", { e });
+    return;
+  }
+
   window.parent.postMessage(
     {
       pluginDrop: {
