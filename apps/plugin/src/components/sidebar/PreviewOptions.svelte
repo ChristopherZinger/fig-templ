@@ -51,10 +51,6 @@
 </SidebarItem>
 
 <style>
-  .selected {
-    color: white;
-    text-decoration: underline;
-  }
   .header {
     display: flex;
     justify-content: space-between;

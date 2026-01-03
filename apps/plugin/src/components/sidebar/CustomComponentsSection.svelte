@@ -4,22 +4,37 @@
   import ImgIcon from "../icons/ImgIcon.svelte";
 
   let dragableImgIcon: HTMLDivElement | undefined;
-  let unsub: (() => void) | undefined;
+  let dragableLoopIcon: HTMLDivElement | undefined;
 
+  let unsubTemplateLoopDragEv: (() => void) | undefined;
+  $: if (dragableLoopIcon) {
+    unsubTemplateLoopDragEv?.();
+    const fn = (e: DragEvent) => {
+      sendDropEventToMainThread(e, "template-loop");
+    };
+
+    dragableLoopIcon.addEventListener("dragend", fn);
+    unsubTemplateLoopDragEv = () => {
+      dragableLoopIcon?.removeEventListener("dragend", fn);
+    };
+  }
+
+  let unsubDynamicImageDragEv: (() => void) | undefined;
   $: if (dragableImgIcon) {
-    unsub?.();
+    unsubDynamicImageDragEv?.();
     const fn = (e: DragEvent) => {
       sendDropEventToMainThread(e, "dynamic-image");
     };
 
     dragableImgIcon.addEventListener("dragend", fn);
-    unsub = () => {
+    unsubDynamicImageDragEv = () => {
       dragableImgIcon?.removeEventListener("dragend", fn);
     };
   }
 
   onDestroy(() => {
-    unsub?.();
+    unsubDynamicImageDragEv?.();
+    unsubTemplateLoopDragEv?.();
   });
 </script>
 
@@ -35,6 +50,15 @@
     >
       <ImgIcon width={20} height={20} />
       <div>Image</div>
+    </div>
+
+    <div
+      class="custom-component-item"
+      draggable={true}
+      bind:this={dragableLoopIcon}
+    >
+      <ImgIcon width={20} height={20} />
+      <div>Loop</div>
     </div>
   </div>
 </div>

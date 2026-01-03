@@ -1,4 +1,5 @@
 export const DYNAMIC_IMG_INSTANCE_NAME = "templetto_dynamic_image";
+export const TEMPLETTO_LOOP_NODE = "templetto_loop_node";
 
 export async function makeDynamicImgNode({
   position,
@@ -45,4 +46,55 @@ function makeRectangle(): RectangleNode {
   rect.fills = [{ type: "IMAGE", imageHash: img.hash, scaleMode: "FILL" }];
 
   return rect;
+}
+
+export async function makeTemplettoLoopNode({
+  position,
+}: {
+  position: { x: number; y: number };
+}): Promise<void> {
+  await figma.loadFontAsync({ family: "Inter", style: "Regular" });
+  const textNode = figma.createText();
+  textNode.characters =
+    "This it repeatable table item. Add custom values {{ my_value_1 }}, {{ my_value_2 }}";
+  textNode.fontSize = 12;
+
+  const itemFrameNode = figma.createFrame();
+  itemFrameNode.layoutMode = "VERTICAL";
+  itemFrameNode.name = "templetto_table_row_item";
+  itemFrameNode.fills = [{ type: "SOLID", color: { r: 1, g: 0.5, b: 0.31 } }];
+
+  itemFrameNode.cornerRadius = 4;
+  itemFrameNode.paddingLeft = 4;
+  itemFrameNode.paddingRight = 4;
+  itemFrameNode.paddingTop = 4;
+  itemFrameNode.paddingBottom = 4;
+
+  //  the order matters for layouting
+  itemFrameNode.appendChild(textNode);
+  textNode.layoutSizingHorizontal = "FILL";
+
+  const loopFrameNode = figma.createFrame();
+  loopFrameNode.layoutMode = "VERTICAL";
+  loopFrameNode.itemSpacing = 10;
+  loopFrameNode.name = TEMPLETTO_LOOP_NODE;
+  loopFrameNode.paddingLeft = 10;
+  loopFrameNode.paddingRight = 10;
+  loopFrameNode.paddingTop = 10;
+  loopFrameNode.paddingBottom = 10;
+  loopFrameNode.resize(600, 100);
+  loopFrameNode.strokes = [
+    { type: "SOLID", color: { r: 0.8, g: 0.8, b: 0.8 } },
+  ];
+
+  //  the order matters for layouting
+  loopFrameNode.appendChild(itemFrameNode);
+  itemFrameNode.layoutSizingHorizontal = "FILL";
+
+  loopFrameNode.setPluginData("custom_component_loop", "true");
+
+  loopFrameNode.x = position.x;
+  loopFrameNode.y = position.y;
+
+  figma.currentPage.appendChild(loopFrameNode);
 }
