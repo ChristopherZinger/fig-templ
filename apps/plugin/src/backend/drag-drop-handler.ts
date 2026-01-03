@@ -1,4 +1,7 @@
-import { makeDynamicImgNode } from "./custom-components";
+import {
+  makeDynamicImgNode,
+  makeTemplateLoopComponentInstance,
+} from "./custom-components";
 
 export function setDragDropHandler(figma: PluginAPI) {
   figma.on("drop", (event: DropEvent) => {
@@ -11,6 +14,14 @@ export function setDragDropHandler(figma: PluginAPI) {
     switch (dropMetadata.type) {
       case "dynamic-image":
         makeDynamicImgNode({
+          position: {
+            x: event.x,
+            y: event.y,
+          },
+        });
+        return true;
+      case "template-loop":
+        makeTemplateLoopComponentInstance({
           position: {
             x: event.x,
             y: event.y,

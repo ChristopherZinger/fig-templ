@@ -4,6 +4,20 @@
   import ImgIcon from "../icons/ImgIcon.svelte";
 
   let dragableImgIcon: HTMLDivElement | undefined;
+  let dragableLoopIcon: HTMLDivElement | undefined;
+
+  let unsub_2: (() => void) | undefined;
+  $: if (dragableLoopIcon) {
+    unsub_2?.();
+    const fn = (e: DragEvent) => {
+      sendDropEventToMainThread(e, "template-loop");
+    };
+
+    dragableLoopIcon.addEventListener("dragend", fn);
+    unsub_2 = () => {
+      dragableLoopIcon?.removeEventListener("dragend", fn);
+    };
+  }
   let unsub: (() => void) | undefined;
 
   $: if (dragableImgIcon) {
@@ -35,6 +49,15 @@
     >
       <ImgIcon width={20} height={20} />
       <div>Image</div>
+    </div>
+
+    <div
+      class="custom-component-item"
+      draggable={true}
+      bind:this={dragableLoopIcon}
+    >
+      <ImgIcon width={20} height={20} />
+      <div>Loop</div>
     </div>
   </div>
 </div>

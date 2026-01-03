@@ -21,6 +21,8 @@ COPY service-account-key.json /app/service-account-key.json
 # sveltekit needs vars during build time.
 COPY env-prod/.env /app/apps/starter-app/.env
 
-RUN NODE_ENV=production npx turbo run build 
+ENV NODE_ENV=production
+
+RUN npx turbo run build 
 
 CMD ["npm", "run", "serve", "-w", "templetto-starter-app"]

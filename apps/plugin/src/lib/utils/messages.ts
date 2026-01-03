@@ -11,7 +11,7 @@ export function sendToMainThread<T extends UiMsg>(
 
 export function sendDropEventToMainThread(
   e: DragEvent,
-  componentType: "dynamic-image"
+  componentType: "dynamic-image" | "template-loop"
 ) {
   if (!e.target || !("innerHTML" in e.target)) {
     console.error("no_target_in_drag_event", { e });

@@ -1,14 +1,12 @@
 export const DYNAMIC_IMG_INSTANCE_NAME = "templetto_dynamic_image";
+export const TEMPLATE_LOOP_INSTANCE_NAME = "templetto_template_loop";
 
 export async function makeDynamicImgNode({
   position,
 }: {
   position: { x: number; y: number };
 }) {
-  let component = figma.currentPage.findOne((node) => {
-    return node.type === "COMPONENT" && node.name === DYNAMIC_IMG_INSTANCE_NAME;
-  }) as ComponentNode | undefined;
-
+  let component = findComponent(DYNAMIC_IMG_INSTANCE_NAME);
   if (!component) {
     component = makeDynamicImgComponent();
   }
@@ -22,14 +20,22 @@ export async function makeDynamicImgNode({
   figma.currentPage.appendChild(img);
 }
 
+function findComponent(name: string): ComponentNode | null {
+  let component = figma.currentPage.findOne((node) => {
+    return node.type === "COMPONENT" && node.name === name;
+  }) as ComponentNode | undefined;
+
+  return component || null;
+}
+
 function makeDynamicImgComponent(): ComponentNode {
-  const rectNode = makeRectangle();
+  const rectNode = makeDynamicImagePlaceholderRectangle();
   const component = figma.createComponentFromNode(rectNode);
   component.name = DYNAMIC_IMG_INSTANCE_NAME;
   return component;
 }
 
-function makeRectangle(): RectangleNode {
+function makeDynamicImagePlaceholderRectangle(): RectangleNode {
   const rect = figma.createRectangle();
   rect.name = "templetto_dynamic_image_rectangle";
   rect.x = 0;
@@ -46,3 +52,48 @@ function makeRectangle(): RectangleNode {
 
   return rect;
 }
+
+export async function makeTemplateLoopComponentInstance({
+  position,
+}: {
+  position: { x: number; y: number };
+}) {
+  const loopFrame = makeTemplateLoopComponent();
+  loopFrame.x = position.x;
+  loopFrame.y = position.y;
+  loopFrame.name = "array_" + Math.random().toString(36).substring(2, 5);
+}
+
+function makeTemplateLoopComponent(): FrameNode {
+  const loopFrame = figma.createFrame();
+  loopFrame.layoutMode = "VERTICAL";
+  loopFrame.itemSpacing = 10;
+  loopFrame.name = "templetto_template_loop_frame";
+  loopFrame.resize(400, 200);
+
+  const rect = figma.createRectangle();
+  rect.resize(100, 200);
+  rect.fills = [{ type: "SOLID", color: { r: 0.5, g: 0.7, b: 0.2 } }];
+  loopFrame.appendChild(rect);
+
+  loopFrame.setPluginData("custom_component_loop", "true");
+
+  const v = loopFrame.getPluginData("custom_component_loop");
+  console.log(v);
+
+  return loopFrame;
+}
+
+//**
+//
+// <div>
+//   <div>example item {{ value }}</div>
+// </div>
+//
+// <div>
+// {{#each div_name}}
+//   <div>example item {{ value }}</div>
+// {{/each }}
+// </div>
+//
+//  */

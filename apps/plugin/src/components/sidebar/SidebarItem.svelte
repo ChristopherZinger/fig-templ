@@ -36,6 +36,11 @@
     text-decoration: underline;
   }
 
+  .selected {
+    color: white;
+    text-decoration: underline;
+  }
+
   .header {
     display: flex;
     justify-content: space-between;

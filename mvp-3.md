@@ -18,8 +18,8 @@
 
 - [] magic layout
 - [] special templating elemtns:
-  - [] loop
-  - [wip] image
+  - [wip] loop
+  - [x] image
 
 ## Server
 
@@ -31,3 +31,7 @@
 ## Testing
 
 - [] Check if docs are correct
+
+## improvements
+
+- [] allow drag-drop special components onto the frame
