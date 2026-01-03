@@ -147,7 +147,7 @@
   });
 
   let view: View = "preview";
-  const views = ["templates", "preview"] as const;
+  const views = ["templates", "preview", "about"] as const;
   type View = (typeof views)[number];
 </script>
 
@@ -198,7 +198,14 @@
       {/if}
 
       <CustomComponentsSection />
-      <About />
+      <SidebarItem
+        onClick={() => (view = "about")}
+        isSelected={view === "about"}
+      >
+        <div slot="header">
+          <div>About Templetto</div>
+        </div>
+      </SidebarItem>
     </div>
 
     <div class="panel-footer">
@@ -230,6 +237,8 @@
         {imgHashToBlob}
         {htmlBuildLogs}
       />
+    {:else if view === "about"}
+      <About />
     {/if}
   </div>
 </BaseLayout>
