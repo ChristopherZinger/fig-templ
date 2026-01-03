@@ -147,7 +147,7 @@
   });
 
   let view: View = "preview";
-  const views = ["templates", "preview", "about"] as const;
+  const views = ["templates", "preview", "about", "custom-components"] as const;
   type View = (typeof views)[number];
 </script>
 
@@ -197,7 +197,15 @@
         />
       {/if}
 
-      <CustomComponentsSection />
+      <SidebarItem
+        onClick={() => (view = "custom-components")}
+        isSelected={view === "custom-components"}
+      >
+        <svelte:fragment slot="header">
+          <div>Custom Components</div>
+        </svelte:fragment>
+      </SidebarItem>
+
       <SidebarItem
         onClick={() => (view = "about")}
         isSelected={view === "about"}
@@ -239,6 +247,8 @@
       />
     {:else if view === "about"}
       <About />
+    {:else if view === "custom-components"}
+      <CustomComponentsSection />
     {/if}
   </div>
 </BaseLayout>

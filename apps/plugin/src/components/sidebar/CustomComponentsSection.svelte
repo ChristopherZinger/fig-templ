@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onDestroy } from "svelte";
   import { sendDropEventToMainThread } from "../../lib/utils/messages";
-  import SidebarItem from "./SidebarItem.svelte";
   import ImgIcon from "../icons/ImgIcon.svelte";
 
   let dragableImgIcon: HTMLDivElement | undefined;
@@ -24,29 +23,26 @@
   });
 </script>
 
-<SidebarItem isOpen={true}>
-  <svelte:fragment slot="header">
-    <div>Image</div>
-  </svelte:fragment>
-
-  <div slot="content">
-    <div style="font-size: 10px; margin-bottom: 10px">
-      Darag icons into the workspace.
-    </div>
-    <div class="custom-components-section">
-      <div
-        class="custom-component-item"
-        draggable={true}
-        bind:this={dragableImgIcon}
-      >
-        <ImgIcon width={20} height={20} />
-        <div>Image</div>
-      </div>
+<div class="custom-components-container">
+  <div style="font-size: 10px; margin-bottom: 10px">
+    Darag icons into the workspace.
+  </div>
+  <div class="custom-components-section">
+    <div
+      class="custom-component-item"
+      draggable={true}
+      bind:this={dragableImgIcon}
+    >
+      <ImgIcon width={20} height={20} />
+      <div>Image</div>
     </div>
   </div>
-</SidebarItem>
+</div>
 
 <style>
+  .custom-components-container {
+    padding: 0.7rem;
+  }
   .custom-components-section {
     display: flex;
     gap: 10px;
