@@ -1,6 +1,7 @@
 <script lang="ts">
   export let onClick: (() => void) | undefined = undefined;
   export let isOpen: boolean = false;
+  export let isSelected: boolean = false;
 </script>
 
 <div class="sidebar-item">
@@ -12,7 +13,9 @@
     tabindex="0"
     class:button={!!onClick}
   >
-    <slot name="header" />
+    <div class:selected={isSelected}>
+      <slot name="header" />
+    </div>
   </div>
 
   {#if $$slots.content && isOpen}
@@ -27,6 +30,10 @@
     display: flex;
     flex-direction: column;
     border-bottom: 1px solid var(--light-gray);
+  }
+  .selected {
+    color: white;
+    text-decoration: underline;
   }
 
   .header {

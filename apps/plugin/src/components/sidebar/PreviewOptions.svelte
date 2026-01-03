@@ -17,9 +17,9 @@
   let isDownloading = false;
 </script>
 
-<SidebarItem {isOpen} onClick={onSelectSection}>
+<SidebarItem {isOpen} onClick={onSelectSection} {isSelected}>
   <div slot="header" class="header">
-    <div class:selected={isSelected}>Preview</div>
+    <div>Preview</div>
   </div>
   <div slot="content" class="content">
     <FrameSelector
