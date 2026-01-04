@@ -3,9 +3,7 @@
   import { sendDropEventToMainThread } from "../../lib/utils/messages";
   import ImgIcon from "../icons/ImgIcon.svelte";
 
-  let dragableImgIcon: HTMLDivElement | undefined;
   let dragableLoopIcon: HTMLDivElement | undefined;
-
   let unsubTemplateLoopDragEv: (() => void) | undefined;
   $: if (dragableLoopIcon) {
     unsubTemplateLoopDragEv?.();
@@ -19,6 +17,7 @@
     };
   }
 
+  let dragableImgIcon: HTMLDivElement | undefined;
   let unsubDynamicImageDragEv: (() => void) | undefined;
   $: if (dragableImgIcon) {
     unsubDynamicImageDragEv?.();

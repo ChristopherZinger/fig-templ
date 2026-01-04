@@ -1,3 +1,5 @@
+import { AppPluginDataKey, setPluginData } from "./plugin-data";
+
 export const DYNAMIC_IMG_INSTANCE_NAME = "templetto_dynamic_image";
 export const TEMPLETTO_LOOP_NODE = "templetto_loop_node";
 
@@ -91,7 +93,10 @@ export async function makeTemplettoLoopNode({
   loopFrameNode.appendChild(itemFrameNode);
   itemFrameNode.layoutSizingHorizontal = "FILL";
 
-  loopFrameNode.setPluginData("custom_component_loop", "true");
+  setPluginData(loopFrameNode, {
+    pluginDataType: AppPluginDataKey.TEMPLATE_LOOP_NODE,
+    loopDataKey: "key-name-placeholder", // TODO: insert slugified user input
+  });
 
   loopFrameNode.x = position.x;
   loopFrameNode.y = position.y;

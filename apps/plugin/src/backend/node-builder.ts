@@ -25,6 +25,11 @@ import {
 } from "./utils/node-position";
 import slugify from "slugify";
 import { DYNAMIC_IMG_INSTANCE_NAME } from "./custom-components";
+import {
+  getPluginData,
+  AppPluginDataKey,
+  AppPluginDataInfo,
+} from "./plugin-data";
 
 const ENABLE_MAGIC_LAYOUT = false;
 
@@ -77,6 +82,14 @@ async function buildAppNodeFromSceneNode(
     return null;
   }
 
+  const loopInfo = getPluginData(
+    sceneNode,
+    AppPluginDataKey.TEMPLATE_LOOP_NODE
+  );
+  if (loopInfo) {
+    return await buildForEachLoopNode(sceneNode, loopInfo);
+  }
+
   if (!hasChildren(sceneNode) || hasAutoLayoutMode(sceneNode)) {
     return await buildAppNodeWithAutoLayout(sceneNode);
   }
@@ -115,6 +128,28 @@ async function buildAppNodeFromSceneNode(
     return magicLayoutNode;
   }
   return await createRasterizedAppNode(sceneNode);
+}
+
+async function buildForEachLoopNode(
+  sceneNode: SceneNode,
+  loopInfo: AppPluginDataInfo
+): Promise<AppNode | null> {
+  const firstChild = getDirectChildren(sceneNode)[0];
+  if (!firstChild) {
+    console.error("no first child for loop node", sceneNode.name);
+    return null;
+  }
+  const [baseStyles, onlyChild] = await Promise.all([
+    buildNodeStyle(sceneNode),
+    buildAppNodeFromSceneNode(firstChild),
+  ]);
+
+  return makeAppNode({
+    sceneNode,
+    children: _.compact([onlyChild]),
+    style: baseStyles,
+    attributes: { "data-loop-data-key": loopInfo.loopDataKey },
+  });
 }
 
 async function buildAppNodeWithAutoLayout(
