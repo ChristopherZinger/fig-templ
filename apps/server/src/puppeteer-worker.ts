@@ -64,15 +64,7 @@ export async function main(req: Request, res: Response) {
     return;
   }
 
-  const $ = cheerio.load(rawTemplate);
-  $("div[data-image-src-name]").each((_, element) => {
-    const imgSrcName = $(element).attr("data-image-src-name");
-    element.tagName = "img";
-    $(element).attr("src", `{{ ${imgSrcName} }}`);
-    $(element).css("object-fit", "cover");
-    $(element).removeAttr("data-image-src-name");
-  });
-  const templateHtml = $.html();
+  const templateHtml = preprocessRawFigmaTemplateExport(rawTemplate);
 
   const htmlToRender = Handlebars.compile(templateHtml)(jsonData);
 
@@ -150,6 +142,29 @@ export async function main(req: Request, res: Response) {
   log.debug("saved_pdf_to_firestore", { artifactPathInStorage });
 
   res.status(200).json({ downloadUrl, pathInStorage: artifactPathInStorage });
+}
+
+function preprocessRawFigmaTemplateExport(rawTemplate: string): string {
+  const $ = cheerio.load(rawTemplate);
+  $("div[data-image-src-name]").each((_, element) => {
+    const imgSrcName = $(element).attr("data-image-src-name");
+    element.tagName = "img";
+    $(element).attr("src", `{{ ${imgSrcName} }}`);
+    $(element).css("object-fit", "cover");
+    $(element).removeAttr("data-image-src-name");
+  });
+
+  $("div[data-loop-data-key]").each((_, element) => {
+    const loopDataKey = $(element).attr("data-loop-data-key");
+    const firstChild = $(element).children().first();
+    $(element).html(
+      `{{#each ${loopDataKey} }}
+       ${firstChild}
+    {{/each}}`
+    );
+  });
+
+  return $.html();
 }
 
 function createTmpDir(): {
