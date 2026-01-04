@@ -19,14 +19,12 @@ export function hasSingleChild(node: SceneNode): boolean {
 }
 
 export function getDirectChildren(node: SceneNode): SceneNode[] {
-  if (!("children" in node)) {
-    return [];
+  if ("findChildren" in node) {
+    return node.findChildren(() => {
+      return true;
+    });
   }
-  const directChildren = node.children.filter((child) => {
-    return child.parent && child.parent.id === node.id;
-  });
-
-  return directChildren;
+  return [];
 }
 
 export function getAllChildren(node: SceneNode): SceneNode[] {
