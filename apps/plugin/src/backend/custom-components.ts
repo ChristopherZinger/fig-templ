@@ -95,7 +95,7 @@ export async function makeTemplettoLoopNode({
 
   setPluginData(loopFrameNode, {
     pluginDataType: AppPluginDataKey.TEMPLATE_LOOP_NODE,
-    loopDataKey: "key-name-placeholder", // TODO: insert slugified user input
+    loopDataKey: "key_name_placeholder", // TODO: insert slugified user input
   });
 
   loopFrameNode.x = position.x;
