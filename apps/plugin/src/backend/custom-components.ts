@@ -24,13 +24,13 @@ export async function makeDynamicImgNode({
 }
 
 function makeDynamicImgComponent(): ComponentNode {
-  const rectNode = makeRectangle();
+  const rectNode = makeDynamicImagePlaceholderRectangle();
   const component = figma.createComponentFromNode(rectNode);
   component.name = DYNAMIC_IMG_INSTANCE_NAME;
   return component;
 }
 
-function makeRectangle(): RectangleNode {
+function makeDynamicImagePlaceholderRectangle(): RectangleNode {
   const rect = figma.createRectangle();
   rect.name = "templetto_dynamic_image_rectangle";
   rect.x = 0;
