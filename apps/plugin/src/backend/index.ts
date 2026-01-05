@@ -6,3 +6,12 @@ figma.showUI(__html__, PLUGIN_WINDOW_OPTIONS);
 
 setMessageRouter(figma);
 setDragDropHandler(figma);
+
+figma.on("selectionchange", () => {
+  figma.currentPage.selection.forEach((node) => {
+    console.log(node.name);
+    node.getPluginDataKeys().forEach((key) => {
+      console.log(key, node.getPluginData(key));
+    });
+  });
+});

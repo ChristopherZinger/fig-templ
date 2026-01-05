@@ -150,6 +150,8 @@ function getSizeStyles(node: BaseNode): {
           return null;
       }
 
+    // todo account for "hug contents"
+
     default:
       return {
         width: node.width + "px",
