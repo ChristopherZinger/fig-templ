@@ -10,16 +10,16 @@
 
 - [] edit template code
 - [] derive json from template
-- [] allow multiple pages per template
+- [wip] allow multiple pages per template
 - [] create default template for user to test ready after account creation
 - [] allow user creating pdfs from the frontend by manipulating json
 
 ## Plugin
 
 - [] magic layout
-- [] special templating elemtns:
-  - [] loop
-  - [wip] image
+- [x] special templating elemtns:
+  - [x] loop
+  - [x] image
 
 ## Server
 
@@ -31,3 +31,7 @@
 ## Testing
 
 - [] Check if docs are correct
+
+## improvements
+
+- [] allow drag-drop special components onto the frame
