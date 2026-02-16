@@ -1,6 +1,7 @@
 <script lang="ts">
   import LineChart from "./lib/components/charts/LineChart.svelte";
   import { data } from "./lib/components/charts/lineData";
+  import Nav from "./lib/components/Nav.svelte";
   let options = {
     xAxis: { ticks: 5 },
     yAxis: { ticks: 5 },
@@ -9,9 +10,12 @@
     padding: 50,
   };
 </script>
+
 <div class="app">
+  <Nav />
+
   <main>
-    <LineD3 data={[_data]} {options} />
+    <LineChart data={[data]} {options} />
   </main>
 </div>
 
