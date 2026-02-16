@@ -8,19 +8,15 @@
   font-weight: 450;
 
   color-scheme: light dark;
-  color: #ffffffb3;
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --light-gray: #3c3c3c;
-
-  select {
-    color: #ffffffb3;
-  }
+  --col-bg: #dddddd;
+  --col-off-white: #f5f5f5;
+  --col-text: #333333;
 }
 
 body {
