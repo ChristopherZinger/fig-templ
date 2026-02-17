@@ -1,27 +1,41 @@
 <script lang="ts">
   import { chartStore } from "../../stores/chart-store";
+  import Checkbox from "../inputs/Checkbox.svelte";
 </script>
 
 <div>
-  <label for="ticks-x-axis">X Axis</label>
-  <input
-    id="ticks-x-axis"
-    type="checkbox"
-    checked={$chartStore.xAxis !== null}
-    on:change={() => {
-      chartStore.setAxisVisibility("x", !$chartStore.xAxis);
-    }}
-  />
+  <div class="section-title">Y Axis</div>
+
+  <div>
+    <Checkbox
+      label="X Axis"
+      checked={$chartStore.xAxis !== null}
+      onChange={(checked) => {
+        chartStore.setAxisVisibility("x", !checked);
+      }}
+    />
+  </div>
 </div>
 
 <div>
-  <label for="ticks-y-axis">Y Axis</label>
-  <input
-    id="ticks-y-axis"
-    type="checkbox"
-    checked={$chartStore.yAxis !== null}
-    on:change={() => {
-      chartStore.setAxisVisibility("y", !$chartStore.yAxis);
-    }}
-  />
+  <div class="section-title">Y Axis</div>
+  <div>
+    <Checkbox
+      label="Y Axis"
+      checked={$chartStore.yAxis !== null}
+      onChange={(checked) => {
+        chartStore.setAxisVisibility("y", !checked);
+      }}
+    />
+  </div>
 </div>
+
+<style>
+  .section-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding: 0 2px;
+    border-bottom: 1px solid var(--col-text);
+  }
+</style>
