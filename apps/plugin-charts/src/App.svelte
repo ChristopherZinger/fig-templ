@@ -2,20 +2,14 @@
   import LineChart from "./lib/components/charts/LineChart.svelte";
   import { data } from "./lib/components/charts/lineData";
   import Nav from "./lib/components/Nav.svelte";
-  let options = {
-    xAxis: { ticks: 5 },
-    yAxis: { ticks: 5 },
-    width: 500,
-    height: 500,
-    padding: 50,
-  };
+  import { chartStore } from "./lib/stores/chart-store";
 </script>
 
 <div class="app">
   <Nav />
 
   <main>
-    <LineChart data={[data]} {options} />
+    <LineChart data={[data]} options={$chartStore} />
   </main>
 </div>
 

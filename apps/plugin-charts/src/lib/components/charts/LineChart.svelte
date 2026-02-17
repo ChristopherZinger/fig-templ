@@ -1,30 +1,17 @@
 <script lang="ts">
   import * as d3 from "d3";
+  import type { LineChartData, LineCharOptions } from "../../types";
 
-  type LineData = number[];
-
-  type AxisOptions = {
-    ticks?: number; // undefined = 'auto'
-  };
-
-  type Options = {
-    xAxis: null | AxisOptions;
-    yAxis: null | AxisOptions;
-    width: number;
-    height: number;
-    padding: number;
-  };
-
-  export let data: LineData[]; // y values
-  export let options: Options;
+  export let data: LineChartData[];
+  export let options: LineCharOptions;
 
   let parentNode: HTMLElement | undefined = undefined;
 
   $: onParentNodeChange(parentNode, data, options);
   function onParentNodeChange(
     parentNode: HTMLElement | undefined,
-    data: LineData[],
-    options: Options,
+    data: LineChartData[],
+    options: LineCharOptions,
   ) {
     if (!parentNode) {
       console.error("Parent node not found");
