@@ -1,7 +1,7 @@
 <script lang="ts">
   import LineChart from "./lib/components/charts/LineChart.svelte";
   import { data } from "./lib/components/charts/lineData";
-  import Nav from "./lib/components/Nav.svelte";
+  import Nav from "./lib/components/nav/Nav.svelte";
   import { chartStore } from "./lib/stores/chart-store";
 </script>
 

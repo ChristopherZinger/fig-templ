@@ -6,9 +6,9 @@
 
 <div class="nav-container">
   <nav on:mouseenter={() => dialogEl?.showModal()}>
-    <div class="item">1</div>
-    <div class="item">2</div>
-    <div class="item">3</div>
+    <div class="item">cha</div>
+    <div class="item">st</div>
+    <div class="item">da</div>
   </nav>
 
   <dialog
@@ -67,6 +67,7 @@
     width: 40px;
     border: 1px solid var(--light-gray);
     color: var(--col-text);
+    font-size: 12px;
   }
 
   #dialog {
