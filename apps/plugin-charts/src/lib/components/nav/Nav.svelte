@@ -1,47 +1,19 @@
 <script lang="ts">
-  import { chartStore } from "../stores/chart-store";
+  import SettingsPanel from "../settings-panel/SettingsPanel.svelte";
+  import NavItem from "./NavItem.svelte";
 
-  let dialogEl: HTMLDialogElement | undefined = undefined;
+  export let onHover: (navItem: "chart" | "style" | "data") => void;
+  export let selectedNavItem: "chart" | "style" | "data" | null;
 </script>
 
 <div class="nav-container">
-  <nav on:mouseenter={() => dialogEl?.showModal()}>
-    <div class="item">cha</div>
-    <div class="item">st</div>
-    <div class="item">da</div>
+  <nav>
+    <NavItem onHover={() => onHover("chart")}>cha</NavItem>
+    <NavItem onHover={() => onHover("style")}>st</NavItem>
+    <NavItem onHover={() => onHover("data")}>da</NavItem>
   </nav>
 
-  <dialog
-    id="dialog"
-    bind:this={dialogEl}
-    on:mouseleave={() => dialogEl?.close()}
-  >
-    <div class="content">
-      <div>
-        <label for="ticks-x-axis">X Axis</label>
-        <input
-          id="ticks-x-axis"
-          type="checkbox"
-          checked={$chartStore.xAxis !== null}
-          on:change={() => {
-            chartStore.setAxisVisibility("x", !$chartStore.xAxis);
-          }}
-        />
-      </div>
-
-      <div>
-        <label for="ticks-y-axis">Y Axis</label>
-        <input
-          id="ticks-y-axis"
-          type="checkbox"
-          checked={$chartStore.yAxis !== null}
-          on:change={() => {
-            chartStore.setAxisVisibility("y", !$chartStore.yAxis);
-          }}
-        />
-      </div>
-    </div>
-  </dialog>
+  <SettingsPanel {selectedNavItem} />
 </div>
 
 <style>
@@ -57,41 +29,5 @@
     background-color: var(--col-bg);
     border-radius: 10px;
     height: 100%;
-  }
-
-  nav div.item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 40px;
-    width: 40px;
-    border: 1px solid var(--light-gray);
-    color: var(--col-text);
-    font-size: 12px;
-  }
-
-  #dialog {
-    left: 45px;
-    top: 0;
-    background: var(--col-bg);
-    height: calc(100% - 10px); /* 10px is the margin of the nav container */
-    width: 300px;
-    max-height: none; /* override UA stylesheet constraint */
-    max-width: none; /* override UA stylesheet constraint */
-    overflow-y: scroll;
-    overflow-x: hidden;
-    border: none;
-    outline: none;
-    padding: 0;
-    margin: 5px;
-    box-sizing: border-box;
-    border-radius: 10px;
-    padding: 5px;
-    color: var(--col-text);
-    font-size: 12px;
-  }
-
-  #dialog::backdrop {
-    display: none;
   }
 </style>

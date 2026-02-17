@@ -3,10 +3,12 @@
   import { data } from "./lib/components/charts/lineData";
   import Nav from "./lib/components/nav/Nav.svelte";
   import { chartStore } from "./lib/stores/chart-store";
+
+  let selectedNavItem: "chart" | "style" | "data" | null = null;
 </script>
 
 <div class="app">
-  <Nav />
+  <Nav onHover={(navItem) => (selectedNavItem = navItem)} {selectedNavItem} />
 
   <main>
     <LineChart data={[data]} options={$chartStore} />
