@@ -4,11 +4,14 @@ export type LineChartData = number[];
 export type LineCharOptions = {
   xAxis: AxisOptions | null;
   yAxis: AxisOptions | null;
+} & ChartSizeOptions;
+
+export type AxisOptions = {
+  ticks?: number | undefined | null; // undefined = 'auto'; null = hide
+};
+
+export type ChartSizeOptions = {
   width: number;
   height: number;
   padding: number;
-};
-
-export type AxisOptions = {
-  ticks?: number; // undefined = 'auto'
 };
