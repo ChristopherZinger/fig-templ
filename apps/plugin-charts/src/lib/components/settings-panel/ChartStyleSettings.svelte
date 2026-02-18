@@ -15,6 +15,16 @@
       }}
     />
   </div>
+
+  <div>
+    <Checkbox
+      label="Ticks"
+      checked={$chartStore.xAxis?.ticks !== null}
+      onChange={(checked) => {
+        chartStore.setTicks("x", checked ? null : undefined);
+      }}
+    />
+  </div>
 </div>
 
 <div>
@@ -25,6 +35,16 @@
       checked={$chartStore.yAxis !== null}
       onChange={(checked) => {
         chartStore.setAxisVisibility("y", !checked);
+      }}
+    />
+  </div>
+
+  <div>
+    <Checkbox
+      label="Ticks"
+      checked={$chartStore.yAxis?.ticks !== null}
+      onChange={(checked) => {
+        chartStore.setTicks("y", checked ? null : undefined);
       }}
     />
   </div>

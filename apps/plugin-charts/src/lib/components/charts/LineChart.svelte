@@ -43,6 +43,9 @@
       if (options.xAxis.ticks !== undefined) {
         xAxis.ticks(options.xAxis.ticks);
       }
+      if (options.xAxis.ticks === null) {
+        xAxis.ticks([]);
+      }
       svg
         .append("g")
         .attr("transform", `translate(0,${height - padding})`)
@@ -54,6 +57,9 @@
       const yAxis = d3.axisLeft(y);
       if (options.yAxis.ticks !== undefined) {
         yAxis.ticks(options.yAxis.ticks);
+      }
+      if (options.yAxis.ticks === null) {
+        yAxis.ticks([]);
       }
       svg
         .append("g")
