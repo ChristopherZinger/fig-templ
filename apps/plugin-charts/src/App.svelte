@@ -2,9 +2,26 @@
   import LineChart from "./lib/components/charts/LineChart.svelte";
   import { data } from "./lib/components/charts/lineData";
   import Nav from "./lib/components/nav/Nav.svelte";
-  import { chartStore } from "./lib/stores/chart-store";
+  import { chartHtmlStore, chartStore } from "./lib/stores/chart-store";
 
   let selectedNavItem: "chart" | "style" | "data" | null = null;
+
+  // TODO: both plugin use this - make a module for this
+  function sendToMainThread(
+    msg: string,
+    payload: Record<string, unknown> | null,
+  ): void {
+    parent.postMessage({ pluginMessage: { type: msg, data: payload } }, "*");
+  }
+
+  function createChart() {
+    const svgHtmlStr = $chartHtmlStore;
+    if (!svgHtmlStr) {
+      console.error("cant_create_chart_no_svg_html_string");
+      return;
+    }
+    sendToMainThread("create_chart", { chartHtmlSting: svgHtmlStr });
+  }
 </script>
 
 <div class="app">
@@ -12,6 +29,10 @@
 
   <main>
     <LineChart data={[data]} options={$chartStore} />
+
+    <div>
+      <button onclick={createChart}>Create</button>
+    </div>
   </main>
 </div>
 

@@ -1,20 +1,31 @@
 <script lang="ts">
   import * as d3 from "d3";
   import type { LineChartData, LineCharOptions } from "../../types";
+  import { chartHtmlStore } from "../../stores/chart-store";
 
   export let data: LineChartData[];
   export let options: LineCharOptions;
 
   let parentNode: HTMLElement | undefined = undefined;
-
-  $: onParentNodeChange(parentNode, data, options);
-  function onParentNodeChange(
+  function onChartHtmlChange(
     parentNode: HTMLElement | undefined,
-    data: LineChartData[],
-    options: LineCharOptions,
+    chartHtml: string | null,
   ) {
     if (!parentNode) {
+      console.error("parent_node_not_found");
+      return;
+    }
+    if (!chartHtml) {
+      parentNode.innerHTML = "<div>No chart data / options</div>";
+      return;
+    }
+    parentNode.innerHTML = chartHtml;
+  }
+
+  function onParentNodeChange(data: LineChartData[], options: LineCharOptions) {
+    if (!parentNode) {
       console.error("Parent node not found");
+      chartHtmlStore.setChartHtml(null);
       return;
     }
     parentNode.innerHTML = "";
@@ -26,14 +37,19 @@
     const minY = Math.max(...data.flat());
     const maxY = Math.min(...data.flat());
 
-    const _parentNode = d3.select(parentNode);
-
-    const svg = _parentNode
-      .append("svg")
+    const svg = d3
+      .create("svg")
       .attr("width", width)
       .attr("height", height)
       .attr("viewBox", [0, 0, width, height])
       .attr("style", "max-width: 100%; height: auto; height: intrinsic;");
+
+    const svgNode = svg.node();
+    if (!svgNode) {
+      console.error("svg_node_not_found");
+      chartHtmlStore.setChartHtml(null);
+      return;
+    }
 
     const x = d3.scaleLinear([padding, width - padding]).domain([minX, maxX]);
     const y = d3.scaleLinear([padding, height - padding]).domain([minY, maxY]);
@@ -81,6 +97,13 @@
         .attr("stroke-width", 1.5)
         .attr("d", line(d));
     }
+
+    chartHtmlStore.setChartHtml(svgNode.outerHTML);
+  }
+
+  $: {
+    onParentNodeChange(data, options);
+    onChartHtmlChange(parentNode, $chartHtmlStore);
   }
 </script>
 

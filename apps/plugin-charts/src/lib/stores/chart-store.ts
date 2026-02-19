@@ -75,3 +75,11 @@ export const chartStore = {
   setHeight: chartSizeStore.setHeight,
   setPadding: chartSizeStore.setPadding,
 };
+
+const _chartHtmlStore = writable<string | null>(null);
+export const chartHtmlStore = {
+  subscribe: _chartHtmlStore.subscribe,
+  setChartHtml: (chartHtml: string | null) => {
+    _chartHtmlStore.set(chartHtml);
+  },
+};
