@@ -24,13 +24,24 @@
   }
 </script>
 
-<div class="app">
+<div
+  role="button"
+  tabindex="0"
+  class="app"
+  onmousedown={(e) => {
+    const isClickOrNavOrDialog = e
+      .composedPath()
+      .filter((el): el is Node => el instanceof Node)
+      .some((el) => ["NAV", "DIALOG"].includes(el.nodeName));
+    if (isClickOrNavOrDialog) {
+      return;
+    }
+    selectedNavItem = null;
+  }}
+>
   <Nav
     onHover={(navItem) => {
       selectedNavItem = navItem;
-    }}
-    onClose={() => {
-      selectedNavItem = null;
     }}
     {selectedNavItem}
   />

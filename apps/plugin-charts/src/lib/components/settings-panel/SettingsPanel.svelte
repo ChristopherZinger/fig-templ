@@ -2,19 +2,11 @@
   import ChartStyleSettings from "./ChartStyleSettings.svelte";
 
   export let selectedNavItem: "chart" | "style" | "data" | null;
-  export let onClose: () => void;
 
   let dialogEl: HTMLDialogElement | undefined = undefined;
 </script>
 
-<dialog
-  id="dialog"
-  bind:this={dialogEl}
-  on:mouseleave={() => {
-    onClose();
-  }}
-  open={selectedNavItem !== null}
->
+<dialog id="dialog" bind:this={dialogEl} open={selectedNavItem !== null}>
   {#if selectedNavItem === "chart"}
     <dv>chart settings</dv>
   {:else if selectedNavItem === "style"}
