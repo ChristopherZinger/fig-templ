@@ -93,8 +93,8 @@
       svg
         .append("path")
         .attr("fill", "none")
-        .attr("stroke", "steelblue")
-        .attr("stroke-width", 1.5)
+        .attr("stroke", options.path.color)
+        .attr("stroke-width", options.path.stroke)
         .attr("d", line(d));
     }
 

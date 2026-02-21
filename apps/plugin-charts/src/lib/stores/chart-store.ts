@@ -1,6 +1,6 @@
 import { derived, writable } from "svelte/store";
 import { get } from "svelte/store";
-import type { AxisOptions, ChartSizeOptions, LineCharOptions } from "../types";
+import type { AxisOptions, ChartSizeOptions, LineCharOptions, PathOptions } from "../types";
 
 const DEFAULT_AXIS_OPTIONS: AxisOptions = {
   ticks: undefined,
@@ -44,13 +44,28 @@ const chartSizeStore = {
   },
 };
 
+const _pathOptionsStore = writable<PathOptions>({
+  stroke: 1.5,
+  color: "steelblue",
+});
+const pathOptionsStore = {
+  subscribe: _pathOptionsStore.subscribe,
+  setStroke: (stroke: number) => {
+    _pathOptionsStore.update((v) => ({ ...v, stroke }));
+  },
+  setColor: (color: string) => {
+    _pathOptionsStore.update((v) => ({ ...v, color }));
+  },
+};
+
 const _chartStore = derived(
-  [_chartSizeStore, xAxisStore, yAxisStore],
-  ([size, xAxis, yAxis]) =>
+  [_chartSizeStore, xAxisStore, yAxisStore, pathOptionsStore],
+  ([size, xAxis, yAxis, lineOptions]) =>
     ({
       ...size,
       xAxis,
       yAxis,
+      path: lineOptions,
     }) satisfies LineCharOptions,
 );
 
@@ -74,6 +89,8 @@ export const chartStore = {
   setWidth: chartSizeStore.setWidth,
   setHeight: chartSizeStore.setHeight,
   setPadding: chartSizeStore.setPadding,
+  setPathStroke: pathOptionsStore.setStroke,
+  setPathColor: pathOptionsStore.setColor,
 };
 
 const _chartHtmlStore = writable<string | null>(null);

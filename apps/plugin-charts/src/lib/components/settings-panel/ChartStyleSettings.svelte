@@ -1,11 +1,41 @@
 <script lang="ts">
   import { chartStore } from "../../stores/chart-store";
   import Checkbox from "../inputs/Checkbox.svelte";
+  import NumberInput from "../inputs/NumberInput.svelte";
+
+  let stroke = $derived($chartStore.path.stroke);
 </script>
 
 <div>
-  <div class="section-title">Y Axis</div>
+  <div class="section-title">Line</div>
+  <div>
+    <label for="path-stroke" class="row-input">
+      <div>Stroke</div>
+      <NumberInput
+        id="path-stroke"
+        min={0}
+        step={0.5}
+        value={stroke}
+        unit="px"
+        onChange={(value) => chartStore.setPathStroke(value)}
+      />
+    </label>
+    <label for="path-color" class="row-input">
+      <div>Color</div>
+      <input
+        id="path-color"
+        type="color"
+        value={$chartStore.path.color}
+        onchange={(e) => {
+          chartStore.setPathColor(e.currentTarget.value);
+        }}
+      />
+    </label>
+  </div>
+</div>
 
+<div>
+  <div class="section-title">Y Axis</div>
   <div>
     <Checkbox
       label="X Axis"
@@ -15,7 +45,6 @@
       }}
     />
   </div>
-
   <div>
     <Checkbox
       label="Ticks"
@@ -57,5 +86,12 @@
     margin-bottom: 10px;
     padding: 0 2px;
     border-bottom: 1px solid var(--col-text);
+  }
+
+  .row-input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
   }
 </style>

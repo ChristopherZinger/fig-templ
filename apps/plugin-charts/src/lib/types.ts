@@ -4,7 +4,9 @@ export type LineChartData = number[];
 export type LineCharOptions = {
   xAxis: AxisOptions | null;
   yAxis: AxisOptions | null;
-} & ChartSizeOptions;
+  path: PathOptions;
+} & ChartSizeOptions 
+
 
 export type AxisOptions = {
   ticks?: number | undefined | null; // undefined = 'auto'; null = hide
@@ -15,3 +17,8 @@ export type ChartSizeOptions = {
   height: number;
   padding: number;
 };
+
+export type PathOptions = {
+  stroke: number;
+  color: string;
+}
