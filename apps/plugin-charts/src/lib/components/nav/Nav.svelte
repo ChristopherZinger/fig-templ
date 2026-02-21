@@ -3,6 +3,7 @@
   import NavItem from "./NavItem.svelte";
 
   export let onHover: (navItem: "chart" | "style" | "data") => void;
+  export let onClose: () => void;
   export let selectedNavItem: "chart" | "style" | "data" | null;
 </script>
 
@@ -13,7 +14,7 @@
     <NavItem onHover={() => onHover("data")}>da</NavItem>
   </nav>
 
-  <SettingsPanel {selectedNavItem} />
+  <SettingsPanel {selectedNavItem} {onClose} />
 </div>
 
 <style>

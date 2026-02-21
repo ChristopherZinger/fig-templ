@@ -25,7 +25,15 @@
 </script>
 
 <div class="app">
-  <Nav onHover={(navItem) => (selectedNavItem = navItem)} {selectedNavItem} />
+  <Nav
+    onHover={(navItem) => {
+      selectedNavItem = navItem;
+    }}
+    onClose={() => {
+      selectedNavItem = null;
+    }}
+    {selectedNavItem}
+  />
 
   <main>
     <LineChart data={[data]} options={$chartStore} />

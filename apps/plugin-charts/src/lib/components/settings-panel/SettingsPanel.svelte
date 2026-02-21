@@ -2,6 +2,7 @@
   import ChartStyleSettings from "./ChartStyleSettings.svelte";
 
   export let selectedNavItem: "chart" | "style" | "data" | null;
+  export let onClose: () => void;
 
   let dialogEl: HTMLDialogElement | undefined = undefined;
 </script>
@@ -10,7 +11,7 @@
   id="dialog"
   bind:this={dialogEl}
   on:mouseleave={() => {
-    selectedNavItem = null;
+    onClose();
   }}
   open={selectedNavItem !== null}
 >
