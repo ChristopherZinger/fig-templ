@@ -1,9 +1,26 @@
 <script lang="ts">
+  import { get } from "svelte/store";
   import { chartStore } from "../../stores/chart-store";
   import Checkbox from "../inputs/Checkbox.svelte";
   import NumberInput from "../inputs/NumberInput.svelte";
 
-  let stroke = $derived($chartStore.path.stroke);
+  function onUnitMouseDown({ clientX: initialMouseX }: MouseEvent) {
+    const initialStroke = get(chartStore).path.stroke;
+
+    const mouseMoveHandler = ({ clientX: mouseX }: MouseEvent) => {
+      const deltaX = Math.round((mouseX - initialMouseX) / 10) / 10;
+      const newStrokeWeight =
+        Math.round(Math.max(0, deltaX + initialStroke) * 100) / 100;
+      chartStore.setPathStroke(newStrokeWeight);
+    };
+    addEventListener("mousemove", mouseMoveHandler);
+
+    const unsubMouseMove = () => {
+      removeEventListener("mousemove", mouseMoveHandler);
+      removeEventListener("mouseup", unsubMouseMove);
+    };
+    addEventListener("mouseup", unsubMouseMove);
+  }
 </script>
 
 <div>
@@ -14,10 +31,11 @@
       <NumberInput
         id="path-stroke"
         min={0}
-        step={0.5}
-        value={stroke}
+        step={0.2}
+        value={$chartStore.path.stroke}
         unit="px"
         onChange={(value) => chartStore.setPathStroke(value)}
+        {onUnitMouseDown}
       />
     </label>
     <label for="path-color" class="row-input">

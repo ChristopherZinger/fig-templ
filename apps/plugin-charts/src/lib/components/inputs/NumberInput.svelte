@@ -6,6 +6,8 @@
   export let step: number | undefined = undefined;
   export let id: string | undefined = undefined;
   export let unit: string | undefined = undefined;
+  export let onUnitMouseDown: ((pos: MouseEvent) => void) | undefined =
+    undefined;
 </script>
 
 <div class="number-input">
@@ -21,7 +23,9 @@
     }}
   />
   {#if unit}
-    <span>{unit}</span>
+    <span role="button" tabindex="0" onmousedown={onUnitMouseDown} class="unit">
+      {unit}
+    </span>
   {/if}
 </div>
 
@@ -40,7 +44,7 @@
     width: 50px;
     border-radius: 5px;
     font-size: 12px;
-    color: var(--off-white);
+    color: var(--col-off-white);
     -moz-appearance: textfield;
   }
 
@@ -48,5 +52,9 @@
   input::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
+  }
+  .unit {
+    cursor: ew-resize;
+    user-select: none;
   }
 </style>
