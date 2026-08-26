@@ -1,6 +1,11 @@
 import { derived, writable } from "svelte/store";
 import { get } from "svelte/store";
-import type { AxisOptions, ChartSizeOptions, LineCharOptions, PathOptions } from "../types";
+import type {
+  AxisOptions,
+  ChartSizeOptions,
+  LineCharOptions,
+  PathOptions,
+} from "../types";
 
 const DEFAULT_AXIS_OPTIONS: AxisOptions = {
   ticks: undefined,
@@ -46,7 +51,7 @@ const chartSizeStore = {
 
 const _pathOptionsStore = writable<PathOptions>({
   stroke: 1.5,
-  color: "steelblue",
+  color: "#4682b4",
 });
 const pathOptionsStore = {
   subscribe: _pathOptionsStore.subscribe,

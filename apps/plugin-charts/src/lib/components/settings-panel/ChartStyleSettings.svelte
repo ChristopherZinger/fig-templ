@@ -3,6 +3,7 @@
   import { chartStore } from "../../stores/chart-store";
   import Checkbox from "../inputs/Checkbox.svelte";
   import NumberInput from "../inputs/NumberInput.svelte";
+  import ColorPicker from "./ColorPicker.svelte";
 
   function onUnitMouseDown({ clientX: initialMouseX }: MouseEvent) {
     const initialStroke = get(chartStore).path.stroke;
@@ -38,15 +39,13 @@
         {onUnitMouseDown}
       />
     </label>
+
     <label for="path-color" class="row-input">
       <div>Color</div>
-      <input
+      <ColorPicker
         id="path-color"
-        type="color"
         value={$chartStore.path.color}
-        onchange={(e) => {
-          chartStore.setPathColor(e.currentTarget.value);
-        }}
+        onChange={(value) => chartStore.setPathColor(value)}
       />
     </label>
   </div>
